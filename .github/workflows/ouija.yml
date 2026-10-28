@@ -24,7 +24,7 @@ env:
 jobs:
   ouija:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,8 +39,10 @@ jobs:
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
           ollama pull ${{ inputs.model }}
       - name: Spell the messages
+        timeout-minutes: 120
         run: witching-hour ouija --data demo_data --top ${{ inputs.top }} --model ${{ inputs.model }}
       - uses: actions/upload-artifact@v4
+        if: always()  # keep the nights that finished
         with:
           name: ouija
           path: demo_data/ouija/
