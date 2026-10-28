@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "336 BELOW 0300",
+ "cites": [
+  "E1"
+ ],
+ "why": "The change in humidity (336) was observed precisely at the peak time (0300) in the laundry room.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

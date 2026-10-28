@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "0210 GLASS",
+ "cites": [
+  "E1"
+ ],
+ "why": "The message quietly references the peak time (0210) and the visual manifestation of the entity ('breath on the glass'), consistent with the observant nature of the Watcher.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

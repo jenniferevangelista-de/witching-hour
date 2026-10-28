@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "HIGH HEAT 0550",
+ "cites": [
+  "E1"
+ ],
+ "why": "The spirit silently notes the unexpected temperature anomaly and its peak time in the kitchen.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

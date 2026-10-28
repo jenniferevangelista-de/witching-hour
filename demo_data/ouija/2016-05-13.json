@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "DRY 0340",
+ "cites": [
+  "E1"
+ ],
+ "why": "The Watcher observes the dry air (low humidity) peaking around 0340 in the bathroom.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

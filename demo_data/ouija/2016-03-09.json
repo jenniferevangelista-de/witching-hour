@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "COLD 0500",
+ "cites": [
+  "E2"
+ ],
+ "why": "The cold spot in the living room peaks at 05:00, a quiet hint of the encroaching chill.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

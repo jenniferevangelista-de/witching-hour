@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "WARMTH AT 0450",
+ "cites": [
+  "E1"
+ ],
+ "why": "The Watcher observes the subtle, unexplained temperature spike, pointing directly to the peak time of the anomaly.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

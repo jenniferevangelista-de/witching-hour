@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "ENERGY SPIKE 0010",
+ "cites": [
+  "E1"
+ ],
+ "why": "The observation hints at the appliance energy spike and the specific time it peaked.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

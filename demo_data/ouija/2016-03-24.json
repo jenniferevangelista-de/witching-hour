@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "BREATH AT 0200",
+ "cites": [
+  "E1"
+ ],
+ "why": "The Watcher observed the appearance of breath on the glass, linking it to the peak time of the humidity anomaly (E1).",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

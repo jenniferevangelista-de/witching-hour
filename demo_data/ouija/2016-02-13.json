@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "COLD 0550 ZONE",
+ "cites": [
+  "E1"
+ ],
+ "why": "The message is a quiet hint about the location and the peak time (0550) of the cold spot observed in the living room.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "AIR GETS DRY",
+ "cites": [
+  "E1"
+ ],
+ "why": "The sensor notes the rapid drying of the bathroom air.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

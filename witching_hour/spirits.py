@@ -20,8 +20,8 @@ from .narrator import _parse_json
 from . import tracing
 
 ARCHETYPES = {
-    "guardian": {"title": "The Guardian", "personality": "protective and worried",
-                 "style": "short warnings in careful words", "voice": "pFZP5JQG7iQjIQuC4Bku"},
+    "guardian": {"title": "The Guardian", "personality": "tender and worried, like someone who once loved the people of this house",
+                 "style": "short, gentle warnings spoken to someone it cares about", "voice": "pFZP5JQG7iQjIQuC4Bku"},
     "lost_one": {"title": "The Lost One", "personality": "sad and confused",
                  "style": "fragmented memories and quiet requests for help", "voice": "Xb7hH8MSUJpSbSDYk0k2"},
     "trickster": {"title": "The Trickster", "personality": "playful and provocative",
@@ -43,7 +43,8 @@ SUMMON_SYSTEM = (
     "You direct the spirit of a fictional haunted-house game called PARANORMAL.exe. You get a list of real evidence "
     "detected in a recording (with ids, times and confidence). Invent ONE fictional spirit inspired by that evidence. "
     "Pick an archetype from: {archetypes}. Give it a short name (no real person's name), a one-sentence backstory and a "
-    "narrative goal (for example: it was trying to warn someone). It is fiction; never claim it is real. "
+    "narrative goal (for example: it was trying to warn someone). If the player shares a memory of that night, the "
+    "spirit and its goal must make sense with that memory. It is fiction; never claim it is real. "
     "Answer only with JSON: {{\"archetype\": str, \"name\": str, \"backstory\": str, \"goal\": str, \"evidence_ids\": [ids]}}"
 )
 ASK_SYSTEM = (

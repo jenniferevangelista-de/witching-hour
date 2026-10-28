@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "0500 AIR LOW",
+ "cites": [
+  "E1"
+ ],
+ "why": "The air dries out significantly at the peak time of 05:00, reflecting the observed humidity drop.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "0540 POWER SPIKE",
+ "cites": [
+  "E1"
+ ],
+ "why": "The energy readings indicate a massive, unnatural surge occurring at 0540.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

@@ -26,7 +26,7 @@ Built for the DEV Hacktoberfest Open-Source AI Challenge, Week 4: Ghost in the M
 
 ## The demo case: The Warning
 
-`demo/make_warning.py` renders a short staged clip, made for this project and clearly labeled as staged: a woman takes her coat and walks to the door at 21:43. The hallway light flickers, a whisper, three knocks, a shadow passes under the door. She stops, comes back, and hangs the coat up. The kit finds the light change, the knocks and the movement as separate pieces of evidence with timestamps; Dr. Bigotes offers ordinary explanations for each; Luna summons the spirit those pieces suggest (a Guardian), and the board spells what it had been trying to say. The spirit is invented. The flicker at 7.0 s and the knocks at 9.2 s are not.
+`demo/make_warning.py` renders a short staged clip, made for this project and clearly labeled as staged: a woman takes her coat and walks to the door at 21:43. The hallway light flickers, a whisper, three knocks, and a shadow taller than her passes behind her. She stops, comes back, and hangs the coat up. The kit finds the flicker, the whisper, the knocks and the shadow as separate pieces of evidence with timestamps; Dr. Bigotes offers ordinary explanations for each; Luna asks for a Guardian, tells it what the woman remembers, and the board spells what it had been trying to say. The spirit is invented. The flicker at 7.0 s and the knocks at 9.0 s are not.
 
 ## Spirits
 
@@ -35,6 +35,7 @@ Built for the DEV Hacktoberfest Open-Source AI Challenge, Week 4: Ghost in the M
 - **Six archetypes**: Guardian, Lost One, Trickster, Watcher, Hostile Presence, Silent One. The model picks the one the evidence suggests and gives the spirit a name, a backstory and a goal, or the visitor can choose.
 - **Answer contract**: every turn returns `response.message` (what the glass spells: A to Z, 0 to 9, at most three words), `response.spoken`, `response.animation_sequence` (the board positions the glass visits, computed in code, not by the model), `response.fictional: true` and `grounding.related_evidence_ids`. An answer that breaks a rule (no evidence cited, evidence that does not exist, more than three words) is sent back once with the reason, and then replaced by a plain template answer.
 - **No harm**: words about hurting yourself or others are refused before they reach the board.
+- **Your words**: in The Unheard you can tell Luna what happened that night ("I was about to go out, and something made me stay"). The spirit hears it as a memory, never as evidence, and can never cite it.
 - **Memory**: the spirit remembers the last eight turns of the session. Sessions live in memory or, with `MONGODB_URI`, in MongoDB Atlas.
 - **Who answers**: Gemma 4 E4B through Ollama when it is running. On the public demo, Gemma 3 27B through Backboard when a key is set, and scripted template answers otherwise. The page always says which one answered.
 - **The Room**: when real motion is measured within a few seconds after the glass stops, the page goes dark and says *"That wasn't part of the game."* It is a narrative effect triggered by a real measurement, and the page says so.

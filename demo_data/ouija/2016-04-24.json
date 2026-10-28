@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "STILL WARM 0540",
+ "cites": [
+  "E1"
+ ],
+ "why": "The warmth noted in the ironing room is persistent, especially at the recorded peak time.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "0540 ENERGY SPIKE",
+ "cites": [
+  "E1"
+ ],
+ "why": "The spectral energy aligns with the unexpected appliance energy spike witnessed at 05:40 in the house.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}

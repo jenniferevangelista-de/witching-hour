@@ -1,0 +1,10 @@
+{
+ "archetype": "watcher",
+ "message": "POWER SPIKE 0540",
+ "cites": [
+  "E1"
+ ],
+ "why": "The spirit observes the sudden surge of appliance energy associated with the machines 'waking up' at the peak time of 05:40.",
+ "fiction": true,
+ "by": "gemma4:e4b"
+}
