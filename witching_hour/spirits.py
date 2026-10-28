@@ -93,6 +93,7 @@ class Session:
     history: list[dict] = field(default_factory=list)
     state: str = "open"  # open | closed
     created_at: float = field(default_factory=time.time)
+    context: str = ""  # the player's own words about that night: a memory, never evidence
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -104,7 +105,7 @@ class Session:
         sp = dict(d["spirit"])
         sp.pop("title", None)
         return Session(d["session_id"], d["investigation"], d["evidence"], Spirit(**sp), d.get("history", []),
-                       d.get("state", "open"), d.get("created_at", time.time()))
+                       d.get("state", "open"), d.get("created_at", time.time()), d.get("context", ""))
 
 
 # ---------------------------------------------------------------- evidence
@@ -196,8 +197,14 @@ def template_answer(session: Session, question: str) -> dict:
 # ---------------------------------------------------------------- the engine
 
 
-def summon(investigation: str, evidence: list[dict], chat=None, archetype: str | None = None) -> Session:
+def clean_context(text: str | None) -> str:
+    return re.sub(r"\s+", " ", str(text or "")).strip()[:200]
+
+
+def summon(investigation: str, evidence: list[dict], chat=None, archetype: str | None = None,
+           context: str | None = None) -> Session:
     evidence = clean_evidence(evidence)
+    context = clean_context(context)
     spirit = template_spirit(evidence)
     if chat is not None and evidence:
         with tracing.span("gen_ai.invoke_agent", "summon spirit", **{"gen_ai.agent.name": "Spirit Director"}):
@@ -206,7 +213,9 @@ def summon(investigation: str, evidence: list[dict], chat=None, archetype: str |
                 sys_msg += f"\nThe player chose the archetype `{archetype}`."
             try:
                 raw = _parse_json(chat([{"role": "system", "content": sys_msg},
-                                        {"role": "user", "content": "Evidence: " + evidence_brief(evidence)}],
+                                        {"role": "user", "content": "Evidence: " + evidence_brief(evidence) + (
+                                            f"\nWhat the player says happened that night (their memory, not evidence): {context}"
+                                            if context else "")}],
                                        schema=SUMMON_SCHEMA, temperature=0.9))
                 arche = archetype if archetype in ARCHETYPES else raw.get("archetype")
                 name = re.sub(r"[^A-Za-z .'-]", "", str(raw.get("name", "")))[:32].strip()
@@ -218,7 +227,7 @@ def summon(investigation: str, evidence: list[dict], chat=None, archetype: str |
                 pass
     elif archetype in ARCHETYPES and evidence:
         spirit.archetype = archetype
-    return Session(uuid.uuid4().hex[:12], investigation, evidence, spirit)
+    return Session(uuid.uuid4().hex[:12], investigation, evidence, spirit, context=context)
 
 
 def ask(session: Session, question: str, chat=None) -> dict:
@@ -231,7 +240,9 @@ def ask(session: Session, question: str, chat=None) -> dict:
         meta = ARCHETYPES[sp.archetype]
         messages = [{"role": "system", "content": ASK_SYSTEM.format(
             name=sp.name, title=meta["title"], personality=meta["personality"], style=meta["style"],
-            backstory=sp.backstory, goal=sp.goal, evidence=evidence_brief(session.evidence))}]
+            backstory=sp.backstory, goal=sp.goal, evidence=evidence_brief(session.evidence)) + (
+            f"\nWhat the player told Luna about that night (their memory, not evidence; never cite it): {session.context}"
+            if session.context else "")}]
         for h in session.history[-8:]:
             messages += [{"role": "user", "content": h["question"]},
                          {"role": "assistant", "content": json.dumps({"message": h["message"], "spoken": h["spoken"], "evidence_ids": h["evidence_ids"]})}]

@@ -179,8 +179,8 @@
 
   const sessions = {};
 
-  async function summon(prefix, investigation, evidence) {
-    const r = await WH.getJSON("/api/sessions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investigation, evidence }) });
+  async function summon(prefix, investigation, evidence, context = "") {
+    const r = await WH.getJSON("/api/sessions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investigation, evidence, context: context.slice(0, 200) }) });
     sessions[prefix] = r;
     const sp = r.spirit;
     $(`#${prefix}-spirit`).innerHTML = `<div class="arch">${esc(sp.title)}</div><h4>${esc(sp.name)}</h4><p>${esc(sp.backstory)}</p><p class="goal">Its goal: ${esc(sp.goal)}</p>`;
@@ -282,6 +282,7 @@
     if (!demo) { $("#uh-status").textContent = "The demo recording is not here yet."; return; }
     unheard.caseData = demo;
     $("#uh-story").innerHTML = `<p>${esc(demo.story)}</p>`;
+    if (demo.seance && demo.seance.context) $("#uh-words").value = demo.seance.context;
     const buf = await fetch(demo.video).then((r) => r.arrayBuffer());
     await investigate(demo.video, buf, "The Warning (a staged recording)");
     $("#uh-replay").hidden = !demo.seance;
@@ -410,7 +411,7 @@
       $("#uh-story").innerHTML = "<p>Your recording. It stays in this browser: only the list of moments below is ever sent to the board.</p>";
       await investigate(URL.createObjectURL(f), await f.arrayBuffer(), f.name);
     });
-    $("#uh-open").addEventListener("click", async () => { await summon("uh", unheard.title || "recording", unheard.evidence); $("#uh-seance").scrollIntoView({ behavior: "smooth", block: "center" }); });
+    $("#uh-open").addEventListener("click", async () => { await summon("uh", unheard.title || "recording", unheard.evidence, $("#uh-words").value.trim()); $("#uh-seance").scrollIntoView({ behavior: "smooth", block: "center" }); });
     $("#uh-replay").addEventListener("click", replaySeance);
     $("#uh-dossier").addEventListener("click", dossier);
     $("#uh-ask").addEventListener("submit", (e) => { e.preventDefault(); const i = $("input", e.target); if (i.value.trim()) { ask("uh", i.value.trim()); i.value = ""; } });

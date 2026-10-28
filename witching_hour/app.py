@@ -179,6 +179,7 @@ class NewSession(BaseModel):
     investigation: str = Field(default="recording", max_length=80)
     evidence: list[dict] = Field(default_factory=list, max_length=spirits.MAX_EVIDENCE)
     archetype: str | None = None
+    context: str = Field(default="", max_length=200)
 
 
 class SpiritQuestion(BaseModel):
@@ -194,7 +195,7 @@ def spirit_info():
 @app.post("/api/sessions", dependencies=[Depends(throttle)])
 def new_session(body: NewSession):
     chat = make_chat()
-    s = spirits.summon(body.investigation, body.evidence, chat=chat, archetype=body.archetype)
+    s = spirits.summon(body.investigation, body.evidence, chat=chat, archetype=body.archetype, context=body.context)
     store().save(s)
     return {"session_id": s.session_id, "spirit": {**spirits.asdict(s.spirit), "title": s.spirit.title},
             "evidence": s.evidence, "model": describe(chat)}

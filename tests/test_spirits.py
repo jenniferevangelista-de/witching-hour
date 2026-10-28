@@ -91,3 +91,28 @@ def test_memory_store_forgets_the_oldest_sessions():
         ids.append(s.session_id)
     assert store.load(ids[0]) is None and store.load(ids[1]) is None
     assert store.load(ids[4]).session_id == ids[4]
+
+
+class Recording(Scripted):
+    def __init__(self, replies):
+        super().__init__(replies)
+        self.seen = []
+
+    def __call__(self, messages, schema=None, temperature=0.5):
+        self.seen.append(messages)
+        return super().__call__(messages, schema, temperature)
+
+
+def test_the_players_memory_reaches_the_spirit_but_is_never_evidence():
+    chat = Recording([
+        {"archetype": "guardian", "name": "Agnes", "backstory": "She lived here once.", "goal": "to keep her home", "evidence_ids": ["ev-002"]},
+        {"message": "STAY HOME", "spoken": "Not tonight.", "evidence_ids": ["ev-002"]},
+    ])
+    words = "I was about to go out.\n  Something made me stay. " + "x" * 300
+    s = spirits.summon("the-warning", EVIDENCE, chat=chat, context=words)
+    assert s.context.startswith("I was about to go out. Something made me stay.") and len(s.context) == 200
+    spirits.ask(s, "Why did you knock?", chat=chat)
+    assert "not evidence" in chat.seen[0][1]["content"] and "about to go out" in chat.seen[1][0]["content"]
+    again = spirits.Session.from_dict(s.to_dict())
+    assert again.context == s.context
+    assert {e["id"] for e in again.evidence} == {"ev-001", "ev-002", "ev-003"}
