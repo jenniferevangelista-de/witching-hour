@@ -48,3 +48,10 @@ def test_forecast_ranks_rooms_and_skips_utility_rooms():
 def test_parse_hourly_accepts_midnight_as_first_entry():
     hours = [{"time": f"Thursday {h:02d}:00", "temperature": "5", "humidity": "90%", "wind": "0 km/h"} for h in range(8)]
     assert parse_hourly({"hourly_forecast": hours})[0]["time"] == "00:00"
+
+
+def test_parse_hourly_understands_a_12_hour_clock():
+    hours = [{"time": "Wednesday 11 PM", "temperature": "6", "humidity": "90%", "wind": "0 km/h"}]
+    hours += [{"time": f"Thursday {h} AM", "temperature": "5", "humidity": "90%", "wind": "0 km/h"} for h in [12, 1, 2, 3, 4, 5, 6]]
+    out = parse_hourly({"hourly_forecast": hours})
+    assert [h["time"] for h in out] == [f"{h:02d}:00" for h in range(7)] and out[0]["day"] == "Thursday"

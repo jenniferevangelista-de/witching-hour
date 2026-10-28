@@ -1,0 +1,58 @@
+# Tonight's live forecast (SerpApi + TabPFN) and the agent's answer about it, on the committed demo data.
+name: tonight
+
+on:
+  workflow_dispatch:
+    inputs:
+      place:
+        description: "town of the house"
+        default: "Stambruges, Belgium"
+      model:
+        description: "Ollama model"
+        default: "gemma4:e4b"
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+  WH_ENV: github-actions
+  TABPFN_MODEL_CACHE_DIR: ${{ github.workspace }}/.cache/tabpfn
+
+jobs:
+  tonight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[tabpfn,tracing]"
+      - uses: actions/cache@v4
+        with:
+          path: .cache/tabpfn
+          key: tabpfn-v2-reg
+      - run: witching-hour fetch
+      - run: witching-hour tonight --place "${{ inputs.place }}" --out demo_data/tonight.json
+      - name: Start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull ${{ inputs.model }}
+      - name: Ask the agent about tonight
+        run: witching-hour ask "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tonight
+          path: |
+            demo_data/tonight.json
+            demo_data/agent_runs.json
+          retention-days: 14

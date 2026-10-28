@@ -1,0 +1,187 @@
+[
+ {
+  "question": "Which night was the most haunted, and what probably happened?",
+  "answer": "The most haunted night was Tuesday, 2016-04-19, with a strong event score of 23.9. The primary event (E1) involved a significant energy surge in the house at 05:40, where the appliance energy spiked to 380 Wh, dramatically exceeding the expected range of 36 Wh to 75 Wh. The story suggests that the machines in the house seemed to wake up, causing this peculiar burst of power that lasted until 05:50.",
+  "steps": [
+   {
+    "tool": "haunted_nights",
+    "args": {
+     "month": null,
+     "top_k": 1
+    },
+    "result": {
+     "nights": [
+      {
+       "night": "2016-04-19",
+       "weekday": "Tuesday",
+       "score": 23.9,
+       "n_events": 1,
+       "headline": "the machines waking up in the house at 05:40"
+      }
+     ]
+    }
+   },
+   {
+    "tool": "scan_night",
+    "args": {
+     "date": "2016-04-19"
+    },
+    "result": {
+     "night": "2016-04-19",
+     "weekday": "Tuesday",
+     "events": [
+      {
+       "id": "E1",
+       "room": "house",
+       "sensor": "appliance energy",
+       "what_it_looks_like": "the machines waking up",
+       "start": "05:40",
+       "end": "05:50",
+       "peak_time": "05:40",
+       "duration_minutes": 10,
+       "observed": "380 Wh",
+       "expected": "52 Wh",
+       "expected_range": "36 Wh to 75 Wh",
+       "direction": "above",
+       "strength_sigma": 23.9,
+       "together_with": []
+      }
+     ],
+     "cold_room_checks": []
+    }
+   },
+   {
+    "tool": "tell_story",
+    "args": {
+     "date": "2016-04-19",
+     "mode": "medium"
+    },
+    "result": {
+     "title": "The House's Midnight Energy",
+     "sentences": [
+      "The house seemed perfectly still until 05:40, when a strange energy surge began (E1).",
+      "The sensors recorded that the machines were waking up, causing the appliance energy to spike to 380 Wh (E1).",
+      "This ghostly burst of power dramatically exceeded the expected 52 Wh (E1).",
+      "The peculiar activity finally subsided at 05:50, leaving the house feeling strangely electrified (E1)."
+     ]
+    }
+   }
+  ],
+  "model": "gemma4:e4b"
+ },
+ {
+  "question": "If an older person lived alone in this house, which night should the family have checked on, and why?",
+  "answer": "The family should have checked on the night of 2016-04-19. The sensor logs noted an 'Appliance Energy Spike,' where the appliance energy was 380 Wh, significantly above the expected 52 Wh, between 05:40 and 05:50. The verified story suggests that this unusual activity might be related to the heating, making it a good time for a welfare check to ensure the older person was comfortable and safe.",
+  "steps": [
+   {
+    "tool": "haunted_nights",
+    "args": {
+     "month": null,
+     "top_k": 1
+    },
+    "result": {
+     "nights": [
+      {
+       "night": "2016-04-19",
+       "weekday": "Tuesday",
+       "score": 23.9,
+       "n_events": 1,
+       "headline": "the machines waking up in the house at 05:40"
+      }
+     ]
+    }
+   },
+   {
+    "tool": "tell_story",
+    "args": {
+     "date": "2016-04-19",
+     "mode": "family"
+    },
+    "result": {
+     "title": "Appliance Energy Spike Noted",
+     "sentences": [
+      "The machines started waking up in the house between 05:40 and 05:50 (E1).",
+      "During this time, the appliance energy was 380 Wh, which was above the expected 52 Wh (E1).",
+      "If you notice anything unusual, perhaps checking the heating might be helpful (E1)."
+     ]
+    }
+   }
+  ],
+  "model": "gemma4:e4b"
+ },
+ {
+  "question": "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?",
+  "answer": "I am unable to check tonight's forecast because the system indicates that no forecast is available yet. Please try again later when the forecast has been generated.",
+  "steps": [
+   {
+    "tool": "tonight!",
+    "args": {},
+    "result": {
+     "error": "unknown tool 'tonight!'"
+    }
+   },
+   {
+    "tool": "tonight",
+    "args": {},
+    "result": {
+     "error": "no forecast yet; run: witching-hour tonight"
+    }
+   }
+  ],
+  "model": "gemma4:e4b"
+ },
+ {
+  "question": "On the most haunted night, what did TabPFN expect the strangest room to read at its peak, and what did it actually read?",
+  "answer": "On the most haunted night, 2016-04-19, the strangest room, the 'house', experienced an event at its peak time of 05:40. TabPFN expected the appliance energy sensor to read 52 Wh, but it actually read 380 Wh.",
+  "steps": [
+   {
+    "tool": "haunted_nights",
+    "args": {
+     "month": null,
+     "top_k": 1
+    },
+    "result": {
+     "nights": [
+      {
+       "night": "2016-04-19",
+       "weekday": "Tuesday",
+       "score": 23.9,
+       "n_events": 1,
+       "headline": "the machines waking up in the house at 05:40"
+      }
+     ]
+    }
+   },
+   {
+    "tool": "scan_night",
+    "args": {
+     "date": "2016-04-19"
+    },
+    "result": {
+     "night": "2016-04-19",
+     "weekday": "Tuesday",
+     "events": [
+      {
+       "id": "E1",
+       "room": "house",
+       "sensor": "appliance energy",
+       "what_it_looks_like": "the machines waking up",
+       "start": "05:40",
+       "end": "05:50",
+       "peak_time": "05:40",
+       "duration_minutes": 10,
+       "observed": "380 Wh",
+       "expected": "52 Wh",
+       "expected_range": "36 Wh to 75 Wh",
+       "direction": "above",
+       "strength_sigma": 23.9,
+       "together_with": []
+      }
+     ],
+     "cold_room_checks": []
+    }
+   }
+  ],
+  "model": "gemma4:e4b"
+ }
+]

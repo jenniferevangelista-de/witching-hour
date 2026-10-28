@@ -33,17 +33,36 @@ def _num(s) -> float:
     return float(m.group(0)) if m else float("nan")
 
 
+_CLOCK = re.compile(r"(\d{1,2})(?::(\d{2}))?\s*([AaPp][Mm])?\s*$")
+
+
+def hour24(stamp: str) -> int | None:
+    """'Thursday 00:00', 'Thursday 12 AM' and 'Thu 1:00 PM' all become an hour from 0 to 23."""
+    m = _CLOCK.search(str(stamp).strip())
+    if not m:
+        return None
+    h = int(m.group(1))
+    ampm = (m.group(3) or "").lower()
+    if ampm == "am":
+        h = 0 if h == 12 else h
+    elif ampm == "pm":
+        h = 12 if h == 12 else h + 12
+    return h if 0 <= h < 24 else None
+
+
 def parse_hourly(answer_box: dict) -> list[dict]:
-    """The next 00:00 to 06:00 from SerpApi's hourly forecast."""
+    """The next 00:00 to 06:00 from SerpApi's hourly forecast (24 h or 12 h clock)."""
     hourly = answer_box.get("hourly_forecast") or []
-    start = next((i for i, h in enumerate(hourly) if str(h.get("time", "")).endswith(" 00:00")), None)
+    hours = [hour24(h.get("time", "")) for h in hourly]
+    start = next((i for i, h in enumerate(hours) if h == 0), None)
     if start is None:
         raise ValueError("no midnight in the hourly forecast")
     out = []
-    for h in hourly[start:start + 7]:
-        day, _, hhmm = str(h["time"]).rpartition(" ")
+    for h, hr in zip(hourly[start:start + 7], hours[start:start + 7]):
+        stamp = str(h["time"]).strip()
+        day = stamp.split(" ")[0] if " " in stamp else ""
         t, rh = _num(h.get("temperature")), _num(h.get("humidity"))
-        out.append({"day": day, "time": hhmm, "temp_c": t, "humidity": rh,
+        out.append({"day": day, "time": f"{hr:02d}:00", "temp_c": t, "humidity": rh,
                     "wind_ms": round(_num(h.get("wind")) / 3.6, 1), "weather": h.get("weather", ""),
                     "dewpoint_c": dewpoint(t, rh)})
     return out
@@ -56,7 +75,7 @@ def fetch_forecast(place: str, api_key: str | None = None) -> dict:
     if not key:
         raise RuntimeError("SERPAPI_KEY is not set")
     r = requests.get("https://serpapi.com/search.json", timeout=60, params={
-        "engine": "google", "q": f"weather {place} tonight", "hl": "en", "api_key": key})
+        "engine": "google", "q": f"weather {place} tonight", "hl": "en", "gl": "be", "api_key": key})
     r.raise_for_status()
     ab = r.json().get("answer_box") or {}
     if ab.get("type") != "weather_result":
