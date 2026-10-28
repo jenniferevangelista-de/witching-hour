@@ -150,6 +150,21 @@ def cmd_voice(args):
     print(voice_stories(args.data, dates, args.modes.split(",")))
 
 
+def cmd_tonight(args):
+    from .scanner import make_backend
+    from .tonight import fetch_forecast, forecast_house
+    from .voice import load_env
+
+    load_env(args.env)
+    house = load_house(args)
+    fc = fetch_forecast(args.place)
+    res = forecast_house(house, fc, make_backend(args.backend))
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    for r in res["rooms"]:
+        print(f"{r['room']}: {r['expected']} °C at {r['coldest_time']} (90% {r['low']} to {r['high']}), P(<18 °C) {r['p_below_18']}")
+
+
 def cmd_worker(args):
     import asyncio
 
@@ -244,6 +259,14 @@ def main(argv=None):
     sp.add_argument("--modes", default="family,medium")
     sp.add_argument("--env", default=".env")
     sp.set_defaults(fn=cmd_voice)
+
+    sp = sub.add_parser("tonight", help="live forecast (SerpApi) + TabPFN guess of each room tonight")
+    house_args(sp)
+    sp.add_argument("--place", default="Stambruges, Belgium")
+    sp.add_argument("--backend", default="tabpfn")
+    sp.add_argument("--out", default="demo_data/tonight.json")
+    sp.add_argument("--env", default=".env")
+    sp.set_defaults(fn=cmd_tonight)
 
     sp = sub.add_parser("worker", help="run a Temporal worker for the night watch")
     sp.add_argument("--address", default="localhost:7233")

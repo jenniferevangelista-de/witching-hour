@@ -97,6 +97,11 @@ def agent_runs():
     return _read_json("agent_runs.json", [])
 
 
+@app.get("/api/tonight")
+def tonight():
+    return _read_json("tonight.json", {})
+
+
 @app.get("/api/eval")
 def eval_results():
     return _read_json("eval.json", {})

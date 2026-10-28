@@ -24,6 +24,7 @@ You can call these tools:
 - haunted_nights(month: "YYYY-MM" or null, top_k: int) -> nights ranked by their strongest event
 - scan_night(date: "YYYY-MM-DD") -> the events of one night
 - expected_reading(date: "YYYY-MM-DD", time: "HH:MM", sensor: str) -> what TabPFN expected vs what was observed
+- tonight() -> live weather for the house's town (Google via SerpApi) and TabPFN's forecast for each room tonight
 - tell_story(date: "YYYY-MM-DD", mode: "medium", "skeptic" or "family") -> a verified story about the night
   ("family" is a calm morning note for the family of someone who lives alone, with cold-room checks)
 
@@ -117,6 +118,16 @@ class Tools:
             "sigma": abs(s["z"][i]),
         }
 
+    def tonight(self) -> dict:
+        p = self.h.dir / "tonight.json"
+        if not p.exists():
+            return {"error": "no forecast yet; run: witching-hour tonight"}
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return {k: d[k] for k in ("place", "fetched_at", "source")} | {
+            "outside": [{"time": h["time"], "temp_c": h["temp_c"], "weather": h["weather"]} for h in d["hours"]],
+            "rooms": [{k: r[k] for k in ("room", "coldest_time", "expected", "low", "high", "p_below_18")} for r in d["rooms"]],
+        }
+
     def tell_story(self, date: str, mode: str = "medium") -> dict:
         mode = mode if mode in ("medium", "skeptic", "family") else "medium"
         saved = self.h.story(date, mode)
@@ -130,7 +141,8 @@ class Tools:
 
     def call(self, name: str, args: dict) -> dict:
         fn = {"haunted_nights": self.haunted_nights, "scan_night": self.scan_night,
-              "expected_reading": self.expected_reading, "tell_story": self.tell_story}.get(name)
+              "expected_reading": self.expected_reading, "tell_story": self.tell_story,
+              "tonight": self.tonight}.get(name)
         if fn is None:
             return {"error": f"unknown tool {name!r}"}
         try:

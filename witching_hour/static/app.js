@@ -239,6 +239,21 @@
     }
   });
 
+  // ------------------------------------------------------------ tonight
+  async function loadTonight() {
+    try {
+      const t = await getJSON("/api/tonight");
+      if (!t.rooms || !t.rooms.length) return;
+      const out = t.hours.map((h) => `${esc(h.time)} ${esc(h.temp_c)} °C`).join(" · ");
+      $("#tonight-sub").textContent = `Live weather for ${t.place} (${t.source}, fetched ${t.fetched_at}), and TabPFN's forecast for each room, learned from ${t.trained_on}.`;
+      $("#tonight-body").innerHTML = `<p class="notice" style="margin-top:0">Outside: ${out}</p>
+        <div class="table-wrap"><table><thead><tr><th>Room</th><th>Coldest expected</th><th>90% range</th><th>Chance below 18 °C</th></tr></thead><tbody>${t.rooms
+          .map((r) => `<tr class="${r.p_below_18 >= 0.5 ? "best" : ""}"><td>${esc(r.room)}</td><td class="num">${esc(r.expected)} °C at ${esc(r.coldest_time)}</td><td class="num">${esc(r.low)} to ${esc(r.high)} °C</td><td class="num">${esc(Math.round(r.p_below_18 * 100))}%</td></tr>`)
+          .join("")}</tbody></table></div><p class="notice">The WHO recommends at least 18 °C indoors in cold seasons. This is a forecast, not a reading: the demo house's logs end in 2016.</p>`;
+      $("#tonight").hidden = false;
+    } catch (_) { /* optional */ }
+  }
+
   // ------------------------------------------------------------ eval
   async function loadEval() {
     try {
@@ -267,6 +282,7 @@
     renderCalendar();
     loadRuns();
     loadEval();
+    loadTonight();
     try {
       const h = await getJSON("/api/health");
       if (!h.live) $("#ask-notice").textContent = "Live questions are off on this public demo (a house's night logs are private). Below are investigations recorded with Gemma running locally.";

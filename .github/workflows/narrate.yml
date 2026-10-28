@@ -24,7 +24,9 @@ permissions:
 env:
   PYTHONUNBUFFERED: "1"
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
   WH_ENV: github-actions
+  TABPFN_MODEL_CACHE_DIR: ${{ github.workspace }}/.cache/tabpfn
 
 jobs:
   narrate:
@@ -36,7 +38,14 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -e ".[tracing]"
+      - name: Install
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[tabpfn,tracing]"
+      - uses: actions/cache@v4
+        with:
+          path: .cache/tabpfn
+          key: tabpfn-v2-reg
       - uses: actions/download-artifact@v4
         with:
           pattern: scan-*
@@ -58,8 +67,13 @@ jobs:
         run: |
           witching-hour narrate --data demo_data --top ${{ inputs.narrate_top }} --model ${{ inputs.model }}
           if [ -n "${{ inputs.extra_nights }}" ]; then witching-hour narrate --data demo_data --dates "${{ inputs.extra_nights }}" --model ${{ inputs.model }}; fi
+      - name: Tonight (live weather + TabPFN room forecast)
+        run: |
+          witching-hour fetch
+          witching-hour tonight --place "Stambruges, Belgium" --out demo_data/tonight.json || echo "tonight skipped"
       - name: Agent investigations
         run: |
+          witching-hour ask "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
           witching-hour ask "Which night was the most haunted, and what probably happened?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
           witching-hour ask "If an older person lived alone in this house, which night in February should the family have checked on, and why?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
           witching-hour ask "On the most haunted night, what did TabPFN expect the strangest room to read at its peak, and what did it actually read?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
