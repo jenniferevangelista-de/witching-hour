@@ -218,6 +218,20 @@ class Story:
         return d
 
 
+_INLINE_CITE = re.compile(r"\s*[\(\[]\s*['\"]?[EC]\d+['\"]?(?:\s*,\s*['\"]?[EC]\d+['\"]?)*\s*[\)\]]")
+_QUOTED_VALUE = re.compile(r"\"(\d[^\"]{0,12})\"")
+
+
+def clean_text(text: str) -> str:
+    """Cosmetic only: drop inline citation markers (the page shows chips), quotes around
+    values, and add the final period a small model sometimes forgets."""
+    t = _INLINE_CITE.sub("", text)
+    t = _QUOTED_VALUE.sub(r"", t).replace(" .", ".").replace(" ,", ",").strip()
+    if t and t[-1] not in ".!?":
+        t += "."
+    return t
+
+
 def validate(raw: dict, scan: NightScan) -> tuple[list[Sentence], list[dict]]:
     by_id = {e.id: e for e in scan.events} | {c.id: c for c in scan.checks}
     kept, rejected = [], []
@@ -228,7 +242,7 @@ def validate(raw: dict, scan: NightScan) -> tuple[list[Sentence], list[dict]]:
             continue
         why = check_sentence(text, cites, by_id, scan.night, tuple(scan.window))
         if why is None:
-            kept.append(Sentence(text, [c for c in cites if c in by_id]))
+            kept.append(Sentence(clean_text(text), [c for c in cites if c in by_id]))
         else:
             rejected.append({"text": text, "cites": cites, "reason": why})
     return kept, rejected

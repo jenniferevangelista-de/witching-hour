@@ -1,6 +1,6 @@
 import json
 
-from witching_hour.narrator import check_sentence, narrate, night_payload, template_story, validate
+from witching_hour.narrator import check_sentence, clean_text, narrate, night_payload, template_story, validate
 from witching_hour.scanner import Event, NightScan
 
 
@@ -73,3 +73,9 @@ def test_payload_is_compact_and_formatted():
     assert p["night"].startswith("Friday 2016-03-04")
     assert p["events"][0]["observed"] == "78.4 %"
     assert p["events"][1]["expected_range"] == "19.8 °C to 20.5 °C"
+
+
+def test_clean_text_removes_inline_citations_only():
+    assert clean_text('At 05:30 the machines woke up [E1]') == "At 05:30 the machines woke up."
+    assert clean_text('It hit "17.8 °C" at "05:40" (C1, C2).') == "It hit 17.8 °C at 05:40."
+    assert clean_text("The WHO recommends 18 °C (C1). Check the heating (C1).") == "The WHO recommends 18 °C. Check the heating."
