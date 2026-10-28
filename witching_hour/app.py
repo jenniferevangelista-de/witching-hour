@@ -122,6 +122,16 @@ def fieldwork_shot():
     return FileResponse(p, media_type="image/png")
 
 
+EXTRAS = {"season_report", "atlas_memory", "tiger_store", "mastra_runs", "tinker"}
+
+
+@app.get("/api/extra/{name}")
+def extra(name: str):
+    if name not in EXTRAS:
+        raise HTTPException(404, "unknown")
+    return _read_json(f"{name}.json", {})
+
+
 @app.get("/api/eval")
 def eval_results():
     return _read_json("eval.json", {})

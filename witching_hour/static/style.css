@@ -224,3 +224,11 @@ footer p { margin: 4px 0; }
 .built { color: var(--bone); font-weight: 600; }
 .loading { color: var(--muted); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.archive { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 860px) { .archive { grid-template-columns: 1fr; } }
+.archive .panel h3 { margin: 0 0 4px; font-size: 18px; }
+.archive .panel .by { font: 600 12px "Fredoka", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--cempa); }
+.archive ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+.archive li { margin: 6px 0; }
+.archive .nchip { display: inline-block; font: 600 11px ui-monospace, Consolas, monospace; background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; margin-left: 3px; color: var(--bone); cursor: pointer; }

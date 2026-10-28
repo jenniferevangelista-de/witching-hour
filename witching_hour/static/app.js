@@ -391,6 +391,44 @@
     } catch (_) { /* optional */ }
   }
 
+  async function loadArchive() {
+    const cards = [];
+    const nchip = (d) => `<button class="nchip" data-night="${esc(d)}">${esc(d)}</button>`;
+    const tryGet = async (n) => { try { return await getJSON(`/api/extra/${n}`); } catch (_) { return {}; } };
+    const [season, atlas, tiger, mastra, tinker] = await Promise.all(["season_report", "atlas_memory", "tiger_store", "mastra_runs", "tinker"].map(tryGet));
+    if (season.findings && season.findings.length) {
+      cards.push(`<div class="panel"><div class="by">Ultramarine · Paper Instruments</div><h3>${esc(season.title)}</h3>
+        <ul>${season.findings.map((f) => `<li>${esc(f.text)} ${f.nights.map(nchip).join("")}</li>`).join("")}</ul>
+        <p class="notice">Read ${esc(season.case_files)} case files. ${esc(season.dropped)} finding(s) dropped for citing a night that does not exist. This run cost $${esc(season.cost_usd)}.</p></div>`);
+    }
+    if (atlas.examples) {
+      const ex = Object.entries(atlas.examples).filter(([, v]) => v.length);
+      if (ex.length) cards.push(`<div class="panel"><div class="by">MongoDB Atlas · Vector Search</div><h3>Has this ghost visited before?</h3>
+        <ul>${ex.map(([d, v]) => `<li>${nchip(d)} looks most like ${v.map((x) => `${nchip(x.night)} <span class="ci">(${esc(Number(x.score).toFixed(3))})</span>`).join(" ")}</li>`).join("")}</ul>
+        <p class="notice">${esc(atlas.sync.case_files)} case files with ${esc(atlas.sync.dimensions)}-dimension embeddings from an open model (nomic-embed-text), searched with Atlas Vector Search. Every hunt is stored as long-term memory.</p></div>`);
+    }
+    if (tiger.searches) {
+      cards.push(`<div class="panel"><div class="by">Tiger Data · TimescaleDB + pgvector</div><h3>Search the case files</h3>
+        <ul>${Object.entries(tiger.searches).map(([q, rows]) => `<li><b>"${esc(q)}"</b>: ${rows.map((r) => `${nchip(r.night)} ${esc(r.title)}`).join(" · ")}</li>`).join("")}</ul>
+        <p class="notice">Hybrid search: keywords and meaning, fused with reciprocal rank fusion, over ${esc(tiger.load.stories)} stories. ${esc(tiger.load.readings)} readings live in a hypertable.</p></div>`);
+    }
+    if (mastra.runs && mastra.runs.length) {
+      cards.push(`<div class="panel"><div class="by">Mastra · agent with memory</div><h3>The same hunt, as a Mastra agent</h3>
+        <ul>${mastra.runs.map((r) => `<li><b>${esc(r.question)}</b> <span class="ci">${esc(r.steps.map((s) => s.tool).join(" → ") || "answered from memory")}</span><br>${esc(r.answer)}</li>`).join("")}</ul>
+        <p class="notice">One memory thread, so the follow-up questions only make sense if the agent remembers the night it found first. Model: ${esc(mastra.runs[0].model)}.</p></div>`);
+    }
+    if (tinker.base && tinker.tuned) {
+      const row = (t, s) => `<tr><td>${esc(t)}</td><td class="num">${esc(Math.round(s.grounded_share * 100))}%</td><td class="num">${esc(s.verified)} / ${esc(s.sentences)}</td><td class="num">${esc(s.json_ok)} / ${esc(s.cases)}</td><td class="num">${esc(s.avg_seconds)}</td></tr>`;
+      cards.push(`<div class="panel"><div class="by">Tinker · LoRA fine-tune</div><h3>Training an apprentice</h3>
+        <div class="table-wrap"><table><thead><tr><th>${esc(tinker.model)}</th><th>Grounded</th><th>Verified / written</th><th>Valid JSON</th><th>Avg s</th></tr></thead><tbody>${row("base", tinker.base)}${row("fine-tuned on the crew", tinker.tuned)}</tbody></table></div>
+        <p class="notice">Trained on ${esc(tinker.train_examples)} verified stories from nights before ${esc(tinker.split)}, scored on ${esc(tinker.base.cases)} stories from later nights it never saw, with the same validator.</p></div>`);
+    }
+    if (!cards.length) return;
+    $("#archive-body").innerHTML = cards.join("");
+    $("#archive-body").querySelectorAll(".nchip").forEach((b) => b.addEventListener("click", () => { if (state.byDate[b.dataset.night]) openNight(b.dataset.night); }));
+    $("#archive").hidden = false;
+  }
+
   // ------------------------------------------------------------ boot
   async function boot() {
     papelPicado();
@@ -412,6 +450,7 @@
     loadTonight();
     loadBakeoff();
     loadField();
+    loadArchive();
     try {
       const me = await getJSON("/api/auth/me");
       if (me.enabled) {
