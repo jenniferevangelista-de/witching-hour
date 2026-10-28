@@ -178,7 +178,7 @@ def check_sentence(text: str, cites: list[str], events_by_id: dict[str, Event], 
     """None if the sentence is grounded, otherwise the reason it is not."""
     valid = [c for c in cites if c in events_by_id]
     if not valid:
-        return "cites no known event"
+        return "cites no known event or check"
     extra = [h for w in window for h in (w, w % 12 or 12)]
     times, values = allowed_numbers([events_by_id[c] for c in valid], night, extra)
     times |= {f"{w:02d}:00" for w in window} | {f"{w}:00" for w in window}
