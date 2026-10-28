@@ -12,7 +12,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .narrator import Story, event_card, fmt, narrate, template_story
+from .narrator import Story, check_card, event_card, fmt, narrate, template_story
 from .scanner import NightScan
 
 SYSTEM = """You are Witching Hour, an investigator for one house's night-time sensor logs (midnight to 6 AM).
@@ -23,7 +23,8 @@ You can call these tools:
 - haunted_nights(month: "YYYY-MM" or null, top_k: int) -> nights ranked by their strongest event
 - scan_night(date: "YYYY-MM-DD") -> the events of one night
 - expected_reading(date: "YYYY-MM-DD", time: "HH:MM", sensor: str) -> what TabPFN expected vs what was observed
-- tell_story(date: "YYYY-MM-DD", mode: "medium" or "skeptic") -> a verified story about the night
+- tell_story(date: "YYYY-MM-DD", mode: "medium", "skeptic" or "family") -> a verified story about the night
+  ("family" is a calm morning note for the family of someone who lives alone, with cold-room checks)
 
 Reply with exactly one JSON object and nothing else.
 To call a tool: {"tool": "scan_night", "args": {"date": "2016-03-04"}}
@@ -91,7 +92,9 @@ class Tools:
         if scan is None:
             return {"error": f"no scan for {date}"}
         top = sorted(scan.events, key=lambda e: -e.sigma)[:8]
-        return {"night": scan.night, "weekday": scan.weekday, "events": [event_card(e) for e in sorted(top, key=lambda e: e.start)]}
+        return {"night": scan.night, "weekday": scan.weekday,
+                "events": [event_card(e) for e in sorted(top, key=lambda e: e.start)],
+                "cold_room_checks": [check_card(c) for c in scan.checks[:6]]}
 
     def expected_reading(self, date: str, time: str, sensor: str) -> dict:
         scan = self.h.night(date)
@@ -114,7 +117,7 @@ class Tools:
         }
 
     def tell_story(self, date: str, mode: str = "medium") -> dict:
-        mode = mode if mode in ("medium", "skeptic") else "medium"
+        mode = mode if mode in ("medium", "skeptic", "family") else "medium"
         saved = self.h.story(date, mode)
         if saved:
             return {"title": saved["title"], "sentences": [s["text"] for s in saved["sentences"]]}

@@ -73,11 +73,17 @@ h2 { font-size: 22px; margin: 0 0 6px; }
 .modes button { background: transparent; color: var(--muted); border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; cursor: pointer; }
 .modes button[aria-pressed="true"] { background: var(--candle); color: #1a1205; font-weight: 700; }
 .modes button.skeptic[aria-pressed="true"] { background: var(--cold); color: #06131f; }
+.modes button.family[aria-pressed="true"] { background: #ffd6e7; color: #2a0f1c; }
+.modes { flex-wrap: wrap; border-radius: 18px; }
 
 .story h3 { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 24px; margin: 0 0 10px; color: var(--candle); }
 .story.skeptic h3 { color: var(--cold); font-style: normal; font-family: inherit; }
 .story p { font-family: Georgia, "Times New Roman", serif; font-size: 19px; line-height: 1.7; margin: 0; }
 .story.skeptic p { font-family: inherit; font-size: 17px; }
+.story.family h3 { color: #ffd6e7; font-style: normal; font-family: inherit; }
+.story.family p { font-family: inherit; font-size: 17px; }
+.event.check { border-style: dashed; }
+.event.check .id { color: var(--cold); }
 .cite { display: inline-block; font: 600 11px/1 ui-monospace, Consolas, monospace; color: var(--bg); background: var(--violet); border-radius: 6px; padding: 3px 5px; margin-left: 3px; vertical-align: 2px; cursor: pointer; border: 0; }
 .cite:hover, .cite.on { background: var(--ghost); }
 .verify { color: var(--muted); font-size: 13px; margin-top: 12px; }

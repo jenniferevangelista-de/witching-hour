@@ -19,7 +19,7 @@ def test_check_sentence_rules():
     assert "not in the cited" in check_sentence("At 03:20 it hit 81 %.", ["E1"], by_id)
     assert "not in the cited" in check_sentence("It was 22.6 °C.", ["E1"], by_id)  # right number, wrong citation
     assert check_sentence("It was 22.6 °C.", ["E2"], by_id) is None
-    assert check_sentence("Something moved.", ["E9"], by_id) == "cites no known event"
+    assert check_sentence("Something moved.", ["E9"], by_id) == "cites no known event or check"
     assert check_sentence("Between midnight and 6 AM the house slept.", ["E1"], by_id) is None
 
 

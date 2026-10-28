@@ -185,7 +185,7 @@ def main(argv=None):
     sp.add_argument("--data", default="demo_data")
     sp.add_argument("--dates")
     sp.add_argument("--top", type=int, default=12)
-    sp.add_argument("--modes", default="medium,skeptic")
+    sp.add_argument("--modes", default="medium,skeptic,family")
     sp.add_argument("--model", default=None)
     sp.add_argument("--template", action="store_true", help="no model, deterministic sentences")
     sp.set_defaults(fn=cmd_narrate)

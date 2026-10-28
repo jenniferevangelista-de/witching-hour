@@ -69,7 +69,7 @@ def night(night: str):
     if scan is None:
         raise HTTPException(404, "no scan for that night")
     out = scan.to_dict()
-    out["stories"] = {m: h.story(night, m) for m in ("medium", "skeptic") if h.story(night, m)}
+    out["stories"] = {m: h.story(night, m) for m in ("medium", "skeptic", "family") if h.story(night, m)}
     return out
 
 

@@ -45,6 +45,24 @@ MODES = {
             "5. Write 4 to 7 sentences, in time order, and a title of at most 6 words."
         ),
     },
+    "family": {
+        "temperature": 0.3,
+        "system": (
+            "You are the Night Watch. Every morning you write a short, calm note for the family of an older person "
+            "who lives alone in this house. Plain, warm English for someone reading it on a phone before work. "
+            "No technical words (never say sigma, quantile or model).\n"
+            "Rules you never break:\n"
+            "1. Use ONLY the events and checks in the list. Do not invent people, devices, sounds or numbers.\n"
+            "2. Every sentence cites at least one event or check id (E1, C1...) in its `cites` list.\n"
+            "3. When you write a time or a value, copy it exactly as it appears in the event or check.\n"
+            "4. Never diagnose and never claim someone fell, is ill or is in danger. Describe what the sensors show.\n"
+            "5. If a check says a room stayed below 18.0 °C, say so and that the WHO recommends at least 18 °C "
+            "indoors in cold seasons, citing that check.\n"
+            "6. If something stands out, end with one gentle, practical suggestion (a phone call, checking the "
+            "heating), citing the event or check it comes from. If nothing stands out, say the night looked calm.\n"
+            "7. Write 2 to 5 sentences and a title of at most 6 words."
+        ),
+    },
     "skeptic": {
         "temperature": 0.3,
         "system": (
@@ -110,14 +128,25 @@ def event_card(e: Event) -> dict:
     }
 
 
-def night_payload(scan: NightScan, max_events: int = 8) -> dict:
+def check_card(c) -> dict:
+    return {
+        "id": c.id, "room": c.room, "rule": c.rule, "from": c.start, "to": c.end, "minutes": c.minutes,
+        "coldest": f"{c.coldest:.1f} °C", "coldest_time": c.coldest_time,
+        "why_it_matters": "WHO recommends at least 18 °C indoors in cold seasons",
+    }
+
+
+def night_payload(scan: NightScan, max_events: int = 8, with_checks: bool = False) -> dict:
     events = sorted(scan.events, key=lambda e: -e.sigma)[:max_events]
     events.sort(key=lambda e: e.start)
-    return {
+    out = {
         "night": f"{scan.weekday} {scan.night}, from {scan.window[0]:02d}:00 to {scan.window[1]:02d}:00",
         "how_expected_was_computed": "TabPFN read the previous 14 days of this house and predicted a range for every 10 minutes.",
         "events": [event_card(e) for e in events],
     }
+    if with_checks:
+        out["checks"] = [check_card(c) for c in scan.checks[:6]]
+    return out
 
 
 # ---------------------------------------------------------------- validation
@@ -125,18 +154,19 @@ def night_payload(scan: NightScan, max_events: int = 8) -> dict:
 _NUM = re.compile(r"(?<![\w.])(\d{1,2}):(\d{2})\b|(?<![\w.])(\d+(?:[.,]\d+)?)")
 
 
-def allowed_numbers(events: list[Event], night: str | None = None,
+def allowed_numbers(items: list, night: str | None = None,
                     extra: list[float] | None = None) -> tuple[set[str], list[float]]:
+    """Times and values a sentence may quote, from the events or checks it cites."""
     times: set[str] = set()
     values: list[float] = list(extra or [])
-    for e in events:
-        for t in (e.start, e.end, e.peak_time):
+    for it in items:
+        ts, vs = it.facts()
+        for t in ts:
             h, m = int(t[:2]), int(t[3:])
             times.add(f"{h:02d}:{m:02d}")
             times.add(f"{h}:{m:02d}")
             values += [h, h % 12 or 12]
-        values += [e.observed, e.expected, e.expected_low, e.expected_high, abs(e.delta), e.sigma, e.duration_min,
-                   e.duration_min / 60]
+        values += vs
     if night:
         y, mth, d = night.split("-")
         values += [int(y), int(mth), int(d)]
@@ -188,7 +218,7 @@ class Story:
 
 
 def validate(raw: dict, scan: NightScan) -> tuple[list[Sentence], list[dict]]:
-    by_id = {e.id: e for e in scan.events}
+    by_id = {e.id: e for e in scan.events} | {c.id: c for c in scan.checks}
     kept, rejected = [], []
     for s in raw.get("sentences", []):
         text = str(s.get("text", "")).strip()
@@ -249,11 +279,11 @@ def _parse_json(text: str) -> dict:
 
 def narrate(scan: NightScan, mode: str, chat=None, model: str = DEFAULT_MODEL, retries: int = 1) -> Story:
     """Ask the local model for a story, keep only grounded sentences."""
-    if not scan.events:
+    if not scan.events and not (mode == "family" and scan.checks):
         return quiet_night(scan, mode, model)
     chat = chat or OllamaChat(model)
     cfg = MODES[mode]
-    payload = night_payload(scan)
+    payload = night_payload(scan, with_checks=(mode == "family"))
     messages = [
         {"role": "system", "content": cfg["system"]},
         {"role": "user", "content": "Here is the night, as JSON:\n" + json.dumps(payload, ensure_ascii=False, indent=1)
@@ -283,6 +313,8 @@ def narrate(scan: NightScan, mode: str, chat=None, model: str = DEFAULT_MODEL, r
 
 def template_story(scan: NightScan, mode: str) -> Story:
     """Deterministic narrator with no model. Used in tests and as a fallback."""
+    if mode == "family":
+        return template_family(scan)
     if not scan.events:
         return quiet_night(scan, mode, "template")
     out = []
@@ -299,6 +331,21 @@ def template_story(scan: NightScan, mode: str) -> Story:
     return Story(scan.night, mode, "template", title, out)
 
 
+def template_family(scan: NightScan) -> Story:
+    out = []
+    for e in sorted(scan.events, key=lambda e: -e.sigma)[:2]:
+        out.append(Sentence(f"The {event_card(e)['sensor']} in the {e.room} was unusual from {e.start} to {e.end}, "
+                            f"reaching {fmt(e.observed, e.unit)}.", [e.id]))
+    for c in scan.checks[:2]:
+        out.append(Sentence(f"The {c.room} stayed below 18 °C from {c.start} to {c.end}, down to {c.coldest:.1f} °C, "
+                            f"and the WHO recommends at least 18 °C indoors in cold seasons.", [c.id]))
+    if not out:
+        return quiet_night(scan, "family", "template")
+    return Story(scan.night, "family", "template", "This morning's note", out)
+
+
 def quiet_night(scan: NightScan, mode: str, model: str) -> Story:
-    text = "Nothing strayed from what the house expected." if mode == "medium" else "Every reading stayed inside its expected range."
+    text = {"medium": "Nothing strayed from what the house expected.",
+            "family": "The night looked calm: every reading stayed inside its usual range."}.get(
+        mode, "Every reading stayed inside its expected range.")
     return Story(scan.night, mode, model, "A quiet night", [Sentence(text, [])])

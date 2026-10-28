@@ -34,10 +34,10 @@ def build_index(out_dir: str | Path, meta: dict | None = None) -> dict:
     nights = []
     for p in sorted((out_dir / "nights").glob("*.json")):
         scan = NightScan.from_dict(json.loads(p.read_text(encoding="utf-8")))
-        modes = [m for m in ("medium", "skeptic") if (out_dir / "stories" / f"{scan.night}.{m}.json").exists()]
+        modes = [m for m in ("medium", "skeptic", "family") if (out_dir / "stories" / f"{scan.night}.{m}.json").exists()]
         nights.append({
             "night": scan.night, "weekday": scan.weekday, "score": round(scan.score, 1),
-            "n_events": len(scan.events), "headline": headline(scan), "stories": modes,
+            "n_events": len(scan.events), "n_cold": len(scan.checks), "headline": headline(scan), "stories": modes,
         })
     index = {"meta": meta or {}, "nights": nights}
     old = out_dir / "index.json"

@@ -117,6 +117,13 @@
     </div>`;
   }
 
+  function checksHTML(night) {
+    return (night.checks || []).map((c) => `<div class="event check" id="ev-${esc(c.id)}" data-ev="${esc(c.id)}">
+        <div class="top"><span><span class="id">${esc(c.id)}</span> <span class="what">${esc(c.room)}: ${esc(c.rule)}</span></span><span>${esc(c.start)} to ${esc(c.end)}</span></div>
+        <div class="nums">coldest <b>${esc(Number(c.coldest).toFixed(1))} °C</b> at ${esc(c.coldest_time)} · ${esc(c.minutes)} minutes · WHO recommends at least 18 °C indoors in cold seasons</div>
+      </div>`).join("");
+  }
+
   function eventsHTML(night) {
     if (!night.events.length) return '<p class="notice">Every reading stayed inside the range TabPFN expected. A quiet night.</p>';
     return night.events
@@ -175,12 +182,13 @@
       <div class="modes" role="group" aria-label="Narrator">
         <button class="medium" aria-pressed="${state.mode === "medium"}" data-mode="medium">🕯️ The Medium</button>
         <button class="skeptic" aria-pressed="${state.mode === "skeptic"}" data-mode="skeptic">🔦 The Skeptic</button>
+        <button class="family" aria-pressed="${state.mode === "family"}" data-mode="family">💌 Morning note</button>
       </div>
       <div class="layout">
         <div>
           <div class="panel">${hasStories ? storyHTML(night) : '<p class="notice">No story for this night yet. Here is what the sensors say.</p>'}</div>
           <h3 style="margin:18px 0 8px;font-size:16px">The evidence</h3>
-          <div class="events">${eventsHTML(night)}</div>
+          <div class="events">${eventsHTML(night)}${checksHTML(night)}</div>
         </div>
         <div>
           <div class="charts">${sensors.map((sid) => chartSVG(sid, night)).join("")}</div>

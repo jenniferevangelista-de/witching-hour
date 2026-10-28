@@ -164,6 +164,12 @@ class Event:
     def delta(self) -> float:
         return self.observed - self.expected
 
+    def facts(self) -> tuple[list[str], list[float]]:
+        """Times and values a narrator may quote when it cites this event."""
+        return [self.start, self.end, self.peak_time], [
+            self.observed, self.expected, self.expected_low, self.expected_high, abs(self.delta), self.sigma,
+            self.duration_min, self.duration_min / 60]
+
     def to_dict(self) -> dict:
         d = asdict(self)
         d["delta"] = round(self.delta, 2)
@@ -236,6 +242,7 @@ class NightScan:
     events: list[Event]
     series: dict[str, dict]  # sensor -> {t, y, q05, q50, q95, z}
     sensors: dict[str, dict]
+    checks: list = field(default_factory=list)  # rule-based notes (checks.Check), ids C1, C2...
 
     @property
     def score(self) -> float:
@@ -245,7 +252,8 @@ class NightScan:
         return {
             "night": self.night, "weekday": self.weekday, "backend": self.backend, "window": list(self.window),
             "score": round(self.score, 1), "n_events": len(self.events),
-            "events": [e.to_dict() for e in self.events], "series": self.series, "sensors": self.sensors,
+            "events": [e.to_dict() for e in self.events], "checks": [c.to_dict() for c in self.checks],
+            "series": self.series, "sensors": self.sensors,
         }
 
     @staticmethod
@@ -255,7 +263,11 @@ class NightScan:
             e = dict(e)
             e.pop("delta", None)
             evs.append(Event(**e))
-        return NightScan(d["night"], d["weekday"], d["backend"], tuple(d["window"]), evs, d["series"], d["sensors"])
+        from .checks import Check, cold_checks
+
+        scan = NightScan(d["night"], d["weekday"], d["backend"], tuple(d["window"]), evs, d["series"], d["sensors"])
+        scan.checks = [Check(**c) for c in d["checks"]] if "checks" in d else cold_checks(scan.series, scan.sensors)
+        return scan
 
 
 @dataclass
@@ -295,10 +307,13 @@ def scan_night(house: House, night: date, backend: Backend, sensors: list[str] |
     for i, e in enumerate(events, 1):
         e.id = f"E{i}"
     link_events(events)
+    from .checks import cold_checks
+
+    sensors_meta = {sid: house.sensor(sid).to_dict() for sid in series}
     return NightScan(
         night=night.isoformat(), weekday=pd.Timestamp(night).day_name(), backend=backend.name,
         window=(cfg.start_hour, cfg.end_hour), events=events, series=series,
-        sensors={sid: house.sensor(sid).to_dict() for sid in series},
+        sensors=sensors_meta, checks=cold_checks(series, sensors_meta),
     )
 
 
