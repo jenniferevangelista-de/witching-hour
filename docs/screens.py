@@ -30,10 +30,28 @@ with sync_playwright() as p:
     page.locator("#eval").screenshot(path=str(out / "benchmark.png"))
     page.locator(".ask .panel").screenshot(path=str(out / "agent.png"))
 
+    page.goto(base, wait_until="networkidle")
+    page.wait_for_timeout(1200)
+    page.locator("#crew").screenshot(path=str(out / "crew.png"))
+    page.locator("header.hero").screenshot(path=str(out / "hero.png"))
+    for mode in ("skeptic", "family"):
+        page.goto(f"{base}/#{night}" if night else base, wait_until="networkidle")
+        page.wait_for_selector(".bubble", timeout=20000)
+        page.click(f"button.tab.{mode}")
+        page.wait_for_timeout(500)
+        page.locator("#night").screenshot(path=str(out / f"night-{mode}.png"))
+    for sel, name in (("#tonight", "tonight.png"), ("#bakeoff-sec", "bakeoff.png"), ("footer.ofrenda", "ofrenda.png")):
+        if page.locator(sel).count() and page.locator(sel).is_visible():
+            page.locator(sel).screenshot(path=str(out / name))
+
     cover = browser.new_page(viewport={"width": 1000, "height": 420}, device_scale_factor=2, color_scheme="dark")
-    cover.goto(f"{base}/#{night}" if night else base, wait_until="networkidle")
-    cover.wait_for_timeout(800)
-    cover.evaluate("document.querySelector('header.hero p:last-of-type').style.display='none'")
+    cover.goto(base, wait_until="networkidle")
+    cover.wait_for_timeout(1200)
+    cover.evaluate("""() => {
+      document.querySelector('.tagline').style.display = 'none';
+      document.querySelectorAll('.card p, .card q').forEach(e => e.style.display = 'none');
+      document.querySelector('header.hero').scrollIntoView();
+    }""")
     cover.screenshot(path=str(out / "cover.png"))
 
     phone = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=3, color_scheme="dark")

@@ -1,14 +1,16 @@
 # Witching Hour
 
-**What happened in the house at 3 AM?**
+**A paranormal activity detector for real houses, built for Halloween and Día de los Muertos.**
 
-Witching Hour reads a home's night-time sensor log. An open tabular foundation model (TabPFN) learns from the house's own previous two weeks what every room should read at every moment of the night. When a room drifts outside that range, it becomes an event. Then an open-weight language model (Gemma 4, running locally through Ollama) tells you about the night three times:
+Witching Hour is a ghost-hunting kit. Its **spirit meter** is TabPFN, an open tabular foundation model: it reads a house's own previous two weeks of sensor logs and learns what every room should feel like at every moment of the night. When a reading breaks that pattern between midnight and 6 AM, the needle jumps and the crew takes the case. The crew are three little characters played by Gemma 4, an open-weight model running locally through Ollama:
 
-- 🕯️ **The Medium** turns the events into a short Halloween ghost story.
-- 🔦 **The Skeptic** reads the same events and gives the boring explanation.
-- 💌 **The Morning note** writes two or three calm lines for the family of someone who lives in that house alone, and checks the coldest rooms against the WHO recommendation of at least 18 °C indoors in cold seasons.
+| | Character | Job | Voice |
+|---|---|---|---|
+| <img src="witching_hour/static/characters/luna.svg" width="90" alt="Luna"> | **Luna, the Medium.** A tiny sugar-skull ghost with a marigold crown and a crystal ball. Whispery, dramatic, loves suspense. *"Shhh... the house is breathing."* | Turns the apparitions into a spooky first-person ghost story | ElevenLabs "Jessica" |
+| <img src="witching_hour/static/characters/bigotes.svg" width="90" alt="Dr. Bigotes"> | **Dr. Bigotes, the Skeptic.** A black cat scientist with round glasses, a lab coat and a flashlight. Grumpy, kind underneath, never believes without data. *"Hmph. Probably the kettle."* | Explains what most likely happened, and checks the official warnings in a real browser | ElevenLabs "George" |
+| <img src="witching_hour/static/characters/xochi.svg" width="90" alt="Xochi"> | **Xochi, the Night Watch.** A xoloitzcuintli, the dog that guides souls on Día de los Muertos, with a lantern and a marigold collar. *"I kept watch. Here is what I saw."* | Writes a calm morning note for the family of someone who lives in the house alone, with the WHO 18 °C check for cold rooms | ElevenLabs "Matilda" |
 
-None of them gets a free pass. Every sentence must cite an event (or a cold-room check), and every number in the sentence must match what it cites. Sentences that fail are dropped and the model gets one retry with feedback. The page shows how many sentences survived.
+None of them gets a free pass: **cite or vanish**. Every sentence must cite an apparition (or a cold-room check), and every number in it must match what it cites. Sentences that fail are dropped before anyone reads them.
 
 **Live demo:** https://witching-hour.onrender.com
 
