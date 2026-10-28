@@ -80,7 +80,15 @@ def cmd_narrate(args):
     from .store import build_index, save_story
 
     h = Haunting(args.data)
-    dates = args.dates.split(",") if args.dates else [n["night"] for n in sorted(h.nights, key=lambda n: -n["score"])[: args.top]]
+    if args.dates:
+        dates = args.dates.split(",")
+    else:
+        dates = [n["night"] for n in sorted(h.nights, key=lambda n: -n["score"])[: args.top]]
+        cold = [n["night"] for n in sorted(h.nights, key=lambda n: -n.get("n_cold", 0)) if n.get("n_cold")]
+        dates += [d for d in cold if d not in dates][: args.cold]
+    if args.shard:
+        i, k = (int(x) for x in args.shard.split("/"))
+        dates = dates[i::k]
     chat = None if args.template else OllamaChat(args.model)
     if chat is not None and not chat.available():
         sys.exit(f"Ollama model {args.model} is not available at {chat.host}. Run: ollama pull {args.model}")
@@ -95,7 +103,8 @@ def cmd_narrate(args):
             save_story(story, args.data)
             print(f"{d} {mode}: {len(story.sentences)} verified, {len(story.rejected)} dropped, "
                   f"{story.attempts} attempt(s), {time.time() - t0:.0f}s  | {story.title}", flush=True)
-    build_index(args.data)
+    if not args.no_index:
+        build_index(args.data)
 
 
 def cmd_ask(args):
@@ -244,6 +253,9 @@ def main(argv=None):
     sp.add_argument("--dates")
     sp.add_argument("--top", type=int, default=12)
     sp.add_argument("--modes", default="medium,skeptic,family")
+    sp.add_argument("--cold", type=int, default=4, help="also narrate the N nights with the most cold-room checks")
+    sp.add_argument("--shard", help="i/n: narrate every n-th of the chosen nights (parallel jobs)")
+    sp.add_argument("--no-index", action="store_true")
     sp.add_argument("--model", default=None)
     sp.add_argument("--template", action="store_true", help="no model, deterministic sentences")
     sp.set_defaults(fn=cmd_narrate)
