@@ -18,6 +18,8 @@ env:
   PYTHONUNBUFFERED: "1"
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+  BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
+  BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
   WH_ENV: github-actions
   TABPFN_MODEL_CACHE_DIR: ${{ github.workspace }}/.cache/tabpfn
 
@@ -34,13 +36,15 @@ jobs:
       - name: Install
         run: |
           pip install torch --index-url https://download.pytorch.org/whl/cpu
-          pip install -e ".[tabpfn,tracing]"
+          pip install -e ".[tabpfn,tracing]" playwright
       - uses: actions/cache@v4
         with:
           path: .cache/tabpfn
           key: tabpfn-v2-reg
       - run: witching-hour fetch
       - run: witching-hour tonight --place "${{ inputs.place }}" --out demo_data/tonight.json
+      - name: Dr. Bigotes's field trip (Browserbase)
+        run: witching-hour fieldwork --data demo_data
       - name: Start Ollama
         run: |
           curl -fsSL https://ollama.com/install.sh | sh
@@ -48,11 +52,15 @@ jobs:
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
           ollama pull ${{ inputs.model }}
       - name: Ask the agent about tonight
-        run: witching-hour ask "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
+        run: |
+          witching-hour ask "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
+          witching-hour ask "Is there an official cold warning for the house tonight, or should we blame a ghost?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
       - uses: actions/upload-artifact@v4
         with:
           name: tonight
           path: |
             demo_data/tonight.json
             demo_data/agent_runs.json
+            demo_data/fieldwork.json
+            demo_data/fieldwork.png
           retention-days: 14

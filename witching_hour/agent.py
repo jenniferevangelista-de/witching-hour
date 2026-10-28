@@ -25,6 +25,7 @@ You can call these tools:
 - scan_night(date: "YYYY-MM-DD") -> the events of one night
 - expected_reading(date: "YYYY-MM-DD", time: "HH:MM", sensor: str) -> what TabPFN expected vs what was observed
 - tonight() -> live weather for the house's town (Google via SerpApi) and TabPFN's forecast for each room tonight
+- official_warnings() -> what Dr. Bigotes read on the official weather warnings page, in a real browser
 - tell_story(date: "YYYY-MM-DD", mode: "medium", "skeptic" or "family") -> a verified story about the night
   ("family" is a calm morning note for the family of someone who lives alone, with cold-room checks)
 
@@ -128,6 +129,13 @@ class Tools:
             "rooms": [{k: r[k] for k in ("room", "coldest_time", "expected", "low", "high", "p_below_18")} for r in d["rooms"]],
         }
 
+    def official_warnings(self) -> dict:
+        p = self.h.dir / "fieldwork.json"
+        if not p.exists():
+            return {"error": "no field trip yet; run: witching-hour fieldwork"}
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return {k: d.get(k) for k in ("url", "fetched_at", "via", "cold_warning", "cold_lines", "excerpt")}
+
     def tell_story(self, date: str, mode: str = "medium") -> dict:
         mode = mode if mode in ("medium", "skeptic", "family") else "medium"
         saved = self.h.story(date, mode)
@@ -142,7 +150,7 @@ class Tools:
     def call(self, name: str, args: dict) -> dict:
         fn = {"haunted_nights": self.haunted_nights, "scan_night": self.scan_night,
               "expected_reading": self.expected_reading, "tell_story": self.tell_story,
-              "tonight": self.tonight}.get(name)
+              "tonight": self.tonight, "official_warnings": self.official_warnings}.get(name)
         if fn is None:
             return {"error": f"unknown tool {name!r}"}
         try:

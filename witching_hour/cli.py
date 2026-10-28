@@ -189,6 +189,18 @@ def cmd_bakeoff(args):
     print(json.dumps(res["local"]))
 
 
+def cmd_fieldwork(args):
+    from .fieldwork import field_trip
+    from .voice import load_env
+
+    load_env(args.env)
+    out_dir = Path(args.data)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    res = field_trip(args.url, screenshot_path=str(out_dir / "fieldwork.png"))
+    (out_dir / "fieldwork.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    print({k: res.get(k) for k in ("status", "title", "cold_warning", "excerpt")})
+
+
 def cmd_worker(args):
     import asyncio
 
@@ -303,6 +315,12 @@ def main(argv=None):
     sp.add_argument("--models", help="comma separated OpenRouter model ids")
     sp.add_argument("--env", default=".env")
     sp.set_defaults(fn=cmd_bakeoff)
+
+    sp = sub.add_parser("fieldwork", help="Dr. Bigotes checks official warnings in a Browserbase browser")
+    sp.add_argument("--data", default="demo_data")
+    sp.add_argument("--url", default="https://meteoalarm.org/en/live/region/BE")
+    sp.add_argument("--env", default=".env")
+    sp.set_defaults(fn=cmd_fieldwork)
 
     sp = sub.add_parser("worker", help="run a Temporal worker for the night watch")
     sp.add_argument("--address", default="localhost:7233")

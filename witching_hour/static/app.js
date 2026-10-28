@@ -377,6 +377,20 @@
     } catch (_) { /* optional */ }
   }
 
+  async function loadField() {
+    try {
+      const f = await getJSON("/api/fieldwork");
+      if (!f.url) return;
+      const verdict = f.cold_warning ? "There IS an official cold warning. Even I will not blame a kettle tonight." : "No official cold warning. Hmph. If a room goes cold, check the heating before you call a priest.";
+      $("#field-body").innerHTML = `<h3 style="margin:0 0 6px">Dr. Bigotes's field trip</h3>
+        <p class="notice" style="margin-top:0">He opened the official warnings page in a real cloud browser (${esc(f.via)}, ${esc(f.fetched_at)}): <a href="${esc(f.url)}">${esc(f.url)}</a></p>
+        <p><b>"${esc(verdict)}"</b></p>
+        ${f.excerpt ? `<p class="notice">What the page said: ${esc(f.excerpt.slice(0, 280))}${f.excerpt.length > 280 ? "..." : ""}</p>` : ""}
+        ${f.screenshot ? `<img src="/media/fieldwork.png" alt="Screenshot of the official warnings page taken in the Browserbase browser" style="width:100%;height:auto;border-radius:12px;border:2px solid var(--line);margin-top:8px">` : ""}`;
+      $("#field").hidden = false;
+    } catch (_) { /* optional */ }
+  }
+
   // ------------------------------------------------------------ boot
   async function boot() {
     papelPicado();
@@ -397,6 +411,7 @@
     loadEval();
     loadTonight();
     loadBakeoff();
+    loadField();
     try {
       const h = await getJSON("/api/health");
       if (!h.live) $("#ask-notice").textContent = "Live questions are off on this public demo (a house's night logs are private). Below are hunts recorded with Gemma 4 running locally.";

@@ -107,6 +107,19 @@ def bakeoff():
     return _read_json("bakeoff.json", {})
 
 
+@app.get("/api/fieldwork")
+def fieldwork():
+    return _read_json("fieldwork.json", {})
+
+
+@app.get("/media/fieldwork.png", include_in_schema=False)
+def fieldwork_shot():
+    p = data_dir() / "fieldwork.png"
+    if not p.exists():
+        raise HTTPException(404, "no screenshot")
+    return FileResponse(p, media_type="image/png")
+
+
 @app.get("/api/eval")
 def eval_results():
     return _read_json("eval.json", {})
