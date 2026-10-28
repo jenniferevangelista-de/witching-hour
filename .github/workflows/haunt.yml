@@ -34,6 +34,8 @@ concurrency:
 env:
   TABPFN_MODEL_CACHE_DIR: ${{ github.workspace }}/.cache/tabpfn
   PYTHONUNBUFFERED: "1"
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  WH_ENV: github-actions
 
 jobs:
   scan:
@@ -105,7 +107,7 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -e .
+      - run: pip install -e ".[tracing]"
       - uses: actions/download-artifact@v4
         with:
           pattern: scan-*

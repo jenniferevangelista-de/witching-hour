@@ -12,6 +12,7 @@ import os
 import re
 from dataclasses import asdict, dataclass, field
 
+from . import tracing
 from .scanner import Event, NightScan
 
 DEFAULT_MODEL = os.environ.get("WH_MODEL", "gemma4:e4b")
@@ -259,9 +260,20 @@ class OllamaChat:
         }
         if schema is not None:
             body["format"] = schema
-        r = requests.post(f"{self.host}/api/chat", json=body, timeout=self.timeout)
-        r.raise_for_status()
-        return r.json()["message"]["content"]
+        with tracing.span("gen_ai.chat", f"chat {self.model}", **{
+                "gen_ai.operation.name": "chat", "gen_ai.system": "ollama", "gen_ai.request.model": self.model,
+                "gen_ai.request.temperature": temperature}) as s:
+            r = requests.post(f"{self.host}/api/chat", json=body, timeout=self.timeout)
+            r.raise_for_status()
+            d = r.json()
+            tracing.set_data(s, **{
+                "gen_ai.response.model": d.get("model", self.model),
+                "gen_ai.usage.input_tokens": d.get("prompt_eval_count", 0),
+                "gen_ai.usage.output_tokens": d.get("eval_count", 0),
+                "gen_ai.usage.total_tokens": d.get("prompt_eval_count", 0) + d.get("eval_count", 0),
+                "ollama.eval_seconds": round(d.get("eval_duration", 0) / 1e9, 2),
+            })
+        return d["message"]["content"]
 
 
 def _parse_json(text: str) -> dict:
@@ -279,6 +291,15 @@ def _parse_json(text: str) -> dict:
 
 def narrate(scan: NightScan, mode: str, chat=None, model: str = DEFAULT_MODEL, retries: int = 1) -> Story:
     """Ask the local model for a story, keep only grounded sentences."""
+    with tracing.agent_transaction(f"narrate {mode}", **{"witching_hour.mode": mode,
+                                                       "witching_hour.events": len(scan.events)}) as t:
+        story = _narrate(scan, mode, chat, model, retries)
+        tracing.set_data(t, **{"witching_hour.verified": len(story.sentences),
+                               "witching_hour.dropped": len(story.rejected), "witching_hour.attempts": story.attempts})
+        return story
+
+
+def _narrate(scan: NightScan, mode: str, chat, model: str, retries: int) -> Story:
     if not scan.events and not (mode == "family" and scan.checks):
         return quiet_night(scan, mode, model)
     chat = chat or OllamaChat(model)
@@ -297,7 +318,7 @@ def narrate(scan: NightScan, mode: str, chat=None, model: str = DEFAULT_MODEL, r
                       kept, rejected, attempt)
         if best is None or len(kept) > len(best.sentences):
             best = story
-        if not rejected and len(kept) >= 3:
+        if not rejected and len(kept) >= (2 if mode == "family" else 3):
             break
         if attempt <= retries:
             notes = "\n".join(f"- \"{r['text']}\": {r['reason']}" for r in rejected) or "- too few sentences"

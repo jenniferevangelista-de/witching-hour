@@ -269,7 +269,13 @@ def main(argv=None):
         from .narrator import DEFAULT_MODEL
 
         args.model = DEFAULT_MODEL
-    args.fn(args)
+    from . import tracing
+
+    tracing.init()
+    try:
+        args.fn(args)
+    finally:
+        tracing.flush()
 
 
 if __name__ == "__main__":

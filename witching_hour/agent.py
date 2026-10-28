@@ -12,6 +12,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from . import tracing
 from .narrator import Story, check_card, event_card, fmt, narrate, template_story
 from .scanner import NightScan
 
@@ -159,6 +160,15 @@ def _parse(text: str) -> dict:
 
 
 def investigate(question: str, haunting: Haunting, chat, max_steps: int = 6) -> AgentRun:
+    with tracing.agent_transaction("invoke_agent Witching Hour", **{
+            "gen_ai.request.model": getattr(chat, "model", "")}) as t:
+        run = _investigate(question, haunting, chat, max_steps)
+        tracing.set_data(t, **{"witching_hour.steps": len(run.steps),
+                               "witching_hour.tools": ",".join(s["tool"] for s in run.steps)})
+        return run
+
+
+def _investigate(question: str, haunting: Haunting, chat, max_steps: int) -> AgentRun:
     tools = Tools(haunting, chat)
     messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": question}]
     run = AgentRun(question, "", model=getattr(chat, "model", ""))
@@ -167,7 +177,11 @@ def investigate(question: str, haunting: Haunting, chat, max_steps: int = 6) -> 
         tool = out.get("tool")
         if tool:
             args = out.get("args") or {}
-            result = tools.call(tool, args)
+            with tracing.span("gen_ai.execute_tool", f"execute_tool {tool}", **{
+                    "gen_ai.operation.name": "execute_tool", "gen_ai.tool.name": tool,
+                    "gen_ai.tool.type": "function"}) as s:
+                result = tools.call(tool, args)
+                tracing.set_data(s, **{"witching_hour.tool_error": "error" in result})
             run.steps.append({"tool": tool, "args": args, "result": result})
             messages += [
                 {"role": "assistant", "content": json.dumps({"tool": tool, "args": args})},

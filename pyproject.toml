@@ -21,6 +21,7 @@ dependencies = [
 [project.optional-dependencies]
 tabpfn = ["tabpfn>=9.2,<10", "lightgbm>=4.4"]
 durable = ["temporalio>=1.7"]
+tracing = ["sentry-sdk>=2.20,<3"]
 dev = ["pytest>=8", "httpx>=0.27"]
 
 [project.scripts]

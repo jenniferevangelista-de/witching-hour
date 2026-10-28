@@ -21,6 +21,11 @@ permissions:
   contents: read
   actions: read
 
+env:
+  PYTHONUNBUFFERED: "1"
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  WH_ENV: github-actions
+
 jobs:
   narrate:
     runs-on: ubuntu-latest
@@ -31,7 +36,7 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -e .
+      - run: pip install -e ".[tracing]"
       - uses: actions/download-artifact@v4
         with:
           pattern: scan-*
