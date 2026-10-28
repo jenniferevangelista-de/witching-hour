@@ -53,6 +53,16 @@ def lamp(t):
     return 1.0
 
 
+def shadow_mask(cx):
+    """A soft human silhouette, head above the door frame, centered at x = cx."""
+    m = Image.new("L", (W, H), 0)
+    d = ImageDraw.Draw(m)
+    cx = int(cx)
+    d.ellipse([cx - 19, 34, cx + 19, 76], fill=255)  # head
+    d.polygon([(cx - 12, 74), (cx + 12, 74), (cx + 46, 104), (cx + 38, 290), (cx - 38, 290), (cx - 46, 104)], fill=255)
+    return np.asarray(m.filter(ImageFilter.GaussianBlur(7)), np.float32) / 255
+
+
 def frame(t, font, small):
     img = Image.new("RGB", (W, H))
     px = np.zeros((H, W, 3), np.float32)
@@ -107,12 +117,8 @@ def frame(t, font, small):
     a[::2] *= 0.94
     vy, vx = np.ogrid[:H, :W]
     a *= (1 - 0.55 * (((vx - W / 2) / (W / 2)) ** 2 + ((vy - H / 2) / (H / 2)) ** 2) / 2)[..., None]
-    if 9.95 <= t < 10.5:  # the shadow of someone tall passes behind her, along the wall by the door
-        u = (t - 9.95) / 0.55
-        sx = int(360 + 260 * u)
-        x0, x1 = max(0, sx), min(W, sx + 80)
-        if x1 > x0:
-            a[36:292, x0:x1] *= 0.3
+    if 9.95 <= t < 10.5:  # the shadow of someone taller than her passes behind her, along the wall by the door
+        a *= (1 - 0.72 * shadow_mask(360 + 260 * (t - 9.95) / 0.55))[..., None]
     img = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(img)
     if int(t * 2) % 2 == 0:
