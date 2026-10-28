@@ -1,0 +1,99 @@
+# The night watch on Temporal, with failures on purpose:
+# the worker is killed in the middle of a TabPFN scan, and Ollama is stopped in
+# the middle of the narrations. The workflows should still finish every night.
+name: durable
+
+on:
+  workflow_dispatch:
+    inputs:
+      nights:
+        description: "nights to watch (comma separated YYYY-MM-DD)"
+        default: "2016-02-10,2016-03-17,2016-04-21"
+      model:
+        description: "Ollama model"
+        default: "gemma4:e4b"
+
+permissions:
+  contents: read
+
+env:
+  TABPFN_MODEL_CACHE_DIR: ${{ github.workspace }}/.cache/tabpfn
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[tabpfn,durable]" playwright
+          python -m playwright install --with-deps chromium
+      - uses: actions/cache@v4
+        with:
+          path: .cache/tabpfn
+          key: tabpfn-v2-reg
+      - name: Temporal dev server
+        run: |
+          curl -sSf https://temporal.download/cli.sh | sh
+          echo "$HOME/.temporalio/bin" >> $GITHUB_PATH
+          ($HOME/.temporalio/bin/temporal server start-dev --db-filename temporal.db --ui-port 8233 > temporal.log 2>&1 &)
+          for i in $(seq 1 30); do $HOME/.temporalio/bin/temporal operator cluster health 2>/dev/null | grep -q SERVING && break; sleep 2; done
+      - name: Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull ${{ inputs.model }}
+      - run: witching-hour fetch
+      - name: Start worker and workflows
+        run: |
+          nohup witching-hour worker > worker1.log 2>&1 & echo $! > worker.pid
+          sleep 5
+          witching-hour watch --nights "${{ inputs.nights }}" --data watch_data --model ${{ inputs.model }} --no-wait
+      - name: "Chaos 1: kill the worker in the middle of a scan"
+        run: |
+          sleep 75
+          echo "killing worker at $(date -u +%H:%M:%S)"; kill -9 $(cat worker.pid)
+          sleep 20
+          nohup witching-hour worker > worker2.log 2>&1 & echo $! > worker.pid
+          echo "worker restarted at $(date -u +%H:%M:%S)"
+      - name: "Chaos 2: stop Ollama while the stories are being written"
+        run: |
+          until ls watch_data/stories/*.json >/dev/null 2>&1; do sleep 10; done
+          echo "stopping ollama at $(date -u +%H:%M:%S)"
+          sudo systemctl stop ollama 2>/dev/null || pkill -f "ollama serve" || true
+          sleep 90
+          sudo systemctl start ollama 2>/dev/null || (ollama serve > ollama2.log 2>&1 &)
+          echo "ollama back at $(date -u +%H:%M:%S)"
+      - name: Wait for every night
+        run: |
+          for n in $(echo "${{ inputs.nights }}" | tr ',' ' '); do
+            until temporal workflow describe -w night-watch-$n -o json | python -c "import sys,json;d=json.load(sys.stdin);s=d['workflowExecutionInfo']['status'];print(s);sys.exit(0 if 'RUNNING' not in s else 1)"; do sleep 15; done
+          done
+      - name: Histories and summary
+        run: |
+          mkdir -p out
+          for n in $(echo "${{ inputs.nights }}" | tr ',' ' '); do
+            temporal workflow show -w night-watch-$n -o json > out/history-$n.json
+            temporal workflow describe -w night-watch-$n -o json > out/describe-$n.json
+          done
+          python docs/temporal_summary.py out > out/temporal_summary.json
+          cat out/temporal_summary.json
+          cp worker1.log worker2.log out/ || true
+      - name: Screenshots of the Temporal UI
+        run: python docs/temporal_screens.py "${{ inputs.nights }}" out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: durable
+          path: |
+            out
+            watch_data
+          retention-days: 14

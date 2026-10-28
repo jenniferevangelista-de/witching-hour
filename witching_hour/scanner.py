@@ -290,11 +290,13 @@ def predict_night(house: House, night: date, target: str, backend: Backend, cfg:
 
 
 def scan_night(house: House, night: date, backend: Backend, sensors: list[str] | None = None,
-               cfg: ScanConfig | None = None) -> NightScan:
+               cfg: ScanConfig | None = None, on_sensor=None) -> NightScan:
     cfg = cfg or ScanConfig()
     events: list[Event] = []
     series: dict[str, dict] = {}
     for sid in sensors or house.sensor_ids:
+        if on_sensor is not None:
+            on_sensor(sid)
         s = house.sensor(sid)
         times, y, q = predict_night(house, night, sid, backend, cfg)
         z = surprise(y, q, s.min_spread)

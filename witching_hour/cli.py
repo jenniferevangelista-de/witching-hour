@@ -150,6 +150,24 @@ def cmd_voice(args):
     print(voice_stories(args.data, dates, args.modes.split(",")))
 
 
+def cmd_worker(args):
+    import asyncio
+
+    from .durable import run_worker
+
+    asyncio.run(run_worker(args.address))
+
+
+def cmd_watch(args):
+    import asyncio
+
+    from .durable import start_watch
+
+    job = {"data_dir": args.data, "modes": args.modes.split(","), "model": args.model}
+    res = asyncio.run(start_watch(args.nights.split(","), job, args.address, wait=not args.no_wait))
+    print(json.dumps(res, indent=1))
+
+
 def cmd_serve(args):
     import os
 
@@ -226,6 +244,19 @@ def main(argv=None):
     sp.add_argument("--modes", default="family,medium")
     sp.add_argument("--env", default=".env")
     sp.set_defaults(fn=cmd_voice)
+
+    sp = sub.add_parser("worker", help="run a Temporal worker for the night watch")
+    sp.add_argument("--address", default="localhost:7233")
+    sp.set_defaults(fn=cmd_worker)
+
+    sp = sub.add_parser("watch", help="start one durable Temporal workflow per night")
+    sp.add_argument("--nights", required=True, help="comma separated YYYY-MM-DD")
+    sp.add_argument("--data", default="demo_data")
+    sp.add_argument("--modes", default="family,medium")
+    sp.add_argument("--model", default=None)
+    sp.add_argument("--address", default="localhost:7233")
+    sp.add_argument("--no-wait", action="store_true")
+    sp.set_defaults(fn=cmd_watch)
 
     sp = sub.add_parser("serve", help="open the web app")
     sp.add_argument("--data", default="demo_data")
