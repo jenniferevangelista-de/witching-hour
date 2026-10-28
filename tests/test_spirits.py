@@ -79,3 +79,15 @@ def test_session_api(monkeypatch):
     assert c.post(f"/api/sessions/{s['session_id']}/ask", json={"question": "hello?"}).status_code == 409
     assert c.get("/api/sessions/nope").status_code == 404
     assert "guardian" in c.get("/api/spirits").json()["archetypes"]
+
+
+def test_memory_store_forgets_the_oldest_sessions():
+    store = spirits.MemoryStore()
+    store.MAX = 3
+    ids = []
+    for _ in range(5):
+        s = spirits.summon("x", EVIDENCE)
+        store.save(s)
+        ids.append(s.session_id)
+    assert store.load(ids[0]) is None and store.load(ids[1]) is None
+    assert store.load(ids[4]).session_id == ids[4]

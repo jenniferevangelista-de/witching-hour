@@ -162,7 +162,8 @@ def store():
 def throttle(request: Request) -> None:
     """The public demo spends a small provider credit: keep it for real visitors."""
     now = time.time()
-    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0]
+    # the proxy appends the address it saw, so the last entry is the one a visitor cannot forge
+    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[-1].strip()
     q = _hits[ip]
     while q and now - q[0] > 3600:
         q.popleft()

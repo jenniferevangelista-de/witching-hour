@@ -296,8 +296,13 @@ class MemoryStore:
     def __init__(self):
         self.d: dict[str, dict] = {}
 
+    MAX = 2000  # the oldest sessions are forgotten first
+
     def save(self, s: Session) -> None:
+        self.d.pop(s.session_id, None)
         self.d[s.session_id] = s.to_dict()
+        while len(self.d) > self.MAX:
+            self.d.pop(next(iter(self.d)))
 
     def load(self, sid: str) -> Session | None:
         return Session.from_dict(self.d[sid]) if sid in self.d else None

@@ -10,7 +10,10 @@ night = sys.argv[3] if len(sys.argv) > 3 else ""
 out.mkdir(parents=True, exist_ok=True)
 
 with sync_playwright() as p:
-    browser = p.chromium.launch()
+    try:  # Google Chrome plays the H.264 demo clip; the bundled Chromium cannot
+        browser = p.chromium.launch(channel="chrome")
+    except Exception:  # noqa: BLE001
+        browser = p.chromium.launch()
     page = browser.new_page(viewport={"width": 1280, "height": 900}, device_scale_factor=2, color_scheme="dark")
     page.goto(f"{base}/#{night}" if night else base, wait_until="networkidle")
     page.wait_for_selector(".story, .notice", timeout=20000)
@@ -49,10 +52,29 @@ with sync_playwright() as p:
     cover.wait_for_timeout(1200)
     cover.evaluate("""() => {
       document.querySelector('.tagline').style.display = 'none';
+      document.querySelector('.doors').style.display = 'none';
       document.querySelectorAll('.card p, .card q').forEach(e => e.style.display = 'none');
       document.querySelector('header.hero').scrollIntoView();
     }""")
     cover.screenshot(path=str(out / "cover.png"))
+
+    # The Unheard: open the demo case, let the browser find the evidence, replay the recorded seance
+    uh = browser.new_page(viewport={"width": 1280, "height": 900}, device_scale_factor=2, color_scheme="dark")
+    uh.goto(base, wait_until="networkidle")
+    uh.locator("nav.doors").screenshot(path=str(out / "doors.png"))
+    uh.click("#uh-demo")
+    try:
+        uh.wait_for_function("document.querySelectorAll('#uh-evidence .event').length > 0", timeout=120000)
+        uh.wait_for_timeout(600)
+        uh.locator("section.terminal").first.screenshot(path=str(out / "unheard.png"))
+        if uh.locator("#uh-replay").is_visible():
+            uh.click("#uh-replay")
+            n = uh.evaluate("fetch('/api/demo/cases').then(r => r.json()).then(c => c.cases[0].seance.turns.length)")
+            uh.wait_for_function(f"document.querySelectorAll('#uh-turns li').length >= {n}", timeout=240000)
+            uh.wait_for_timeout(1500)
+            uh.locator("section.terminal").first.screenshot(path=str(out / "seance.png"))
+    except Exception as e:  # noqa: BLE001
+        print("the unheard capture failed:", e)
 
     phone = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=3, color_scheme="dark")
     phone.goto(f"{base}/#{night}" if night else base, wait_until="networkidle")
