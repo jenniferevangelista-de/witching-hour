@@ -1,0 +1,50 @@
+# The ghost hunter as a Mastra agent with memory, on an open model served by Ollama,
+# using the public Witching Hour API as its tools.
+name: mastra
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Ollama model (needs tool calling)"
+        default: "gemma4:e4b"
+      api:
+        description: "Witching Hour API"
+        default: "https://witching-hour.onrender.com"
+
+permissions:
+  contents: read
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: mastra
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --no-audit --no-fund
+      - name: Start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull ${{ inputs.model }}
+      - name: Wake the demo API
+        run: for i in $(seq 1 12); do curl -sf "${{ inputs.api }}/api/health" && break; sleep 10; done
+      - name: Hunt
+        env:
+          WH_MODEL: ${{ inputs.model }}
+          WH_API: ${{ inputs.api }}
+          WH_OUT: mastra_runs.json
+        run: npm run hunt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mastra
+          path: mastra/mastra_runs.json
+          retention-days: 14
