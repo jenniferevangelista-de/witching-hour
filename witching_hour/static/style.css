@@ -226,7 +226,8 @@ footer p { margin: 4px 0; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 .archive { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (max-width: 860px) { .archive { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .archive { grid-template-columns: minmax(0, 1fr); } }
+.archive .panel { min-width: 0; overflow-wrap: anywhere; }
 .archive .panel h3 { margin: 0 0 4px; font-size: 18px; }
 .archive .panel .by { font: 600 12px "Fredoka", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--cempa); }
 .archive ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
