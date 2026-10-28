@@ -7,11 +7,12 @@ import os
 import re
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from . import auth
 from .agent import Haunting, investigate
 from .narrator import DEFAULT_MODEL, OllamaChat
 
@@ -29,6 +30,7 @@ def live_enabled() -> bool:
 
 app = FastAPI(title="Witching Hour", docs_url=None, redoc_url=None)
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
+auth.install(app)  # Auth0 login for the family room, home install only
 _haunting: dict[str, Haunting] = {}
 
 
@@ -129,7 +131,7 @@ class Question(BaseModel):
     question: str = Field(min_length=3, max_length=300)
 
 
-@app.post("/api/ask")
+@app.post("/api/ask", dependencies=[Depends(auth.require_family)])
 def ask(q: Question):
     if not live_enabled():
         return JSONResponse(status_code=503, content={

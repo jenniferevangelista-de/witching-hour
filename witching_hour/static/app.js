@@ -413,6 +413,14 @@
     loadBakeoff();
     loadField();
     try {
+      const me = await getJSON("/api/auth/me");
+      if (me.enabled) {
+        $("#ask-notice").innerHTML = me.member
+          ? `Signed in with Auth0 as ${esc(me.member.name)} (family). <a href="/auth/logout">Sign out</a>`
+          : 'This is the family room: live questions need a family member signed in. <a href="/auth/login">Sign in with Auth0</a>';
+      }
+    } catch (_) { /* older server */ }
+    try {
       const h = await getJSON("/api/health");
       if (!h.live) $("#ask-notice").textContent = "Live questions are off on this public demo (a house's night logs are private). Below are hunts recorded with Gemma 4 running locally.";
     } catch (_) { /* ignore */ }
