@@ -218,6 +218,82 @@
       </div></div>`;
   }
 
+  // ------------------------------------------------------------ Luna's spirit board
+  const BOARD = (() => {
+    const pos = {};
+    const arc = (letters, r, a0, a1) => letters.split("").forEach((ch, i) => {
+      const a = (a0 + (a1 - a0) * i / (letters.length - 1)) * Math.PI / 180;
+      pos[ch] = { x: 300 + r * Math.cos(a), y: 330 - r * Math.sin(a), rot: 90 - a * 180 / Math.PI };
+    });
+    arc("ABCDEFGHIJKLM", 232, 158, 22);
+    arc("NOPQRSTUVWXYZ", 172, 152, 28);
+    "1234567890".split("").forEach((d, i) => { pos[d] = { x: 138 + i * 36, y: 282, rot: 0 }; });
+    pos.YES = { x: 78, y: 54 }; pos.NO = { x: 522, y: 54 }; pos.GOODBYE = { x: 300, y: 352 }; pos.REST = { x: 300, y: 205 };
+    return pos;
+  })();
+
+  function boardSVG() {
+    const letters = Object.entries(BOARD).filter(([k]) => k.length === 1).map(([k, p]) =>
+      `<text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" transform="rotate(${(p.rot || 0).toFixed(1)} ${p.x.toFixed(1)} ${p.y.toFixed(1)})" text-anchor="middle" dominant-baseline="middle" class="bl">${k}</text>`).join("");
+    return `<svg class="wood" viewBox="0 0 600 380" role="img" aria-label="Spirit board with letters, numbers, yes, no and goodbye">
+      <defs><radialGradient id="wood" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#f1d9a7"/><stop offset="1" stop-color="#c8955a"/></radialGradient></defs>
+      <style>.bl{font:700 26px Georgia,serif;fill:#3a2414}.bw{font:700 30px Georgia,serif;fill:#3a2414}.orn{fill:none;stroke:#3a2414;stroke-width:2}</style>
+      <rect x="6" y="6" width="588" height="368" rx="26" fill="url(#wood)" stroke="#3a2414" stroke-width="6"/>
+      <rect x="18" y="18" width="564" height="344" rx="18" class="orn" opacity=".5"/>
+      <g transform="translate(78 54)"><circle r="20" fill="#ffd36e" stroke="#3a2414" stroke-width="3"/><text y="44" text-anchor="middle" class="bw">YES</text></g>
+      <g transform="translate(522 54)"><path d="M10,-18 a20,20 0 1 0 0,36 a15,15 0 1 1 0,-36 Z" fill="#fbf3e4" stroke="#3a2414" stroke-width="3"/><text y="44" text-anchor="middle" class="bw">NO</text></g>
+      <text x="300" y="${BOARD.GOODBYE.y}" text-anchor="middle" dominant-baseline="middle" class="bw">GOODBYE</text>
+      <g transform="translate(300 34)"><path d="M-14,0 a14,14 0 1 1 28,0 v6 h-6 v5 h-16 v-5 h-6 Z" fill="#fbf3e4" stroke="#3a2414" stroke-width="2.5"/><circle cx="-6" cy="-1" r="4" fill="#e83f8b"/><circle cx="6" cy="-1" r="4" fill="#2ec4b6"/></g>
+      ${[[40, 340], [560, 340]].map(([x, y]) => `<g transform="translate(${x} ${y})"><circle r="11" fill="#ff9f1c" stroke="#3a2414" stroke-width="2.5"/><circle r="5" fill="#c2410c"/></g>`).join("")}
+      ${letters}
+    </svg>`;
+  }
+
+  const GLASS = `<svg class="glass" viewBox="0 0 100 120" aria-hidden="true"><path d="M50 116 C18 92 4 70 4 46 C4 22 22 6 50 22 C78 6 96 22 96 46 C96 70 82 92 50 116 Z" fill="rgba(251,243,228,.88)" stroke="#2a2048" stroke-width="5"/><circle cx="50" cy="52" r="20" fill="rgba(141,255,207,.25)" stroke="#2a2048" stroke-width="4"/><circle cx="43" cy="45" r="5" fill="#fff" opacity=".9"/></svg>`;
+
+  function ouijaHTML(night) {
+    const o = night.ouija || {};
+    const arch = o.archetype ? `<span class="arch">${esc(o.archetype.replace("_", " "))}</span>` : "";
+    const cites = (o.cites || []).map((c) => ` <button class="cite" data-ev="${esc(c)}">${esc(c)}</button>`).join("");
+    return `<div class="panel ouija">
+      <div class="head"><h3>🔮 Luna's spirit board</h3><button class="call" type="button">Call the spirit</button></div>
+      <div class="board">${boardSVG()}${GLASS}</div>
+      <div class="spelled" aria-live="polite"></div>
+      <div class="spirit-meta" hidden>${arch}${esc(o.why || "")}${cites}</div>
+      <div class="fiction">Fiction on purpose: the message is spelled by ${esc(o.by === "template" ? "a fixed rule" : (o.by || "the model"))} from the apparitions it cites. The apparitions are real; the spirit is not.</div>
+    </div>`;
+  }
+
+  function placeGlass(glass, key) {
+    const p = BOARD[key] || BOARD.REST;
+    glass.style.left = `${(p.x / 600 * 100).toFixed(2)}%`;
+    glass.style.top = `${(p.y / 380 * 100).toFixed(2)}%`;
+  }
+
+  async function playOuija(root, msg) {
+    const glass = root.querySelector(".glass"), out = root.querySelector(".spelled"), meta = root.querySelector(".spirit-meta");
+    const btn = root.querySelector(".call");
+    btn.disabled = true;
+    out.textContent = "";
+    meta.hidden = true;
+    const wait = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
+    const text = String(msg || "NO").toUpperCase();
+    const steps = text === "NO" || text === "YES" ? [text] : text.split("");
+    placeGlass(glass, "REST");
+    await wait(600);
+    for (const ch of steps) {
+      if (ch === " ") { placeGlass(glass, "REST"); out.textContent += " "; await wait(700); continue; }
+      placeGlass(glass, ch);
+      await wait(900);
+      out.textContent += ch;
+      await wait(250);
+    }
+    await wait(600);
+    placeGlass(glass, "GOODBYE");
+    meta.hidden = false;
+    btn.disabled = false;
+  }
+
   function checksHTML(night) {
     return (night.checks || []).map((c) => `<div class="event check" id="ev-${esc(c.id)}" data-ev="${esc(c.id)}">
         <div class="top"><span><span class="id">${esc(c.id)}</span> <span class="what">cold room: ${esc(c.room)} ${esc(c.rule)}</span></span><span>${esc(c.start)} to ${esc(c.end)}</span></div>
@@ -280,6 +356,7 @@
       <div class="layout">
         <div>
           ${storyHTML(night)}
+          ${ouijaHTML(night)}
           <h3 class="locker">🗝️ Evidence locker</h3>
           <div class="events">${eventsHTML(night)}${checksHTML(night)}</div>
         </div>
@@ -291,6 +368,11 @@
     const needle = $("#night .needle");
     if (needle && !reduceMotion) requestAnimationFrame(() => requestAnimationFrame(() => { needle.style.transform = `rotate(${needle.dataset.angle}deg)`; }));
     $("#night").querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => { state.mode = b.dataset.mode; renderNight(); }));
+    const ouija = $("#night .ouija");
+    if (ouija) {
+      placeGlass(ouija.querySelector(".glass"), "REST");
+      ouija.querySelector(".call").addEventListener("click", () => playOuija(ouija, (night.ouija || {}).message));
+    }
     $("#night").querySelectorAll("[data-ev]").forEach((el) => {
       const on = () => highlight(el.dataset.ev, true);
       const off = () => highlight(el.dataset.ev, false);

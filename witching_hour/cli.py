@@ -234,6 +234,20 @@ def cmd_tiger(args):
     print(json.dumps(out, default=str)[:600])
 
 
+def cmd_ouija(args):
+    from .agent import Haunting
+    from .narrator import OllamaChat
+    from .ouija import save, spirit_message
+
+    h = Haunting(args.data)
+    chat = None if args.template else OllamaChat(args.model)
+    nights = [n["night"] for n in sorted(h.nights, key=lambda n: -n["score"]) if n["n_events"]][: args.top]
+    for d in nights:
+        msg = spirit_message(h.night(d), chat=chat)
+        save(d, msg, args.data)
+        print(f"{d}: {msg['archetype']} spells {msg['message']!r} ({msg['by']})", flush=True)
+
+
 def cmd_worker(args):
     import asyncio
 
@@ -372,6 +386,13 @@ def main(argv=None):
     sp.add_argument("--queries", default="the bathroom air at night|machines waking before dawn|a cold living room")
     sp.add_argument("--env", default=".env")
     sp.set_defaults(fn=cmd_tiger)
+
+    sp = sub.add_parser("ouija", help="Luna's spirit board: a short spelled message per haunted night")
+    sp.add_argument("--data", default="demo_data")
+    sp.add_argument("--top", type=int, default=25)
+    sp.add_argument("--model", default=None)
+    sp.add_argument("--template", action="store_true")
+    sp.set_defaults(fn=cmd_ouija)
 
     sp = sub.add_parser("worker", help="run a Temporal worker for the night watch")
     sp.add_argument("--address", default="localhost:7233")
