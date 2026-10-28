@@ -1,4 +1,6 @@
 # Stories and agent runs with Gemma, reusing the TabPFN scans of an earlier haunt run.
+# Four runners write the stories in parallel; a last job merges them, fetches tonight's
+# live forecast (SerpApi + TabPFN) and records the agent investigations.
 name: narrate
 
 on:
@@ -10,9 +12,9 @@ on:
       narrate_top:
         description: "how many of the most haunted nights get stories"
         default: "16"
-      extra_nights:
-        description: "extra nights to narrate (comma separated YYYY-MM-DD), e.g. the coldest ones"
-        default: ""
+      cold:
+        description: "also narrate the N nights with the most cold-room checks"
+        default: "4"
       model:
         description: "Ollama model"
         default: "gemma4:e4b"
@@ -27,11 +29,49 @@ env:
   SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
   WH_ENV: github-actions
   TABPFN_MODEL_CACHE_DIR: ${{ github.workspace }}/.cache/tabpfn
+  META: '{"house": "UCI house", "attribution": "Appliances energy prediction, UCI Machine Learning Repository, CC BY 4.0 (Candanedo, Feldheim & Deramaix, 2017). A real house in Stambruges, Belgium, January to May 2016.", "backend": "tabpfn-v2", "window": [0, 6], "context_days": 14}'
 
 jobs:
-  narrate:
+  stories:
     runs-on: ubuntu-latest
-    timeout-minutes: 330
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[tracing]"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: scan-*
+          merge-multiple: true
+          path: demo_data
+          run-id: ${{ inputs.scan_run_id }}
+          github-token: ${{ github.token }}
+      - run: witching-hour index --out demo_data --meta "$META"
+      - name: Start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull ${{ inputs.model }}
+      - name: Stories
+        run: witching-hour narrate --data demo_data --top ${{ inputs.narrate_top }} --cold ${{ inputs.cold }} --shard ${{ matrix.shard }}/4 --model ${{ inputs.model }} --no-index
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stories-${{ matrix.shard }}
+          path: demo_data/stories
+          retention-days: 14
+
+  merge:
+    needs: stories
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -53,29 +93,27 @@ jobs:
           path: demo_data
           run-id: ${{ inputs.scan_run_id }}
           github-token: ${{ github.token }}
-      - name: Index
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: stories-*
+          merge-multiple: true
+          path: demo_data/stories
+      - run: witching-hour index --out demo_data --meta "$META"
+      - name: Tonight (live weather + TabPFN room forecast)
         run: |
-          witching-hour index --out demo_data --meta '{"house": "UCI house", "attribution": "Appliances energy prediction, UCI Machine Learning Repository, CC BY 4.0 (Candanedo, Feldheim & Deramaix, 2017). A real house in Stambruges, Belgium, January to May 2016.", "backend": "tabpfn-v2", "window": [0, 6], "context_days": 14}'
-          python -c "import json;d=json.load(open('demo_data/index.json'));n=d['nights'];print(len(n),'nights');print('cold nights',sum(1 for x in n if x['n_cold']));print(sorted(n,key=lambda x:-x['score'])[:5])"
+          witching-hour fetch
+          witching-hour tonight --place "Stambruges, Belgium" --out demo_data/tonight.json || echo "tonight skipped"
       - name: Start Ollama
         run: |
           curl -fsSL https://ollama.com/install.sh | sh
           if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
           ollama pull ${{ inputs.model }}
-      - name: Stories
-        run: |
-          witching-hour narrate --data demo_data --top ${{ inputs.narrate_top }} --model ${{ inputs.model }}
-          if [ -n "${{ inputs.extra_nights }}" ]; then witching-hour narrate --data demo_data --dates "${{ inputs.extra_nights }}" --model ${{ inputs.model }}; fi
-      - name: Tonight (live weather + TabPFN room forecast)
-        run: |
-          witching-hour fetch
-          witching-hour tonight --place "Stambruges, Belgium" --out demo_data/tonight.json || echo "tonight skipped"
       - name: Agent investigations
         run: |
-          witching-hour ask "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
           witching-hour ask "Which night was the most haunted, and what probably happened?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
-          witching-hour ask "If an older person lived alone in this house, which night in February should the family have checked on, and why?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
+          witching-hour ask "If an older person lived alone in this house, which night should the family have checked on, and why?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
+          witching-hour ask "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
           witching-hour ask "On the most haunted night, what did TabPFN expect the strangest room to read at its peak, and what did it actually read?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
       - uses: actions/upload-artifact@v4
         with:
