@@ -1,0 +1,30 @@
+{
+ "night": "2016-04-13",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Morning Energy Use Note",
+ "sentences": [
+  {
+   "text": "The machines started waking up in the house between 05:30 and 06:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The observed appliance energy was 360 Wh, which was above the expected 50 Wh.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "You might want to check the appliances during this time.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-17",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "Ironing Room's Midnight Mystery",
+ "sentences": [
+  {
+   "text": "As the clock struck 04:00, the ironed room began a strange, ethereal performance as the air started drying out.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The spectral humidity plummeted, dropping to 32.8 % in the ironing room, which was far below the expected 37.5 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "At 05:30, the peak of this strange dehumidifying activity was reached, suggesting a mischievous, unseen guest.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The haunting sensation persisted until 06:00, leaving the house's humidity well below the predicted range of 37.0 % to 38.1 %.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

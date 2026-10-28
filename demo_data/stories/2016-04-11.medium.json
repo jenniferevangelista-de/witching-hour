@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-11",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "The Ironing Room's Ghostly Heat",
+ "sentences": [
+  {
+   "text": "As the night deepened at 02:00, the ironing room began to host a strange warmth with no discernible source.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This mysterious heat, observed at 22.4 °C, felt notably warmer than the predicted 21.2 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The temperature reached its peak at 03:00, making the house feel like it was being hugged by an unseen spirit.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Finally, the warmth in the ironing room began to recede, lasting until 06:00.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

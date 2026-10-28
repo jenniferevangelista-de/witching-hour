@@ -1,0 +1,30 @@
+{
+ "night": "2016-04-17",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Quiet Morning Check",
+ "sentences": [
+  {
+   "text": "The living room temperature reached its coldest point at 17.8 °C at 05:40. Since WHO recommends at least 18 °C indoors in cold seasons, this is something to note.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "In the ironing room, the humidity was observed at 32.8 % between 04:00 and 06:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "You might want to check the heating in the living room, as the temperature stayed below 18.0 °C.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

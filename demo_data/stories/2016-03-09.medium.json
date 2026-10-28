@@ -1,0 +1,42 @@
+{
+ "night": "2016-03-09",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "Whispers of the Midnight Living Room",
+ "sentences": [
+  {
+   "text": "At 03:00, a ghostly presence began to waft through the living room, evidenced by the humidity rising to 41.2 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This strange.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This spectral breath on the glass lasted until 06:00, peaking at 05:40.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Later, at 04:20, the house detected a cold spot arriving in the living room.",
+   "cites": [
+    "E2"
+   ]
+  },
+  {
+   "text": "By 05:00, this cold spot reached its peak, dropping the temperature to 16.6 °C, significantly below the expected 18.0 °C.",
+   "cites": [
+    "E2"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 5,
+ "dropped": 0
+}

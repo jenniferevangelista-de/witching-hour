@@ -1,0 +1,30 @@
+{
+ "night": "2016-02-13",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Living Room Temperature Note",
+ "sentences": [
+  {
+   "text": "The living room showed a cold spot from 04:20 to 06:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The observed temperature was 18.4 °C, which was below the expected 19.7 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Because the temperature was lower than expected, checking the heating might be a good idea.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

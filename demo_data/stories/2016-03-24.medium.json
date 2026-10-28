@@ -1,0 +1,36 @@
+{
+ "night": "2016-03-24",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "Breath on the Glass",
+ "sentences": [
+  {
+   "text": "The house began to notice something strange in the teenager's room starting at 01:10, as the humidity levels began to climb.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Between 01:10 and 03:10, the sensors recorded the fleeting image of \"breath on the glass\".",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "At 02:00, the humidity observed a peak of 46.6 %, dramatically exceeding the expected range of 42.2 % to 44.6 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The mysterious moisture lingered in the teenager's room until 03:10.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

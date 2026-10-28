@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-12",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Office Temperature Spike Observed",
+ "sentences": [
+  {
+   "text": "The office registered a temperature anomaly, described as a warmth with no source, starting at 01:10 and ending at 04:50.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "During this period, the observed temperature reached 22.2 °C, which was higher than the expected temperature of 21.4 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This warmth was outside the expected range of 21.1 °C to 21.6 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This sudden temperature rise in the office was probably due to a fluctuation in the building's climate control system.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

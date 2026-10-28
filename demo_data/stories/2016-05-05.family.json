@@ -1,0 +1,30 @@
+{
+ "night": "2016-05-05",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Bathroom Humidity Note",
+ "sentences": [
+  {
+   "text": "The bathroom humidity showed the air drying out from 03:00 to 05:20.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The observed humidity was 41.9 %, which was below the expected range of 49.3 % to 50.0 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "It might be helpful to check the bathroom environment to keep the air comfortable.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

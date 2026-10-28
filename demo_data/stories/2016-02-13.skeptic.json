@@ -1,0 +1,36 @@
+{
+ "night": "2016-02-13",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Temperature Drop in Living Room",
+ "sentences": [
+  {
+   "text": "The sensor recorded a cold spot in the living room starting at 04:20 and continuing until 06:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The observed temperature of 18.4 °C was below the expected range of 19.3 °C to 20.0 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This temperature deviation peaked at 05:50.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This drop probably suggests a localized draft or a temporary change in the room's thermal conditions.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

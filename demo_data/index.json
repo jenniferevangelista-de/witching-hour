@@ -1,0 +1,1201 @@
+{
+ "meta": {
+  "house": "UCI house",
+  "attribution": "Appliances energy prediction, UCI Machine Learning Repository, CC BY 4.0 (Candanedo, Feldheim & Deramaix, 2017). A real house in Stambruges, Belgium, January to May 2016.",
+  "backend": "tabpfn-v2",
+  "window": [
+   0,
+   6
+  ],
+  "context_days": 14
+ },
+ "nights": [
+  {
+   "night": "2016-01-26",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 2,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-01-27",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 3,
+   "headline": "a quiet night",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-01-28",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 4,
+   "headline": "a quiet night",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-01-29",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 5,
+   "headline": "a quiet night",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-01-30",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 3,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-01-31",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 2,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-01",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-02",
+   "weekday": "Tuesday",
+   "score": 5.3,
+   "n_events": 1,
+   "n_cold": 1,
+   "headline": "the air drying out in the ironing room at 05:00",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-02-03",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-04",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-05",
+   "weekday": "Friday",
+   "score": 4.1,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "breath on the glass in the teenager's room at 02:10",
+   "stories": []
+  },
+  {
+   "night": "2016-02-06",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-07",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-08",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-09",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-10",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-11",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-12",
+   "weekday": "Friday",
+   "score": 5.8,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "the machines waking up in the house at 00:10",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-02-13",
+   "weekday": "Saturday",
+   "score": 5.8,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "a cold spot in the living room at 05:50",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-02-14",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-15",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-16",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-17",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-18",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 2,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-19",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 2,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-20",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 4,
+   "headline": "a quiet night",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-02-21",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-22",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-23",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-24",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-25",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-26",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-27",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-28",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-02-29",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 2,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-01",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-02",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-03",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-04",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-05",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-06",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 2,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-07",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 3,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-08",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 2,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-09",
+   "weekday": "Wednesday",
+   "score": 6.0,
+   "n_events": 2,
+   "n_cold": 3,
+   "headline": "breath on the glass in the living room at 05:40",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-03-10",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 3,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-11",
+   "weekday": "Friday",
+   "score": 5.7,
+   "n_events": 1,
+   "n_cold": 2,
+   "headline": "a cold spot in the living room at 05:20",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-03-12",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-13",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-14",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-15",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-16",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-17",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-18",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-19",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-20",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-21",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-22",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-23",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-24",
+   "weekday": "Thursday",
+   "score": 5.6,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "breath on the glass in the teenager's room at 02:00",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-03-25",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-26",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-27",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-28",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-29",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-30",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-03-31",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-01",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-02",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-03",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-04",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-05",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-06",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-07",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-08",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-09",
+   "weekday": "Saturday",
+   "score": 5.1,
+   "n_events": 1,
+   "n_cold": 1,
+   "headline": "a warmth with no source in the teenager's room at 04:50",
+   "stories": []
+  },
+  {
+   "night": "2016-04-10",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-11",
+   "weekday": "Monday",
+   "score": 5.2,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "a warmth with no source in the ironing room at 03:00",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-04-12",
+   "weekday": "Tuesday",
+   "score": 6.0,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "a warmth with no source in the office at 01:30",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-04-13",
+   "weekday": "Wednesday",
+   "score": 19.4,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "the machines waking up in the house at 05:30",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-04-14",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-15",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-16",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-17",
+   "weekday": "Sunday",
+   "score": 9.7,
+   "n_events": 1,
+   "n_cold": 1,
+   "headline": "the air drying out in the ironing room at 05:30",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-04-18",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-19",
+   "weekday": "Tuesday",
+   "score": 23.9,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "the machines waking up in the house at 05:40",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-04-20",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-21",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-22",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-23",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-24",
+   "weekday": "Sunday",
+   "score": 5.0,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "a warmth with no source in the ironing room at 05:40",
+   "stories": []
+  },
+  {
+   "night": "2016-04-25",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-26",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-27",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-28",
+   "weekday": "Thursday",
+   "score": 15.4,
+   "n_events": 1,
+   "n_cold": 1,
+   "headline": "the machines waking up in the house at 05:40",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-04-29",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-04-30",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-01",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 1,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-02",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-03",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-04",
+   "weekday": "Wednesday",
+   "score": 4.3,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "breath on the glass in the ironing room at 05:40",
+   "stories": []
+  },
+  {
+   "night": "2016-05-05",
+   "weekday": "Thursday",
+   "score": 15.9,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "the air drying out in the bathroom at 03:00",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-05-06",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-07",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-08",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-09",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-10",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-11",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-12",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-13",
+   "weekday": "Friday",
+   "score": 5.9,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "the air drying out in the bathroom at 03:40",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-05-14",
+   "weekday": "Saturday",
+   "score": 4.2,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "the air drying out in the laundry room at 03:00",
+   "stories": []
+  },
+  {
+   "night": "2016-05-15",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-16",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-17",
+   "weekday": "Tuesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-18",
+   "weekday": "Wednesday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-19",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-20",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-21",
+   "weekday": "Saturday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-22",
+   "weekday": "Sunday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-23",
+   "weekday": "Monday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-24",
+   "weekday": "Tuesday",
+   "score": 14.9,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "the machines waking up in the house at 05:40",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-05-25",
+   "weekday": "Wednesday",
+   "score": 5.8,
+   "n_events": 1,
+   "n_cold": 0,
+   "headline": "a warmth with no source in the kitchen at 05:50",
+   "stories": [
+    "medium",
+    "skeptic",
+    "family"
+   ]
+  },
+  {
+   "night": "2016-05-26",
+   "weekday": "Thursday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  },
+  {
+   "night": "2016-05-27",
+   "weekday": "Friday",
+   "score": 0.0,
+   "n_events": 0,
+   "n_cold": 0,
+   "headline": "a quiet night",
+   "stories": []
+  }
+ ]
+}

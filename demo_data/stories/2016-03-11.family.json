@@ -1,0 +1,36 @@
+{
+ "night": "2016-03-11",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Cold Spots Noticed This Morning",
+ "sentences": [
+  {
+   "text": "The living room temperature was observed at 16.9 °C between 04:20 and 06:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The living room stayed below 18.0 °C from 02:10 to 06:00, and the WHO recommends at least 18 °C indoors in cold seasons.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The bathroom also stayed below 18.0 °C from 04:00 to 06:00.",
+   "cites": [
+    "C2"
+   ]
+  },
+  {
+   "text": "It might be helpful to check the heating system, especially since the living room was below 18.0 °C.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

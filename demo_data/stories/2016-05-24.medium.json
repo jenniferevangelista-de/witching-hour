@@ -1,0 +1,36 @@
+{
+ "night": "2016-05-24",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "Midnight's Electric Playtime",
+ "sentences": [
+  {
+   "text": "In the quiet depths of the house, something began to stir around 05:40, as the machines started waking up.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Between 05:40 and 05:50, the appliances registered an immense burst of energy, totaling 340 Wh.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This recorded spike was wildly outside the expected range of \"44 Wh to 88 Wh\".",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "It seems a mischievous entity decided to bring the house's power system to life during this brief window.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

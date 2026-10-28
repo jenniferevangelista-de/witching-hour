@@ -1,0 +1,44 @@
+{
+ "night": "2016-01-29",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Morning Temperature Check",
+ "sentences": [
+  {
+   "text": "Several rooms stayed below 18.0 °C throughout the night, including the parents' room, which reached 16.4 °C at 05:20.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The bathroom also registered a low of 16.8 °C at 05:00.",
+   "cites": [
+    "C2"
+   ]
+  },
+  {
+   "text": "Please remember that the WHO recommends at least 18 °C indoors in cold seasons.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5"
+   ]
+  },
+  {
+   "text": "Since multiple rooms were below 18.0 °C, perhaps checking the heating would be helpful.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

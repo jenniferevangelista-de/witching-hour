@@ -1,0 +1,30 @@
+{
+ "night": "2016-05-25",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Kitchen Temperature Note",
+ "sentences": [
+  {
+   "text": "The kitchen showed a warmth with no source between 05:20 and 06:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The temperature observed was 23.6 °C, which was above the expected range of 22.6 °C to 23.0 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Since the temperature was higher than expected, perhaps checking the heating system might be helpful.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

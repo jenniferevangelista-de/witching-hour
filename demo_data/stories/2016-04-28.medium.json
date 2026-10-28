@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-28",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "Whispers of Waking Machines",
+ "sentences": [
+  {
+   "text": "The house remained still until 05:40, when a mischievous energy surge began, suggesting that \"the machines waking up\".",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Between 05:40 and 06:00, the house’s sensors recorded a whopping 270 Wh.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This spectral power draw was significantly higher than the expected 60 Wh.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The observed energy was far beyond the predicted range of 33 Wh to 82 Wh.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

@@ -1,0 +1,30 @@
+{
+ "night": "2016-05-05",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Bathroom Humidity Drop Explanation",
+ "sentences": [
+  {
+   "text": "The sensor data shows that the humidity in the bathroom dropped significantly between 03:00 and 05:20.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The observed humidity was 41.9 %, which was below the expected range of 49.3 % to 50.0 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Since the sensor noted 'the air drying out', this probably indicates a change in air circulation or ventilation during that time.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

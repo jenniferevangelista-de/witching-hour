@@ -1,0 +1,30 @@
+{
+ "night": "2016-04-12",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Office Temperature Readings",
+ "sentences": [
+  {
+   "text": "The office recorded a warmth with no source between 01:10 and 04:50.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "During this period, the temperature was observed at 22.2 °C, which was above the expected 21.4 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Since the sensor noted a warmth with no source, perhaps checking the heating system would be helpful.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

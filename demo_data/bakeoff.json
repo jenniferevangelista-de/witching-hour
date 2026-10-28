@@ -1,0 +1,70 @@
+{
+ "nights": [
+  "2016-04-19",
+  "2016-04-13",
+  "2016-05-05",
+  "2016-04-28",
+  "2016-05-24",
+  "2016-04-17"
+ ],
+ "modes": [
+  "medium",
+  "family"
+ ],
+ "one_shot": true,
+ "results": [
+  {
+   "model": "google/gemma-3-27b-it",
+   "via": "Backboard (openrouter)",
+   "stories": 12,
+   "failed": 0,
+   "sentences": 38,
+   "verified": 34,
+   "grounded_share": 0.895,
+   "clean_stories": 8,
+   "avg_seconds": 4.8
+  },
+  {
+   "model": "meta-llama/llama-3.3-70b-instruct",
+   "via": "Backboard (openrouter)",
+   "stories": 12,
+   "failed": 0,
+   "sentences": 35,
+   "verified": 35,
+   "grounded_share": 1.0,
+   "clean_stories": 12,
+   "avg_seconds": 10.0
+  },
+  {
+   "model": "mistralai/mistral-small-3.1-24b-instruct",
+   "via": "Backboard (openrouter)",
+   "stories": 4,
+   "failed": 8,
+   "sentences": 9,
+   "verified": 9,
+   "grounded_share": 1.0,
+   "clean_stories": 4,
+   "avg_seconds": 12.8
+  },
+  {
+   "model": "qwen/qwen-2.5-72b-instruct",
+   "via": "Backboard (openrouter)",
+   "stories": 12,
+   "failed": 0,
+   "sentences": 35,
+   "verified": 35,
+   "grounded_share": 1.0,
+   "clean_stories": 12,
+   "avg_seconds": 31.1,
+   "note": "rerun: the first pass hit 12 transient errors"
+  }
+ ],
+ "local": {
+  "model": "gemma4:e4b",
+  "via": "Ollama, local (with one retry)",
+  "stories": 12,
+  "sentences": 43,
+  "verified": 43,
+  "grounded_share": 1.0
+ }
+}

@@ -1,0 +1,36 @@
+{
+ "night": "2016-02-02",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Humidity Drop in Ironing Room",
+ "sentences": [
+  {
+   "text": "The reported events might simply be related to a change in air conditions in the ironing room.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Between 03:00 and 06:00, the humidity was observed at 46.2 %, which indicates that the air was drying out.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This observed reading was below the expected range of \"49.0 % to 51.2 %\".",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "It is probably just a normal fluctuation, as the humidity dropped below the predicted levels during the early morning.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

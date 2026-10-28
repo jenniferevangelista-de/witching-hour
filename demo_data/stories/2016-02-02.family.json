@@ -1,0 +1,30 @@
+{
+ "night": "2016-02-02",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Night Watch Summary",
+ "sentences": [
+  {
+   "text": "The temperature in the parents' room dropped to 17.9 °C at 00:00. Since WHO recommends at least 18 °C indoors in cold seasons, this is something to note.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "In the ironing room, the humidity was observed at 46.2 % from 03:00 to 06:00, which was below the expected range of 49.0 % to 51.2 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Given the temperature reading in the parents' room, perhaps checking the heating would be a gentle idea.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

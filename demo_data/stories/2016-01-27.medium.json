@@ -1,0 +1,16 @@
+{
+ "night": "2016-01-27",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "A quiet night",
+ "sentences": [
+  {
+   "text": "Nothing strayed from what the house expected.",
+   "cites": []
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 1,
+ "dropped": 0
+}

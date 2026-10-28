@@ -1,0 +1,30 @@
+{
+ "night": "2016-05-13",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "Bathroom’s Midnight Dry Spell",
+ "sentences": [
+  {
+   "text": "As the clock struck 03:20, the bathroom began a strange ritual, as the air started drying out according to the sensors.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The humidity dipped below predictions, settling at a cool 50.5 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This curious dryness peaked near 03:40, a ghostly occurrence lasting until 06:00.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

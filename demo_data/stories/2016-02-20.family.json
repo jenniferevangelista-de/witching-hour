@@ -1,0 +1,40 @@
+{
+ "night": "2016-02-20",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Morning Temperature Readings",
+ "sentences": [
+  {
+   "text": "The bathroom temperature stayed below 18.0 °C, reaching 17.0 °C at 03:50, which is noted by C1 as being below the WHO recommendation.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The living room and parents' room also stayed below 18.0 °C, with the parents' room being coldest at 17.5 °C at 00:00.",
+   "cites": [
+    "C2",
+    "C3"
+   ]
+  },
+  {
+   "text": "The office temperature stayed below 18.0 °C, hitting 17.7 °C at 05:00.",
+   "cites": [
+    "C4"
+   ]
+  },
+  {
+   "text": "Since several rooms were below 18.0 °C, perhaps checking the heating might be helpful.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3",
+    "C4"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

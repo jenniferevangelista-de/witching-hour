@@ -1,0 +1,38 @@
+{
+ "night": "2016-01-27",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Temperature Readings for the Night",
+ "sentences": [
+  {
+   "text": "The parents' room stayed below 18.0 °C, with the coldest reading being 17.0 °C at 00:10.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The teenager's room also stayed below 18.0 °C, recording 17.8 °C at 03:40.",
+   "cites": [
+    "C2"
+   ]
+  },
+  {
+   "text": "The bathroom stayed below 18.0 °C, reaching 17.7 °C at 05:50.",
+   "cites": [
+    "C3"
+   ]
+  },
+  {
+   "text": "Since all rooms were below 18.0 °C, which the WHO recommends against in cold seasons, perhaps checking the heating would be helpful.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

@@ -1,0 +1,36 @@
+{
+ "night": "2016-02-12",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Energy Usage Spike Explained",
+ "sentences": [
+  {
+   "text": "The reported activity probably correlates with a significant spike in appliance energy usage observed in the house during the night.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Between 00:10 and 00:30, the observed appliance energy was 90 Wh, which is much higher than the expected 40 Wh.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This energy usage was outside the expected range of 20 Wh to 54 Wh, suggesting that the machines were waking up or running unexpectedly.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "It is likely that this deviation is simply due to normal equipment cycling rather than anything unusual.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}
