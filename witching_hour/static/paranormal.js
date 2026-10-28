@@ -47,6 +47,9 @@
     let prev = null;
     for (let t = 0; t < dur; t += STEP) {
       await new Promise((res) => { video.addEventListener("seeked", res, { once: true }); video.currentTime = t; });
+      if (video.requestVideoFrameCallback) {
+        await Promise.race([new Promise((res) => video.requestVideoFrameCallback(() => res())), new Promise((res) => setTimeout(res, 250))]);
+      }
       ctx.drawImage(video, 0, 0, W, H);
       const [row, g] = frameStats(ctx, prev);
       row.t = Math.round(t * 100) / 100;
@@ -73,19 +76,19 @@
     } catch (_) { return []; }
   }
 
-  function runs(mask) {
+  function runs(mask, maxGap = 1) {
     const out = []; let start = null, last = null;
     mask.forEach((m, i) => {
       if (!m) return;
       if (start === null) start = i;
-      else if (i - last - 1 > 1) { out.push([start, last]); start = i; }
+      else if (i - last - 1 > maxGap) { out.push([start, last]); start = i; }
       last = i;
     });
     if (start !== null) out.push([start, last]);
     return out;
   }
 
-  const ONSET_DB = 12;
+  const ONSET_DB = 12, MIN_SOUND_DB = 6;
   function splitOnsets(rs, x) {
     // a new sound starts where the level jumps by ONSET_DB or more (a whisper, then knocks)
     const out = [];
@@ -108,11 +111,12 @@
     let lightMask = null;
     for (const [kind, x, floor] of signals) {
       const z = robustZ(x);
-      let mask = z.map((v, i) => v > zThr && (floor == null || x[i] > floor));
+      const med = median(x);
+      let mask = z.map((v, i) => v > zThr && (floor == null || x[i] > floor) && (kind !== "audio" || x[i] - med >= MIN_SOUND_DB));
       if (kind === "light_change") lightMask = mask.slice();
       // when the light changes, every pixel changes: that is not movement
       else if (kind === "motion" && lightMask) mask = mask.map((m, i) => m && !(lightMask[i] || lightMask[i - 1] || lightMask[i + 1]));
-      let rs = runs(mask);
+      let rs = runs(mask, kind === "audio" ? 0 : 1);
       if (kind === "audio") rs = splitOnsets(rs, x);
       for (const [a, b] of rs) {
         let peak = a;
@@ -258,18 +262,30 @@
     box.querySelectorAll(".ts").forEach((b) => b.addEventListener("click", () => { const v = $("#uh-video"); v.currentTime = Number(b.dataset.t); v.play(); }));
   }
 
-  async function investigate(src, buf, title) {
+  const sameEvidence = (a, b) => JSON.stringify(a.map((e) => [e.type, e.start])) === JSON.stringify(b.map((e) => [e.type, e.start]));
+
+  async function investigate(src, buf, title, measured) {
     const v = $("#uh-video");
     $("#uh-status").textContent = "PARANORMAL.exe is reading the recording, frame by frame, in your browser...";
     v.src = src;
     await new Promise((r) => { v.addEventListener("loadedmetadata", r, { once: true }); });
     const rows = await frameFeatures(v, 90, (p) => { $("#uh-status").textContent = `Reading frames... ${Math.round(p * 100)}%`; });
     const levels = await audioLevels(buf, 90);
-    const evidence = detect(rows, levels);
-    unheard = { ...unheard, evidence, series: { t: rows.map((r) => r.t), brightness: rows.map((r) => r.brightness), motion: rows.map((r) => r.motion), audio_db: levels.slice(0, rows.length) }, title };
-    $("#uh-status").textContent = `${title}: ${evidence.length} moment${evidence.length === 1 ? "" : "s"} stand out from the rest of the recording.`;
+    // a tab in the background does not paint video frames: every frame comes back the same
+    const blind = rows.length > 8 && rows.slice(1).every((r) => r.motion === 0);
+    let evidence = detect(rows, levels);
+    let series = { t: rows.map((r) => r.t), brightness: rows.map((r) => r.brightness), motion: rows.map((r) => r.motion), audio_db: levels.slice(0, rows.length) };
+    let note = `${evidence.length} moment${evidence.length === 1 ? "" : "s"} stand out from the rest of the recording.`;
+    if (blind && measured && measured.series) {
+      evidence = measured.evidence; series = measured.series;
+      note = `this tab was in the background, so the browser could not see the frames. Showing what the pipeline measured on the same clip with OpenCV: ${evidence.length} moments.`;
+    } else if (blind) {
+      note = "keep this tab in front while it reads the recording (a background tab does not paint video frames). Only the sound could be measured: " + note;
+    }
+    unheard = { ...unheard, evidence, series, title };
+    $("#uh-status").textContent = `${title}: ${note}`;
     v.currentTime = 0;
-    drawTimeline(unheard.series, evidence, rows.length * STEP);
+    drawTimeline(series, evidence, series.t.length * STEP);
     renderEvidence(evidence);
     $("#uh-open").hidden = false;
     return evidence;
@@ -284,13 +300,19 @@
     $("#uh-story").innerHTML = `<p>${esc(demo.story)}</p>`;
     if (demo.seance && demo.seance.context) $("#uh-words").value = demo.seance.context;
     const buf = await fetch(demo.video).then((r) => r.arrayBuffer());
-    await investigate(demo.video, buf, "The Warning (a staged recording)");
+    await investigate(demo.video, buf, "The Warning (a staged recording)", demo);
     $("#uh-replay").hidden = !demo.seance;
   }
 
   async function replaySeance() {
     const demo = unheard.caseData;
     if (!demo || !demo.seance) return;
+    if (demo.evidence && !sameEvidence(unheard.evidence || [], demo.evidence)) {
+      // the recorded séance cites the pipeline's evidence ids: show that list so every citation points somewhere real
+      unheard.evidence = demo.evidence;
+      renderEvidence(demo.evidence);
+      $("#uh-status").textContent += " The recorded séance below used the pipeline's measurements (OpenCV), shown here.";
+    }
     $("#uh-seance").hidden = false;
     const sp = demo.seance.spirit;
     $("#uh-spirit").innerHTML = `<div class="arch">${esc(sp.title)}</div><h4>${esc(sp.name)}</h4><p>${esc(sp.backstory)}</p><p class="goal">Its goal: ${esc(sp.goal)}</p>`;

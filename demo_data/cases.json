@@ -1,0 +1,322 @@
+{
+ "cases": [
+  {
+   "id": "the-warning",
+   "title": "The Warning",
+   "video": "/media/the_warning.mp4",
+   "story": "October 28, 21:43. A hallway camera. She had her coat on and her hand almost on the door. Then she stopped, walked back and hung the coat up again. She never knew why. (This clip was staged and rendered for the demo. The evidence below is measured from it.)",
+   "duration": 20.0,
+   "evidence": [
+    {
+     "type": "light_change",
+     "start": 7.0,
+     "end": 8.0,
+     "confidence": 1.0,
+     "description": "the light rose 175% in a quarter second",
+     "id": "ev-001"
+    },
+    {
+     "type": "audio",
+     "start": 7.0,
+     "end": 7.75,
+     "confidence": 1.0,
+     "description": "a sound 26 dB above the room",
+     "id": "ev-002"
+    },
+    {
+     "type": "audio",
+     "start": 8.25,
+     "end": 9.0,
+     "confidence": 1.0,
+     "description": "a sound 16 dB above the room",
+     "id": "ev-003"
+    },
+    {
+     "type": "audio",
+     "start": 9.0,
+     "end": 10.0,
+     "confidence": 1.0,
+     "description": "a sound 38 dB above the room",
+     "id": "ev-004"
+    },
+    {
+     "type": "motion",
+     "start": 10.0,
+     "end": 10.75,
+     "confidence": 1.0,
+     "where": "right",
+     "description": "movement on the right side (12% of the frame changed)",
+     "id": "ev-005"
+    }
+   ],
+   "seance": {
+    "model": "gemma4:e4b (Ollama, local)",
+    "spirit": {
+     "name": "Sentinel",
+     "archetype": "guardian",
+     "backstory": "It was a protector who felt compelled to defend the space from intrusion, often reacting violently when boundaries were crossed.",
+     "goal": "It is desperately trying to warn new inhabitants about dangers lurking outside the walls.",
+     "evidence_ids": [
+      "ev-001",
+      "ev-002",
+      "ev-003",
+      "ev-004",
+      "ev-005"
+     ],
+     "by": "gemma4:e4b",
+     "title": "The Guardian"
+    },
+    "turns": [
+     {
+      "session_id": "4c61836f9f0c",
+      "question": "Is someone here?",
+      "spirit": {
+       "name": "Sentinel",
+       "archetype": "guardian",
+       "title": "The Guardian"
+      },
+      "response": {
+       "message": "YES THERE ARE",
+       "spoken": "Stay close to the center. Do not look at the edges.",
+       "fictional": true,
+       "animation_sequence": [
+        "Y",
+        "E",
+        "S",
+        "SPACE",
+        "T",
+        "H",
+        "E",
+        "R",
+        "E",
+        "SPACE",
+        "A",
+        "R",
+        "E"
+       ],
+       "by": "gemma4:e4b"
+      },
+      "grounding": {
+       "related_evidence_ids": [
+        "ev-004",
+        "ev-005"
+       ],
+       "note": "These events inspired the fiction; they do not prove any message was supernatural."
+      }
+     },
+     {
+      "session_id": "4c61836f9f0c",
+      "question": "Who are you?",
+      "spirit": {
+       "name": "Sentinel",
+       "archetype": "guardian",
+       "title": "The Guardian"
+      },
+      "response": {
+       "message": "WARNING KEEP INSIDE",
+       "spoken": "The silence between the sounds is where they move. Do not listen too closely.",
+       "fictional": true,
+       "animation_sequence": [
+        "W",
+        "A",
+        "R",
+        "N",
+        "I",
+        "N",
+        "G",
+        "SPACE",
+        "K",
+        "E",
+        "E",
+        "P",
+        "SPACE",
+        "I",
+        "N",
+        "S",
+        "I",
+        "D",
+        "E"
+       ],
+       "by": "gemma4:e4b"
+      },
+      "grounding": {
+       "related_evidence_ids": [
+        "ev-002",
+        "ev-003"
+       ],
+       "note": "These events inspired the fiction; they do not prove any message was supernatural."
+      }
+     },
+     {
+      "session_id": "4c61836f9f0c",
+      "question": "What were you trying to tell me that night?",
+      "spirit": {
+       "name": "Sentinel",
+       "archetype": "guardian",
+       "title": "The Guardian"
+      },
+      "response": {
+       "message": "WALLS ARE THIN",
+       "spoken": "The things outside are always seeking a breach. Do not let them find a way in.",
+       "fictional": true,
+       "animation_sequence": [
+        "W",
+        "A",
+        "L",
+        "L",
+        "S",
+        "SPACE",
+        "A",
+        "R",
+        "E",
+        "SPACE",
+        "T",
+        "H",
+        "I",
+        "N"
+       ],
+       "by": "gemma4:e4b"
+      },
+      "grounding": {
+       "related_evidence_ids": [
+        "ev-001",
+        "ev-004"
+       ],
+       "note": "These events inspired the fiction; they do not prove any message was supernatural."
+      }
+     },
+     {
+      "session_id": "4c61836f9f0c",
+      "question": "Why did you knock?",
+      "spirit": {
+       "name": "Sentinel",
+       "archetype": "guardian",
+       "title": "The Guardian"
+      },
+      "response": {
+       "message": "KEEP THE SEAL",
+       "spoken": "I warned you about the border. Do not give them the chance to cross.",
+       "fictional": true,
+       "animation_sequence": [
+        "K",
+        "E",
+        "E",
+        "P",
+        "SPACE",
+        "T",
+        "H",
+        "E",
+        "SPACE",
+        "S",
+        "E",
+        "A",
+        "L"
+       ],
+       "by": "gemma4:e4b"
+      },
+      "grounding": {
+       "related_evidence_ids": [
+        "ev-004",
+        "ev-005"
+       ],
+       "note": "These events inspired the fiction; they do not prove any message was supernatural."
+      }
+     },
+     {
+      "session_id": "4c61836f9f0c",
+      "question": "What would have happened if I had gone out?",
+      "spirit": {
+       "name": "Sentinel",
+       "archetype": "guardian",
+       "title": "The Guardian"
+      },
+      "response": {
+       "message": "DANGER OUT THERE",
+       "spoken": "The spaces beyond the walls are not safe. They do not belong here.",
+       "fictional": true,
+       "animation_sequence": [
+        "D",
+        "A",
+        "N",
+        "G",
+        "E",
+        "R",
+        "SPACE",
+        "O",
+        "U",
+        "T",
+        "SPACE",
+        "T",
+        "H",
+        "E",
+        "R",
+        "E"
+       ],
+       "by": "gemma4:e4b"
+      },
+      "grounding": {
+       "related_evidence_ids": [
+        "ev-001",
+        "ev-004"
+       ],
+       "note": "These events inspired the fiction; they do not prove any message was supernatural."
+      }
+     },
+     {
+      "session_id": "4c61836f9f0c",
+      "question": "Will you come back?",
+      "spirit": {
+       "name": "Sentinel",
+       "archetype": "guardian",
+       "title": "The Guardian"
+      },
+      "response": {
+       "message": "NO",
+       "spoken": "My duty is to hold the perimeter. Do not seek distractions.",
+       "fictional": true,
+       "animation_sequence": [
+        "NO"
+       ],
+       "by": "gemma4:e4b"
+      },
+      "grounding": {
+       "related_evidence_ids": [],
+       "note": "These events inspired the fiction; they do not prove any message was supernatural."
+      }
+     },
+     {
+      "session_id": "4c61836f9f0c",
+      "question": "(the session ends)",
+      "spirit": {
+       "name": "Sentinel",
+       "archetype": "guardian",
+       "title": "The Guardian"
+      },
+      "response": {
+       "message": "GOODBYE",
+       "spoken": "",
+       "fictional": true,
+       "animation_sequence": [
+        "GOODBYE"
+       ],
+       "by": "rule"
+      },
+      "grounding": {
+       "related_evidence_ids": [],
+       "note": "These events inspired the fiction; they do not prove any message was supernatural."
+      }
+     }
+    ],
+    "audio": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
+  }
+ ]
+}

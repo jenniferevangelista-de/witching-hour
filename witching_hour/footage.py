@@ -90,6 +90,7 @@ def _runs(mask: np.ndarray, max_gap: int = 1) -> list[tuple[int, int]]:
 
 
 ONSET_DB = 12.0
+MIN_SOUND_DB = 6.0  # quieter than this above the room is not something you would notice
 
 
 def _split_onsets(runs: list[tuple[int, int]], x: np.ndarray) -> list[tuple[int, int]]:
@@ -125,13 +126,15 @@ def detect(rows: list[dict], levels: list[float], z_thr: float = 4.0, min_window
         mask = z > z_thr
         if floor is not None:
             mask &= x > floor
+        if kind == "audio":
+            mask &= x - np.median(x) >= MIN_SOUND_DB
         if kind == "light_change":
             light_mask = mask.copy()
         elif kind == "motion" and light_mask is not None:
             # when the light changes, every pixel changes: that is not movement
             near = light_mask | np.roll(light_mask, 1) | np.roll(light_mask, -1)
             mask &= ~near
-        runs = _runs(mask)
+        runs = _runs(mask, max_gap=0 if kind == "audio" else 1)
         if kind == "audio":
             runs = _split_onsets(runs, x)
         for a, b in runs:

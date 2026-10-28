@@ -56,3 +56,12 @@ def test_a_whisper_then_knocks_are_two_sounds():
     levels[35] = -50.0
     sounds = [e for e in detect(rows(), levels) if e["type"] == "audio"]
     assert [s["start"] for s in sounds] == [8.25, 9.0]
+
+
+def test_soft_footsteps_are_not_evidence():
+    levels = [-60.0] * 80
+    for i in (4, 12, 20, 28):  # footsteps, 2 dB above a very steady room
+        levels[i] = -58.0
+    levels[50] = -30.0
+    sounds = [e for e in detect(rows(), levels) if e["type"] == "audio"]
+    assert [s["start"] for s in sounds] == [12.5]
