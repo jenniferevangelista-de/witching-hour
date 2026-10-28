@@ -78,7 +78,7 @@ Temperatures, humidity, power and lights (`on`/`off` becomes 1/0) are recognized
 | `evaluate` | planted ghosts benchmark |
 | `serve` | the web app |
 
-The full pipeline also runs in GitHub Actions (`.github/workflows/haunt.yml`): six parallel TabPFN shards, the benchmark, then Ollama with Gemma on the runner for the stories and the agent runs.
+The full pipeline also runs in GitHub Actions (`.github/workflows/haunt.yml`): twelve parallel TabPFN shards, the benchmark, then Ollama with Gemma on the runner for the stories and the agent runs.
 
 ## Tests
 
