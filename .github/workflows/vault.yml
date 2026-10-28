@@ -1,0 +1,60 @@
+# The crew's archive, on partner services. Each step runs only if its secret exists:
+#   MongoDB Atlas  (MONGODB_URI)              long-term case memory + vector search
+#   Tiger Data     (TIGER_DATABASE_URL)       readings hypertable + hybrid story search
+#   Ultramarine    (PAPERINSTRUMENTS_API_KEY) the season report over every case file
+name: vault
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+  TIGER_DATABASE_URL: ${{ secrets.TIGER_DATABASE_URL }}
+  PAPERINSTRUMENTS_API_KEY: ${{ secrets.PAPERINSTRUMENTS_API_KEY }}
+
+jobs:
+  vault:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[atlas,tiger]"
+      - name: Open embedding model (nomic-embed-text through Ollama)
+        if: env.MONGODB_URI != '' || env.TIGER_DATABASE_URL != ''
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull nomic-embed-text
+      - name: MongoDB Atlas
+        if: env.MONGODB_URI != ''
+        run: |
+          witching-hour atlas --data demo_data
+          sleep 60   # the vector index builds in the background
+          witching-hour atlas --data demo_data
+      - name: Tiger Data
+        if: env.TIGER_DATABASE_URL != ''
+        run: |
+          witching-hour fetch
+          witching-hour tiger --data demo_data
+      - name: Ultramarine season report
+        if: env.PAPERINSTRUMENTS_API_KEY != ''
+        run: witching-hour season --data demo_data
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vault
+          path: |
+            demo_data/atlas_memory.json
+            demo_data/tiger_store.json
+            demo_data/season_report.json
+          if-no-files-found: ignore
+          retention-days: 14
