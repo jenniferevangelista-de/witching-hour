@@ -1,16 +1,11 @@
 # Fine-tune a small open model on Tinker to speak as the crew without inventing numbers,
 # then score base vs tuned on held-out (later) nights with the demo's own validator.
+# Uses the committed demo_data (scans and the crew's verified stories).
 name: tinker
 
 on:
   workflow_dispatch:
     inputs:
-      narrate_run_id:
-        description: "narrate run whose stories-* artifacts are the training data"
-        required: true
-      haunt_run_id:
-        description: "haunt run whose scan-* artifacts hold the nights"
-        default: "40656271313"
       split:
         description: "nights before this date train, nights from it on are held out"
         default: "2016-04-15"
@@ -34,21 +29,6 @@ jobs:
           python-version: "3.11"
           cache: pip
       - run: pip install -e . tinker tinker-cookbook
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: scan-*
-          merge-multiple: true
-          path: demo_data
-          run-id: ${{ inputs.haunt_run_id }}
-          github-token: ${{ github.token }}
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: stories-*
-          merge-multiple: true
-          path: demo_data/stories
-          run-id: ${{ inputs.narrate_run_id }}
-          github-token: ${{ github.token }}
-      - run: witching-hour index --out demo_data
       - run: python train/make_sft.py demo_data train/out ${{ inputs.split }}
       - name: Base model on held-out nights
         run: python train/tinker_eval.py demo_data train/out

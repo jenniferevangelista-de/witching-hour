@@ -1,0 +1,50 @@
+# Record the agent's investigations on the committed demo data (Gemma 4 through Ollama).
+name: ask
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Ollama model"
+        default: "gemma4:e4b"
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  WH_ENV: github-actions
+
+jobs:
+  ask:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[tracing]"
+      - name: Start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull ${{ inputs.model }}
+      - name: Investigations
+        run: |
+          rm -f demo_data/agent_runs.json
+          M=${{ inputs.model }}
+          witching-hour ask "Which night was the most haunted, and what probably happened?" --model $M --save demo_data/agent_runs.json
+          witching-hour ask "On that night, did Luna and Dr. Bigotes agree? Quote them." --model $M --save demo_data/agent_runs.json
+          witching-hour ask "If an older person lived alone in this house, which night should the family have checked on, and why?" --model $M --save demo_data/agent_runs.json
+          witching-hour ask "On the most haunted night, what did the spirit meter expect the strangest room to read at its peak, and what did it actually read?" --model $M --save demo_data/agent_runs.json
+          witching-hour ask "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?" --model $M --save demo_data/agent_runs.json
+          witching-hour ask "Is there an official cold warning for the house tonight, or should we blame a ghost?" --model $M --save demo_data/agent_runs.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agent_runs
+          path: demo_data/agent_runs.json
+          retention-days: 14
