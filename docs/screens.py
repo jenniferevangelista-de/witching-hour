@@ -30,6 +30,12 @@ with sync_playwright() as p:
     page.locator("#eval").screenshot(path=str(out / "benchmark.png"))
     page.locator(".ask .panel").screenshot(path=str(out / "agent.png"))
 
+    cover = browser.new_page(viewport={"width": 1000, "height": 420}, device_scale_factor=2, color_scheme="dark")
+    cover.goto(f"{base}/#{night}" if night else base, wait_until="networkidle")
+    cover.wait_for_timeout(800)
+    cover.evaluate("document.querySelector('header.hero p:last-of-type').style.display='none'")
+    cover.screenshot(path=str(out / "cover.png"))
+
     phone = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=3, color_scheme="dark")
     phone.goto(f"{base}/#{night}" if night else base, wait_until="networkidle")
     phone.wait_for_selector(".story, .notice", timeout=20000)

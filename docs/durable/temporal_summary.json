@@ -1,0 +1,113 @@
+[
+ {
+  "night": "2016-02-10",
+  "status": "completed",
+  "events": 23,
+  "activities": [
+   {
+    "activity": "scan_activity",
+    "attempt": 2,
+    "last_failure": "activity Heartbeat timeout",
+    "started": "2026-10-28T08:36:14.570799110Z"
+   },
+   {
+    "activity": "narrate_activity",
+    "attempt": 6,
+    "last_failure": "Ollama model gemma4:e4b is not answering (attempt 5)",
+    "started": "2026-10-28T08:45:05.956111656Z"
+   },
+   {
+    "activity": "narrate_activity",
+    "attempt": 1,
+    "last_failure": "",
+    "started": "2026-10-28T08:45:05.993015264Z"
+   }
+  ],
+  "retried": [
+   {
+    "activity": "scan_activity",
+    "attempt": 2,
+    "last_failure": "activity Heartbeat timeout",
+    "started": "2026-10-28T08:36:14.570799110Z"
+   },
+   {
+    "activity": "narrate_activity",
+    "attempt": 6,
+    "last_failure": "Ollama model gemma4:e4b is not answering (attempt 5)",
+    "started": "2026-10-28T08:45:05.956111656Z"
+   }
+  ]
+ },
+ {
+  "night": "2016-03-17",
+  "status": "completed",
+  "events": 23,
+  "activities": [
+   {
+    "activity": "scan_activity",
+    "attempt": 2,
+    "last_failure": "activity Heartbeat timeout",
+    "started": "2026-10-28T08:36:15.391093142Z"
+   },
+   {
+    "activity": "narrate_activity",
+    "attempt": 6,
+    "last_failure": "Ollama model gemma4:e4b is not answering (attempt 5)",
+    "started": "2026-10-28T08:44:57.820384649Z"
+   },
+   {
+    "activity": "narrate_activity",
+    "attempt": 1,
+    "last_failure": "",
+    "started": "2026-10-28T08:46:30.959060816Z"
+   }
+  ],
+  "retried": [
+   {
+    "activity": "scan_activity",
+    "attempt": 2,
+    "last_failure": "activity Heartbeat timeout",
+    "started": "2026-10-28T08:36:15.391093142Z"
+   },
+   {
+    "activity": "narrate_activity",
+    "attempt": 6,
+    "last_failure": "Ollama model gemma4:e4b is not answering (attempt 5)",
+    "started": "2026-10-28T08:44:57.820384649Z"
+   }
+  ]
+ },
+ {
+  "night": "2016-04-21",
+  "status": "completed",
+  "events": 23,
+  "activities": [
+   {
+    "activity": "scan_activity",
+    "attempt": 2,
+    "last_failure": "activity Heartbeat timeout",
+    "started": "2026-10-28T08:36:15.458222092Z"
+   },
+   {
+    "activity": "narrate_activity",
+    "attempt": 1,
+    "last_failure": "",
+    "started": "2026-10-28T08:42:36.754738054Z"
+   },
+   {
+    "activity": "narrate_activity",
+    "attempt": 1,
+    "last_failure": "",
+    "started": "2026-10-28T08:42:36.922328484Z"
+   }
+  ],
+  "retried": [
+   {
+    "activity": "scan_activity",
+    "attempt": 2,
+    "last_failure": "activity Heartbeat timeout",
+    "started": "2026-10-28T08:36:15.458222092Z"
+   }
+  ]
+ }
+]
