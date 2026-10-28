@@ -326,17 +326,22 @@ def narrate(scan: NightScan, mode: str, chat=None, model: str = DEFAULT_MODEL, r
         return story
 
 
+def build_messages(scan: NightScan, mode: str) -> list[dict]:
+    """The exact prompt a narrator gets (also used to build fine-tuning data)."""
+    payload = night_payload(scan, with_checks=(mode == "family"))
+    return [
+        {"role": "system", "content": MODES[mode]["system"]},
+        {"role": "user", "content": "Here is the night, as JSON:\n" + json.dumps(payload, ensure_ascii=False, indent=1)
+         + "\n\nAnswer with JSON: {\"title\": str, \"sentences\": [{\"text\": str, \"cites\": [event ids]}]}"},
+    ]
+
+
 def _narrate(scan: NightScan, mode: str, chat, model: str, retries: int) -> Story:
     if not scan.events and not (mode == "family" and scan.checks):
         return quiet_night(scan, mode, model)
     chat = chat or OllamaChat(model)
     cfg = MODES[mode]
-    payload = night_payload(scan, with_checks=(mode == "family"))
-    messages = [
-        {"role": "system", "content": cfg["system"]},
-        {"role": "user", "content": "Here is the night, as JSON:\n" + json.dumps(payload, ensure_ascii=False, indent=1)
-         + "\n\nAnswer with JSON: {\"title\": str, \"sentences\": [{\"text\": str, \"cites\": [event ids]}]}"},
-    ]
+    messages = build_messages(scan, mode)
     best: Story | None = None
     for attempt in range(1, retries + 2):
         raw = _parse_json(chat(messages, schema=STORY_SCHEMA, temperature=cfg["temperature"]))

@@ -30,3 +30,4 @@ dist/
 mastra/node_modules/
 mastra/*.db*
 mastra/mastra_runs.json
+train/out/
