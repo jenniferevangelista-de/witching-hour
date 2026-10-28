@@ -66,6 +66,8 @@ with sync_playwright() as p:
     try:
         uh.wait_for_function("document.querySelectorAll('#uh-evidence .event').length > 0", timeout=120000)
         uh.wait_for_timeout(600)
+        print("browser status:", uh.inner_text("#uh-status"))
+        print("browser evidence:", uh.evaluate(r"[...document.querySelectorAll('#uh-evidence .event .top')].map(e => e.innerText.replace(/\s+/g, ' '))"))
         uh.locator("section.terminal").first.screenshot(path=str(out / "unheard.png"))
         if uh.locator("#uh-replay").is_visible():
             uh.click("#uh-replay")

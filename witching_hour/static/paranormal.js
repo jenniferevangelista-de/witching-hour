@@ -46,6 +46,12 @@
     const rows = [];
     let prev = null;
     for (let t = 0; t < dur; t += STEP) {
+      if (rows.length >= 8 && rows.slice(1).every((r) => r.motion === 0)) {
+        // the frames are not being painted (a background tab): stop seeking, keep the time base for the sound
+        const last = rows[rows.length - 1];
+        rows.push({ ...last, t: Math.round(t * 100) / 100 });
+        continue;
+      }
       await new Promise((res) => { video.addEventListener("seeked", res, { once: true }); video.currentTime = t; });
       if (video.requestVideoFrameCallback) {
         await Promise.race([new Promise((res) => video.requestVideoFrameCallback(() => res())), new Promise((res) => setTimeout(res, 250))]);
@@ -268,7 +274,10 @@
     const v = $("#uh-video");
     $("#uh-status").textContent = "PARANORMAL.exe is reading the recording, frame by frame, in your browser...";
     v.src = src;
-    await new Promise((r) => { v.addEventListener("loadedmetadata", r, { once: true }); });
+    await new Promise((r, fail) => {
+      v.addEventListener("loadedmetadata", r, { once: true });
+      v.addEventListener("error", () => fail(new Error("This browser cannot open that video file. Try an MP4 or WebM recording.")), { once: true });
+    });
     const rows = await frameFeatures(v, 90, (p) => { $("#uh-status").textContent = `Reading frames... ${Math.round(p * 100)}%`; });
     const levels = await audioLevels(buf, 90);
     // a tab in the background does not paint video frames: every frame comes back the same
@@ -300,7 +309,9 @@
     $("#uh-story").innerHTML = `<p>${esc(demo.story)}</p>`;
     if (demo.seance && demo.seance.context) $("#uh-words").value = demo.seance.context;
     const buf = await fetch(demo.video).then((r) => r.arrayBuffer());
-    await investigate(demo.video, buf, "The Warning (a staged recording)", demo);
+    try {
+      await investigate(demo.video, buf, "The Warning (a staged recording)", demo);
+    } catch (e) { $("#uh-status").textContent = e.message; return; }
     $("#uh-replay").hidden = !demo.seance;
   }
 
@@ -431,7 +442,9 @@
       unheard.caseData = null;
       $("#uh-replay").hidden = true;
       $("#uh-story").innerHTML = "<p>Your recording. It stays in this browser: only the list of moments below is ever sent to the board.</p>";
-      await investigate(URL.createObjectURL(f), await f.arrayBuffer(), f.name);
+      try {
+        await investigate(URL.createObjectURL(f), await f.arrayBuffer(), f.name);
+      } catch (e) { $("#uh-status").textContent = e.message; }
     });
     $("#uh-open").addEventListener("click", async () => { await summon("uh", unheard.title || "recording", unheard.evidence, $("#uh-words").value.trim()); $("#uh-seance").scrollIntoView({ behavior: "smooth", block: "center" }); });
     $("#uh-replay").addEventListener("click", replaySeance);
