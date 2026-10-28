@@ -12,6 +12,10 @@ services:
         value: 3.11.9
       - key: WH_DATA
         value: demo_data
-      # The public demo never runs a model on visitors' questions: it replays results.
+      # The house's agent replays recorded hunts on the public demo (a house's logs are private).
       - key: WH_LIVE
         value: "0"
+      # The spirit board answers live with Gemma 3 27B through Backboard when this key is set
+      # (in the Render dashboard, never in the repo); without it the board uses template answers.
+      - key: BACKBOARD_API_KEY
+        sync: false
