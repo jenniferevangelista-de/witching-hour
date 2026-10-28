@@ -110,27 +110,6 @@
   "model": "gemma4:e4b"
  },
  {
-  "question": "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?",
-  "answer": "I am unable to check tonight's forecast because the system indicates that no forecast is available yet. Please try again later when the forecast has been generated.",
-  "steps": [
-   {
-    "tool": "tonight!",
-    "args": {},
-    "result": {
-     "error": "unknown tool 'tonight!'"
-    }
-   },
-   {
-    "tool": "tonight",
-    "args": {},
-    "result": {
-     "error": "no forecast yet; run: witching-hour tonight"
-    }
-   }
-  ],
-  "model": "gemma4:e4b"
- },
- {
   "question": "On the most haunted night, what did TabPFN expect the strangest room to read at its peak, and what did it actually read?",
   "answer": "On the most haunted night, 2016-04-19, the strangest room, the 'house', experienced an event at its peak time of 05:40. TabPFN expected the appliance energy sensor to read 52 Wh, but it actually read 380 Wh.",
   "steps": [
@@ -179,6 +158,116 @@
       }
      ],
      "cold_room_checks": []
+    }
+   }
+  ],
+  "model": "gemma4:e4b"
+ },
+ {
+  "question": "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?",
+  "answer": "The family should be most concerned about the parents' room, as it has the highest probability of dropping below 18 C, with a likelihood of 0.045. The teenager's room is the next most likely, with a probability of 0.03. All other rooms have a very low probability of dropping below 18 C.",
+  "steps": [
+   {
+    "tool": "tonight!",
+    "args": {},
+    "result": {
+     "error": "unknown tool 'tonight!'"
+    }
+   },
+   {
+    "tool": "tonight",
+    "args": {},
+    "result": {
+     "place": "Stambruges, Beloeil",
+     "fetched_at": "2026-10-28 10:33 UTC",
+     "source": "Google weather results via SerpApi",
+     "outside": [
+      {
+       "time": "00:00",
+       "temp_c": 9.0,
+       "weather": "Clear"
+      },
+      {
+       "time": "01:00",
+       "temp_c": 8.0,
+       "weather": "Mostly cloudy"
+      },
+      {
+       "time": "02:00",
+       "temp_c": 8.0,
+       "weather": "Mostly cloudy"
+      },
+      {
+       "time": "03:00",
+       "temp_c": 8.0,
+       "weather": "Partly cloudy"
+      },
+      {
+       "time": "04:00",
+       "temp_c": 8.0,
+       "weather": "Partly cloudy"
+      },
+      {
+       "time": "05:00",
+       "temp_c": 7.0,
+       "weather": "Mostly cloudy"
+      },
+      {
+       "time": "06:00",
+       "temp_c": 7.0,
+       "weather": "Cloudy"
+      }
+     ],
+     "rooms": [
+      {
+       "room": "bathroom",
+       "coldest_time": "06:00",
+       "expected": 19.8,
+       "low": 19.1,
+       "high": 21.4,
+       "p_below_18": 0.005
+      },
+      {
+       "room": "living room",
+       "coldest_time": "00:00",
+       "expected": 20.3,
+       "low": 20.0,
+       "high": 23.0,
+       "p_below_18": 0.005
+      },
+      {
+       "room": "parents' room",
+       "coldest_time": "00:00",
+       "expected": 20.8,
+       "low": 18.2,
+       "high": 22.6,
+       "p_below_18": 0.045
+      },
+      {
+       "room": "office",
+       "coldest_time": "00:00",
+       "expected": 21.7,
+       "low": 21.2,
+       "high": 24.0,
+       "p_below_18": 0.005
+      },
+      {
+       "room": "kitchen",
+       "coldest_time": "00:00",
+       "expected": 22.6,
+       "low": 22.2,
+       "high": 24.2,
+       "p_below_18": 0.005
+      },
+      {
+       "room": "teenager's room",
+       "coldest_time": "03:00",
+       "expected": 24.0,
+       "low": 18.1,
+       "high": 24.6,
+       "p_below_18": 0.03
+      }
+     ]
     }
    }
   ],
