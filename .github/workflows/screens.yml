@@ -1,0 +1,36 @@
+# Screenshots of the app with the committed demo data, for the README.
+name: screens
+
+on:
+  workflow_dispatch:
+    inputs:
+      night:
+        description: "night to open (YYYY-MM-DD), empty = the default one"
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  screens:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: |
+          pip install -e . playwright
+          python -m playwright install --with-deps chromium
+      - name: Start the app (demo mode)
+        run: |
+          (WH_LIVE=0 witching-hour serve --data demo_data --port 8000 > server.log 2>&1 &)
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/api/health && break; sleep 1; done
+      - run: python docs/screens.py http://127.0.0.1:8000 docs/screens "${{ inputs.night }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screens
+          path: docs/screens
+          retention-days: 14
