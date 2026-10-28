@@ -1,0 +1,135 @@
+# The whole pipeline on open models, on a throwaway machine:
+# scan every night with TabPFN (6 parallel shards), run the planted-ghost benchmark,
+# then let Gemma (through Ollama) write the stories and record a few agent investigations.
+# Results come back as an artifact; nothing is pushed to the repository from here.
+name: haunt
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "nights per shard (0 = all)"
+        default: "0"
+      narrate_top:
+        description: "how many of the most haunted nights get stories"
+        default: "16"
+      model:
+        description: "Ollama model for the narrators and the agent"
+        default: "gemma4:e4b"
+      run_eval:
+        description: "run the planted-ghost benchmark"
+        type: boolean
+        default: true
+      eval_nights:
+        description: "nights in the benchmark"
+        default: "40"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: haunt
+  cancel-in-progress: false
+
+env:
+  TABPFN_MODEL_CACHE_DIR: ${{ github.workspace }}/.cache/tabpfn
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install (CPU torch)
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[tabpfn]"
+      - uses: actions/cache@v4
+        with:
+          path: .cache/tabpfn
+          key: tabpfn-v2-reg
+      - run: witching-hour fetch
+      - name: Memory probe (one night, all sensors)
+        if: matrix.shard == 0
+        run: /usr/bin/time -v witching-hour scan --limit 1 --out probe --no-index 2>&1 | grep -E "Maximum resident|Elapsed|score"
+      - name: Scan
+        run: witching-hour scan --shard ${{ matrix.shard }}/6 --limit ${{ inputs.limit }} --out out --no-index
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scan-${{ matrix.shard }}
+          path: out
+          retention-days: 7
+
+  benchmark:
+    if: ${{ inputs.run_eval }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install (CPU torch)
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[tabpfn]"
+      - uses: actions/cache@v4
+        with:
+          path: .cache/tabpfn
+          key: tabpfn-v2-reg
+      - run: witching-hour fetch
+      - run: witching-hour evaluate --nights ${{ inputs.eval_nights }} --out out/eval.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval
+          path: out
+          retention-days: 7
+
+  narrate:
+    needs: scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e .
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: scan-*
+          merge-multiple: true
+          path: demo_data
+      - name: Index
+        run: |
+          witching-hour index --out demo_data --meta '{"house": "UCI house", "attribution": "Appliances energy prediction, UCI Machine Learning Repository, CC BY 4.0 (Candanedo, Feldheim & Deramaix, 2017). A real house in Stambruges, Belgium, January to May 2016.", "backend": "tabpfn-v2", "window": [0, 6], "context_days": 14}'
+      - name: Start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull ${{ inputs.model }}
+          ollama list
+      - name: Stories
+        run: witching-hour narrate --data demo_data --top ${{ inputs.narrate_top }} --model ${{ inputs.model }}
+      - name: Agent investigations
+        run: |
+          witching-hour ask "Which night was the most haunted, and what probably happened?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
+          witching-hour ask "Was anything strange going on in the bathroom in March 2016?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
+          witching-hour ask "On the most haunted night, what did TabPFN expect the strangest room to read at its peak, and what did it actually read?" --model ${{ inputs.model }} --save demo_data/agent_runs.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo_data
+          path: demo_data
+          retention-days: 14

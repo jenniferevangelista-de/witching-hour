@@ -1,0 +1,27 @@
+# private notes and drafts, never public
+NOTAS_REGRAS.md
+_interno/
+.claude/
+audit/
+*.local.md
+
+# secrets
+.env
+.env.*
+
+# data and caches
+data/
+out/
+artifacts/
+*.zip
+.cache/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+build/
+dist/
