@@ -39,7 +39,7 @@ class TabPFNBackend:
     """
 
     def __init__(self, version: str | None = None, n_estimators: int = 4, device: str = "cpu",
-                 max_context: int = 1200, seed: int = 0):
+                 max_context: int = 1000, seed: int = 0):
         self.version = version or os.environ.get("WH_TABPFN_VERSION", "v2")
         self.n_estimators = n_estimators
         self.device = device

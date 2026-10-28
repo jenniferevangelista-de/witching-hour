@@ -172,7 +172,7 @@ def main(argv=None):
     sp.add_argument("--sensors", help="comma separated sensor ids (default: all)")
     sp.add_argument("--context-days", type=int, default=14)
     sp.add_argument("--n-estimators", type=int, default=4)
-    sp.add_argument("--max-context", type=int, default=1200)
+    sp.add_argument("--max-context", type=int, default=1000)
     sp.add_argument("--no-index", action="store_true")
     sp.set_defaults(fn=cmd_scan)
 
@@ -204,7 +204,7 @@ def main(argv=None):
     sp.add_argument("--sensors", default="T1,T5,T9,RH_1,RH_5,Appliances")
     sp.add_argument("--backends", default="tabpfn,lightgbm,seasonal")
     sp.add_argument("--n-estimators", type=int, default=4)
-    sp.add_argument("--max-context", type=int, default=1200)
+    sp.add_argument("--max-context", type=int, default=1000)
     sp.add_argument("--seed", type=int, default=0)
     sp.add_argument("--out", default="demo_data/eval.json")
     sp.set_defaults(fn=cmd_evaluate)
