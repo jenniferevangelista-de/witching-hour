@@ -226,7 +226,7 @@ def clean_text(text: str) -> str:
     """Cosmetic only: drop inline citation markers (the page shows chips), quotes around
     values, and add the final period a small model sometimes forgets."""
     t = _INLINE_CITE.sub("", text)
-    t = _QUOTED_VALUE.sub(r"", t).replace(" .", ".").replace(" ,", ",").strip()
+    t = _QUOTED_VALUE.sub(lambda m: m.group(1), t).replace(" .", ".").replace(" ,", ",").strip()
     if t and t[-1] not in ".!?":
         t += "."
     return t
