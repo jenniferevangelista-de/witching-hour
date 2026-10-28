@@ -165,6 +165,21 @@ def cmd_tonight(args):
         print(f"{r['room']}: {r['expected']} °C at {r['coldest_time']} (90% {r['low']} to {r['high']}), P(<18 °C) {r['p_below_18']}")
 
 
+def cmd_bakeoff(args):
+    from .agent import Haunting
+    from .bakeoff import MODELS, local_reference, run_bakeoff
+    from .voice import load_env
+
+    load_env(args.env)
+    h = Haunting(args.data)
+    dates = args.dates.split(",") if args.dates else [n["night"] for n in sorted(h.nights, key=lambda n: -n["score"])[: args.top]]
+    modes = args.modes.split(",")
+    res = run_bakeoff(args.data, dates, modes, args.models.split(",") if args.models else MODELS)
+    res["local"] = local_reference(args.data, dates, modes)
+    Path(args.data, "bakeoff.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
+    print(json.dumps(res["local"]))
+
+
 def cmd_worker(args):
     import asyncio
 
@@ -267,6 +282,15 @@ def main(argv=None):
     sp.add_argument("--out", default="demo_data/tonight.json")
     sp.add_argument("--env", default=".env")
     sp.set_defaults(fn=cmd_tonight)
+
+    sp = sub.add_parser("bakeoff", help="grounding bake-off of open models through Backboard")
+    sp.add_argument("--data", default="demo_data")
+    sp.add_argument("--dates")
+    sp.add_argument("--top", type=int, default=6)
+    sp.add_argument("--modes", default="medium,family")
+    sp.add_argument("--models", help="comma separated OpenRouter model ids")
+    sp.add_argument("--env", default=".env")
+    sp.set_defaults(fn=cmd_bakeoff)
 
     sp = sub.add_parser("worker", help="run a Temporal worker for the night watch")
     sp.add_argument("--address", default="localhost:7233")

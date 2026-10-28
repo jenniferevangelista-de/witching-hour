@@ -239,6 +239,21 @@
     }
   });
 
+  // ------------------------------------------------------------ bake-off
+  async function loadBakeoff() {
+    try {
+      const b = await getJSON("/api/bakeoff");
+      if (!b.results || !b.results.length) return;
+      const rows = [...b.results].sort((x, y) => y.grounded_share - x.grounded_share);
+      const best = rows[0].grounded_share;
+      const local = b.local && b.local.stories ? `<tr><td>${esc(b.local.model)} <span class="sub">(${esc(b.local.via)})</span></td><td class="num">${esc(Math.round(b.local.grounded_share * 100))}%</td><td class="num">${esc(b.local.verified)} / ${esc(b.local.sentences)}</td><td class="num">${esc(b.local.stories)}</td><td></td></tr>` : "";
+      $("#bakeoff").innerHTML = `<table><thead><tr><th>Model</th><th>Grounded sentences</th><th>Verified / written</th><th>Stories</th><th>Avg seconds</th></tr></thead><tbody>${rows
+        .map((r) => `<tr class="${r.grounded_share === best ? "best" : ""}"><td>${esc(r.model)}</td><td class="num">${esc(Math.round(r.grounded_share * 100))}%</td><td class="num">${esc(r.verified)} / ${esc(r.sentences)}</td><td class="num">${esc(r.stories)}${r.failed ? ` (+${esc(r.failed)} failed)` : ""}</td><td class="num">${esc(r.avg_seconds)}</td></tr>`)
+        .join("")}${local}</tbody></table><p class="notice">${esc(b.nights.length)} nights × ${esc(b.modes.join(" and "))}. A sentence is grounded when every number and time in it matches the event it cites.</p>`;
+      $("#bakeoff-sec").hidden = false;
+    } catch (_) { /* optional */ }
+  }
+
   // ------------------------------------------------------------ tonight
   async function loadTonight() {
     try {
@@ -283,6 +298,7 @@
     loadRuns();
     loadEval();
     loadTonight();
+    loadBakeoff();
     try {
       const h = await getJSON("/api/health");
       if (!h.live) $("#ask-notice").textContent = "Live questions are off on this public demo (a house's night logs are private). Below are investigations recorded with Gemma running locally.";

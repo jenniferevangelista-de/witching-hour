@@ -102,6 +102,11 @@ def tonight():
     return _read_json("tonight.json", {})
 
 
+@app.get("/api/bakeoff")
+def bakeoff():
+    return _read_json("bakeoff.json", {})
+
+
 @app.get("/api/eval")
 def eval_results():
     return _read_json("eval.json", {})
