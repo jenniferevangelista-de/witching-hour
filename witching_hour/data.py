@@ -177,8 +177,8 @@ def features(house: House, rows: pd.DataFrame, target: str) -> pd.DataFrame:
     X["tod"] = tod
     X["tod_sin"] = np.sin(2 * np.pi * tod / 24)
     X["tod_cos"] = np.cos(2 * np.pi * tod / 24)
-    X["dow"] = idx.dayofweek
-    X["weekend"] = (idx.dayofweek >= 5).astype(int)
+    X["dow"] = idx.day_of_week
+    X["weekend"] = (idx.day_of_week >= 5).astype(int)
     for c in house.context:
         if c in rows.columns:
             X[c] = rows[c].to_numpy()
