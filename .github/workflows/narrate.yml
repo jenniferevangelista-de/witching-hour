@@ -61,7 +61,9 @@ jobs:
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
           ollama pull ${{ inputs.model }}
       - name: Stories
-        run: witching-hour narrate --data demo_data --top ${{ inputs.narrate_top }} --cold ${{ inputs.cold }} --shard ${{ matrix.shard }}/8 --model ${{ inputs.model }} --no-index
+        run: |
+          rm -rf demo_data/stories   # only this shard's fresh stories go into its artifact
+          witching-hour narrate --data demo_data --top ${{ inputs.narrate_top }} --cold ${{ inputs.cold }} --shard ${{ matrix.shard }}/8 --model ${{ inputs.model }} --no-index
       - uses: actions/upload-artifact@v4
         with:
           name: stories-${{ matrix.shard }}
@@ -93,6 +95,7 @@ jobs:
           path: demo_data
           run-id: ${{ inputs.scan_run_id }}
           github-token: ${{ github.token }}
+      - run: rm -rf demo_data/stories
       - uses: actions/download-artifact@v4
         with:
           pattern: stories-*
