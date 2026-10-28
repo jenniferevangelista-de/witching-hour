@@ -121,14 +121,6 @@ def fieldwork():
     return _read_json("fieldwork.json", {})
 
 
-@app.get("/media/fieldwork.png", include_in_schema=False)
-def fieldwork_shot():
-    p = data_dir() / "fieldwork.png"
-    if not p.exists():
-        raise HTTPException(404, "no screenshot")
-    return FileResponse(p, media_type="image/png")
-
-
 EXTRAS = {"season_report", "atlas_memory", "tiger_store", "mastra_runs", "tinker"}
 
 
@@ -225,6 +217,32 @@ def ask_spirit(sid: str, q: SpiritQuestion):
     out = spirits.ask(s, q.question, chat=make_chat())
     store().save(s)
     return out
+
+
+class MoreEvidence(BaseModel):
+    evidence: list[dict] = Field(max_length=10)
+
+
+@app.post("/api/sessions/{sid}/evidence")
+def more_evidence(sid: str, body: MoreEvidence):
+    s = store().load(sid)
+    if s is None:
+        raise HTTPException(404, "no such session")
+    added = spirits.add_evidence(s, body.evidence)
+    store().save(s)
+    return {"added": added, "evidence": len(s.evidence)}
+
+
+MEDIA = re.compile(r"^[a-z0-9_-]+(/[a-z0-9_-]+)?\.(mp4|mp3|png|jpg)$")
+
+
+@app.get("/media/{name:path}", include_in_schema=False)
+def media(name: str):
+    p = data_dir() / "media" / name
+    if not MEDIA.match(name) or not p.exists():
+        raise HTTPException(404, "no media")
+    kind = {"mp4": "video/mp4", "mp3": "audio/mpeg", "png": "image/png", "jpg": "image/jpeg"}[name.rsplit(".", 1)[1]]
+    return FileResponse(p, media_type=kind)
 
 
 @app.post("/api/sessions/{sid}/close")

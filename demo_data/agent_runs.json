@@ -1,7 +1,7 @@
 [
  {
   "question": "Which night was the most haunted, and what probably happened?",
-  "answer": "The most haunted night was Tuesday, 2016-04-19, with a strong event score of 23.9. The primary event (E1) involved a significant energy surge in the house at 05:40, where the appliance energy spiked to 380 Wh, dramatically exceeding the expected range of 36 Wh to 75 Wh. The story suggests that the machines in the house seemed to wake up, causing this peculiar burst of power that lasted until 05:50.",
+  "answer": "The most haunted night was Tuesday, 2016-04-19, with a strong event score of 23.9. The primary event was 'the machines waking up' in the house at 05:40. This was marked by a massive spike in appliance energy, where the observed 380 Wh soared far above the expected range of 36 Wh to 75 Wh, suggesting a powerful presence jolted the house awake until 05:50.",
   "steps": [
    {
     "tool": "haunted_nights",
@@ -57,12 +57,88 @@
      "mode": "medium"
     },
     "result": {
-     "title": "The House's Midnight Energy",
+     "title": "A Sudden Awakening of the Machines",
      "sentences": [
-      "The house seemed perfectly still until 05:40, when a strange energy surge began (E1).",
-      "The sensors recorded that the machines were waking up, causing the appliance energy to spike to 380 Wh (E1).",
-      "This ghostly burst of power dramatically exceeded the expected 52 Wh (E1).",
-      "The peculiar activity finally subsided at 05:50, leaving the house feeling strangely electrified (E1)."
+      "The air hung still within the house until 05:40, when the machines began their shift, a strange energy gathering.",
+      "The machines waking up was marked by an immense spike, as the observed 380 Wh soared far past the expected 36 Wh to 75 Wh range.",
+      "At 05:40, the appliances registered this dramatic power surge, feeling as though the house itself was jolting awake.",
+      "This powerful presence lingered, filling the air until the period of intense appliance energy ended at 05:50."
+     ]
+    }
+   }
+  ],
+  "model": "gemma4:e4b"
+ },
+ {
+  "question": "On that night, did Luna and Dr. Bigotes agree? Quote them.",
+  "answer": "I do not have any tool results that contain quotes from Luna or Dr. Bigotes to determine if they agreed on that night. The attempt to retrieve official warnings also failed, so I cannot compare their assessments.",
+  "steps": [
+   {
+    "tool": "official_warnings",
+    "args": {},
+    "result": {
+     "error": "no field trip yet; run: witching-hour fieldwork"
+    }
+   },
+   {
+    "tool": "haunted_nights",
+    "args": {
+     "top_k": 1
+    },
+    "result": {
+     "nights": [
+      {
+       "night": "2016-04-19",
+       "weekday": "Tuesday",
+       "score": 23.9,
+       "n_events": 1,
+       "headline": "the machines waking up in the house at 05:40"
+      }
+     ]
+    }
+   },
+   {
+    "tool": "scan_night",
+    "args": {
+     "date": "2016-04-19"
+    },
+    "result": {
+     "night": "2016-04-19",
+     "weekday": "Tuesday",
+     "events": [
+      {
+       "id": "E1",
+       "room": "house",
+       "sensor": "appliance energy",
+       "what_it_looks_like": "the machines waking up",
+       "start": "05:40",
+       "end": "05:50",
+       "peak_time": "05:40",
+       "duration_minutes": 10,
+       "observed": "380 Wh",
+       "expected": "52 Wh",
+       "expected_range": "36 Wh to 75 Wh",
+       "direction": "above",
+       "strength_sigma": 23.9,
+       "together_with": []
+      }
+     ],
+     "cold_room_checks": []
+    }
+   },
+   {
+    "tool": "tell_story",
+    "args": {
+     "date": "2016-04-19",
+     "mode": "medium"
+    },
+    "result": {
+     "title": "A Sudden Awakening of the Machines",
+     "sentences": [
+      "The air hung still within the house until 05:40, when the machines began their shift, a strange energy gathering.",
+      "The machines waking up was marked by an immense spike, as the observed 380 Wh soared far past the expected 36 Wh to 75 Wh range.",
+      "At 05:40, the appliances registered this dramatic power surge, feeling as though the house itself was jolting awake.",
+      "This powerful presence lingered, filling the air until the period of intense appliance energy ended at 05:50."
      ]
     }
    }
@@ -71,12 +147,11 @@
  },
  {
   "question": "If an older person lived alone in this house, which night should the family have checked on, and why?",
-  "answer": "The family should have checked on the night of 2016-04-19. The sensor logs noted an 'Appliance Energy Spike,' where the appliance energy was 380 Wh, significantly above the expected 52 Wh, between 05:40 and 05:50. The verified story suggests that this unusual activity might be related to the heating, making it a good time for a welfare check to ensure the older person was comfortable and safe.",
+  "answer": "The family should have checked on the night of 2016-04-19. The sensor logs indicated that the machines woke up around 05:40. During this time, the energy used was 380 Wh, which was significantly higher than the expected 52 Wh. Because of this high energy usage, it was suggested that appliances should be checked to determine the cause of the anomaly.",
   "steps": [
    {
     "tool": "haunted_nights",
     "args": {
-     "month": null,
      "top_k": 1
     },
     "result": {
@@ -98,11 +173,11 @@
      "mode": "family"
     },
     "result": {
-     "title": "Appliance Energy Spike Noted",
+     "title": "A Gentle Watch Through the Night",
      "sentences": [
-      "The machines started waking up in the house between 05:40 and 05:50 (E1).",
-      "During this time, the appliance energy was 380 Wh, which was above the expected 52 Wh (E1).",
-      "If you notice anything unusual, perhaps checking the heating might be helpful (E1)."
+      "My lantern watched over the house, and the machines woke up around 05:40.",
+      "The energy used was 380 Wh, which was much higher than the expected 52 Wh.",
+      "Since the energy was so high, it might be helpful to check the appliances to see why."
      ]
     }
    }
@@ -110,8 +185,8 @@
   "model": "gemma4:e4b"
  },
  {
-  "question": "On the most haunted night, what did TabPFN expect the strangest room to read at its peak, and what did it actually read?",
-  "answer": "On the most haunted night, 2016-04-19, the strangest room, the 'house', experienced an event at its peak time of 05:40. TabPFN expected the appliance energy sensor to read 52 Wh, but it actually read 380 Wh.",
+  "question": "On the most haunted night, what did the spirit meter expect the strangest room to read at its peak, and what did it actually read?",
+  "answer": "On the most haunted night, 2016-04-19, the spirit meter (appliance energy sensor) in the house expected a reading of 52 Wh at its peak time of 05:40, but it actually read 380 Wh.",
   "steps": [
    {
     "tool": "haunted_nights",
@@ -165,13 +240,34 @@
  },
  {
   "question": "Look at tonight's forecast. Which room should the family worry about, and how likely is it to drop below 18 C?",
-  "answer": "The family should be most concerned about the parents' room, as it has the highest probability of dropping below 18 C, with a likelihood of 0.045. The teenager's room is the next most likely, with a probability of 0.03. All other rooms have a very low probability of dropping below 18 C.",
+  "answer": "I am unable to check tonight's forecast because the `tonight()` tool is returning an error. Therefore, I cannot tell you which room the family should worry about or how likely it is to drop below 18 C.",
   "steps": [
    {
-    "tool": "tonight!",
+    "tool": "tonight()",
     "args": {},
     "result": {
-     "error": "unknown tool 'tonight!'"
+     "error": "unknown tool 'tonight()'"
+    }
+   },
+   {
+    "tool": "tonight()",
+    "args": {},
+    "result": {
+     "error": "unknown tool 'tonight()'"
+    }
+   }
+  ],
+  "model": "gemma4:e4b"
+ },
+ {
+  "question": "Is there an official cold warning for the house tonight, or should we blame a ghost?",
+  "answer": "I cannot confirm an official cold warning as the previous check failed. However, the sensor forecasts for tonight show a very low probability of cold events in any room. The highest probability of a room dropping below 18°C is 0.045 in the parents' room, while most other rooms have a probability of only 0.005. Based on the data, the risk of a significant cold event is minimal.",
+  "steps": [
+   {
+    "tool": "official_warnings",
+    "args": {},
+    "result": {
+     "error": "no field trip yet; run: witching-hour fieldwork"
     }
    },
    {

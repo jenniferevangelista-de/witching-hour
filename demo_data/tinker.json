@@ -1,0 +1,27 @@
+{
+ "model": "Qwen/Qwen3-8B",
+ "split": "2016-04-15",
+ "train_examples": 60,
+ "method": "LoRA SFT on Tinker, 3 epochs",
+ "base": {
+  "model": "Qwen/Qwen3-8B",
+  "cases": 36,
+  "json_ok": 36,
+  "sentences": 88,
+  "verified": 84,
+  "grounded_share": 0.955,
+  "clean_stories": 33,
+  "avg_seconds": 2.6
+ },
+ "tuned": {
+  "model": "tinker://351b748e-4eae-5fd8-bb7e-69fed33fab5a:train:0/sampler_weights/final",
+  "cases": 36,
+  "json_ok": 36,
+  "sentences": 125,
+  "verified": 124,
+  "grounded_share": 0.992,
+  "clean_stories": 35,
+  "avg_seconds": 3.6
+ },
+ "checkpoint": "tinker://351b748e-4eae-5fd8-bb7e-69fed33fab5a:train:0/sampler_weights/final"
+}

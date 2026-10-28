@@ -1,0 +1,124 @@
+{
+ "api": "https://witching-hour.onrender.com",
+ "thread": "hunt-1793209338261",
+ "runs": [
+  {
+   "question": "Which night was the most haunted? Open its case file and tell me what Luna and Dr. Bigotes each said about it.",
+   "answer": "The most intensely haunted night was 2016-04-19, when the machinery awoke late in the morning. I am now opening that night's case file to see what the crew logged.The night of 2016-04-19 proved the most intense, when the house reported \"the machines waking up.\" Luna sensed a profound energy, noting that \"The air hung still within the house until 05:40, when the machines began their shift, a strange energy gathering.\" However, skeptics are not so easily spooked; Dr. Bigotes dismissed the event, stating, \"Instead, the appliance energy registered a significant spike, observing 380 Wh between 05:40 and 05:50. This observed value is much higher than the expected 52 Wh, suggesting that the machines were simply waking up.\"",
+   "steps": [
+    {
+     "tool": "hauntedNights",
+     "args": {}
+    },
+    {
+     "tool": "caseFile",
+     "args": {
+      "date": "2016-04-19"
+     }
+    }
+   ],
+   "model": "gemma4:e4b via Ollama (Mastra agent with memory)",
+   "seconds": 183,
+   "usage": {
+    "inputTokens": 1923,
+    "outputTokens": 945,
+    "totalTokens": 2868,
+    "reasoningTokens": 0,
+    "cachedInputTokens": 890,
+    "raw": {
+     "inputTokens": {
+      "total": 1025,
+      "noCache": 488,
+      "cacheRead": 537
+     },
+     "outputTokens": {
+      "total": 502,
+      "text": 502,
+      "reasoning": 0
+     },
+     "raw": {
+      "prompt_tokens": 1025,
+      "completion_tokens": 502,
+      "total_tokens": 1527,
+      "prompt_tokens_details": {
+       "cached_tokens": 537
+      }
+     }
+    }
+   }
+  },
+  {
+   "question": "And that same night, what did Xochi write to the family in the morning?",
+   "answer": "Xochi's observations from that restless night serve as a quiet sentinel. They noted, \"My lantern watched over the house, and the machines woke up around 05:40. The energy used was 380 Wh, which was much higher than the expected 52 Wh. Since the energy was so high, it might be helpful to check the appliances to see why.\" It is a gentle warning, delivered beneath the silence of the morning.",
+   "steps": [],
+   "model": "gemma4:e4b via Ollama (Mastra agent with memory)",
+   "seconds": 57,
+   "usage": {
+    "inputTokens": 1188,
+    "outputTokens": 323,
+    "totalTokens": 1511,
+    "reasoningTokens": 0,
+    "cachedInputTokens": 1020,
+    "raw": {
+     "inputTokens": {
+      "total": 1188,
+      "noCache": 168,
+      "cacheRead": 1020
+     },
+     "outputTokens": {
+      "total": 323,
+      "text": 323,
+      "reasoning": 0
+     },
+     "raw": {
+      "prompt_tokens": 1188,
+      "completion_tokens": 323,
+      "total_tokens": 1511,
+      "prompt_tokens_details": {
+       "cached_tokens": 1020
+      }
+     }
+    }
+   }
+  },
+  {
+   "question": "Now look at tonight's forecast. Should the family worry about any room?",
+   "answer": "Tonight's forecast suggests a relatively temperate evening, and the chance of any room dropping below 18°C is quite low across the board. However, the parents' room registers the highest chance at 0.045, meaning it is the room to watch, though the prediction still suggests a comfortably chilling night.",
+   "steps": [
+    {
+     "tool": "tonight",
+     "args": {}
+    }
+   ],
+   "model": "gemma4:e4b via Ollama (Mastra agent with memory)",
+   "seconds": 74,
+   "usage": {
+    "inputTokens": 2875,
+    "outputTokens": 379,
+    "totalTokens": 3254,
+    "reasoningTokens": 0,
+    "cachedInputTokens": 2496,
+    "raw": {
+     "inputTokens": {
+      "total": 1567,
+      "noCache": 259,
+      "cacheRead": 1308
+     },
+     "outputTokens": {
+      "total": 286,
+      "text": 286,
+      "reasoning": 0
+     },
+     "raw": {
+      "prompt_tokens": 1567,
+      "completion_tokens": 286,
+      "total_tokens": 1853,
+      "prompt_tokens_details": {
+       "cached_tokens": 1308
+      }
+     }
+    }
+   }
+  }
+ ]
+}

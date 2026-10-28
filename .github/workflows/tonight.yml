@@ -62,5 +62,5 @@ jobs:
             demo_data/tonight.json
             demo_data/agent_runs.json
             demo_data/fieldwork.json
-            demo_data/fieldwork.png
+            demo_data/media/fieldwork.png
           retention-days: 14

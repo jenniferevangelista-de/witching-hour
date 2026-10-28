@@ -1,0 +1,47 @@
+# Luna's spirit board for the house: Gemma spells one short message for each of
+# the most haunted nights, checked against the night's own events.
+name: ouija
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Ollama model"
+        default: "gemma4:e4b"
+      top:
+        description: "How many nights"
+        default: "25"
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  WH_ENV: github-actions
+  WH_LLM: ollama
+
+jobs:
+  ouija:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[tracing]"
+      - name: Start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          if ! curl -sf http://127.0.0.1:11434/api/tags >/dev/null; then (ollama serve > ollama.log 2>&1 &); fi
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
+          ollama pull ${{ inputs.model }}
+      - name: Spell the messages
+        run: witching-hour ouija --data demo_data --top ${{ inputs.top }} --model ${{ inputs.model }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ouija
+          path: demo_data/ouija/
+          retention-days: 14

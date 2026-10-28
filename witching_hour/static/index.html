@@ -19,9 +19,17 @@
   <header class="hero">
     <div class="kicker">Halloween · Día de los Muertos · Paranormal activity detector</div>
     <h1>Witching Hour</h1>
-    <p class="tagline">A ghost-hunting kit for real houses. An open tabular model, the <b>spirit meter</b>, learns what every room feels like when nothing is haunting it. When a reading breaks that pattern in the dark, the needle jumps and the crew takes the case. None of them may say a word the sensors cannot back.</p>
+    <p class="hook">What if someone tried to warn you, and you never heard them?</p>
+    <p class="tagline">Witching Hour is a ghost-hunting crew with an open-source kit. Their terminal, <b>PARANORMAL.exe</b>, opens three kinds of cases: a house that keeps a log every night, a recording of the moment you felt something, and the room you are sitting in right now. <b>The evidence is real. The spirits are fiction.</b> And nobody on the crew may say a word the evidence cannot back.</p>
     <div class="crew" id="crew"></div>
+    <nav class="doors" aria-label="Choose a case">
+      <a class="door" href="#case-house"><span class="n">Case 1</span><b>🏚️ The House</b><span>A real house's night logs and the spirit meter</span></a>
+      <a class="door" href="#unheard"><span class="n">Case 2</span><b>🎞️ The Unheard</b><span>Bring the recording of the night you almost left</span></a>
+      <a class="door" href="#room"><span class="n">Case 3</span><b>📹 The Room</b><span>A live séance with your own camera</span></a>
+    </nav>
   </header>
+
+  <div class="case-title" id="case-house"><span class="n">Case 1</span><h2>🏚️ The House</h2><p>A real house in Belgium kept a log of every room, every 10 minutes, for four months. The spirit meter (TabPFN) learned what each night should feel like. Luna, Dr. Bigotes and Xochi read the nights that broke the pattern.</p></div>
 
   <section aria-labelledby="map-title">
     <h2 id="map-title"><span class="em">🗺️</span>The haunting map</h2>
@@ -80,6 +88,47 @@
     <div class="panel table-wrap" id="bakeoff"></div>
   </section>
 
+  <div class="case-title" id="unheard"><span class="n">Case 2</span><h2>🎞️ The Unheard</h2><p>You were about to leave. Something made you stay, and you never knew why. If a camera was running that night, bring the recording: PARANORMAL.exe reads it frame by frame <b>inside your browser</b> (the video never leaves this page), Dr. Bigotes explains what he can, and Luna opens the board for whatever is left.</p></div>
+  <section class="terminal" aria-label="PARANORMAL.exe, The Unheard">
+    <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">PARANORMAL.exe · THE UNHEARD · some messages were never meant to be heard</span></div>
+    <div class="term-body">
+      <div class="term-actions">
+        <button id="uh-demo" class="big">▶ Open the case: <i>The Warning</i></button>
+        <label class="big alt">Bring your own recording<input id="uh-file" type="file" accept="video/*" hidden></label>
+      </div>
+      <p class="status" id="uh-status">No recording loaded. The demo is a staged clip made for this project.</p>
+      <div class="uh-story" id="uh-story"></div>
+      <div class="layout">
+        <div>
+          <video id="uh-video" controls playsinline preload="metadata"></video>
+          <canvas id="uh-timeline" aria-label="Light, motion and sound over time, with the moments that stand out"></canvas>
+          <div class="key"><span><i style="background:#ffbf3c"></i>light</span><span><i style="background:#8dffcf"></i>motion</span><span><i style="background:#a77bff"></i>sound</span><span><i style="background:rgba(255,255,255,.25)"></i>evidence</span></div>
+          <h3 class="locker">🗝️ Evidence locker <span class="ci">(measured, with Dr. Bigotes's notes)</span></h3>
+          <div class="events" id="uh-evidence"></div>
+        </div>
+        <div>
+          <div class="with-guide luna"><img src="/static/characters/luna.svg" alt="Luna, the Medium"><div><h3 style="margin:0">Luna opens the board</h3><p class="notice" style="margin-top:4px">She summons the spirit the evidence suggests: a Guardian, a Lost One, a Trickster, a Watcher, a Hostile Presence or a Silent One. Its answers are fiction, and each one must point at a real moment of the recording.</p></div></div>
+          <div class="term-actions"><button id="uh-open" class="big" hidden>🔮 Summon the spirit</button><button id="uh-replay" class="big alt" hidden>⏺ Replay the recorded séance</button><button id="uh-dossier" class="big alt">📜 Xochi's dossier</button></div>
+          <div id="uh-seance-slot"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="case-title" id="room"><span class="n">Case 3</span><h2>📹 The Room</h2><p>Turn on your camera and microphone and ask the board. Nothing is recorded or uploaded: the browser measures light, motion and sound, and only the list of moments goes to the spirit. If something really moves right after the glass stops, the game will notice.</p></div>
+  <section class="terminal" aria-label="PARANORMAL.exe, The Room">
+    <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">PARANORMAL.exe · THE ROOM · live</span></div>
+    <div class="term-body">
+      <div class="term-actions"><button id="rm-start" class="big">Turn on camera and microphone</button><button id="rm-seance-open" class="big alt" hidden>🔮 Summon the spirit of this room</button></div>
+      <p class="status" id="rm-status">Off. Camera and microphone stay off until you press the button.</p>
+      <div class="layout">
+        <div><video id="rm-video" muted playsinline></video><p class="status" id="rm-meters"></p><ol class="live-log" id="rm-log"></ol></div>
+        <div id="rm-seance-slot"></div>
+      </div>
+    </div>
+    <div class="haunt" id="rm-haunt" hidden><p>That wasn't part of the game.</p><span>(a narrative effect: real motion was measured right after the spirit answered)</span></div>
+  </section>
+
   <section class="how" aria-labelledby="how-title">
     <h2 id="how-title"><span class="em">🧰</span>What is in the kit</h2>
     <ul>
@@ -100,5 +149,6 @@
   </footer>
 </main>
 <script src="/static/app.js"></script>
+<script src="/static/paranormal.js"></script>
 </body>
 </html>

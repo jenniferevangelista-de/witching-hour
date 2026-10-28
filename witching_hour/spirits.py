@@ -258,6 +258,14 @@ def ask(session: Session, question: str, chat=None) -> dict:
     return response(session, turn)
 
 
+def add_evidence(session: Session, items: list[dict]) -> int:
+    """Live rooms keep producing evidence; the spirit may only use what was really measured."""
+    known = {e["id"] for e in session.evidence}
+    new = [e for e in clean_evidence(items) if e["id"] not in known]
+    session.evidence = (session.evidence + new)[-MAX_EVIDENCE:]
+    return len(new)
+
+
 def close(session: Session) -> dict:
     session.state = "closed"
     turn = {"question": "(the session ends)", "message": "GOODBYE", "spoken": "", "evidence_ids": [], "by": "rule",

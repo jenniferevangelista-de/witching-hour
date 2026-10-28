@@ -196,7 +196,8 @@ def cmd_fieldwork(args):
     load_env(args.env)
     out_dir = Path(args.data)
     out_dir.mkdir(parents=True, exist_ok=True)
-    res = field_trip(args.url, screenshot_path=str(out_dir / "fieldwork.png"))
+    (out_dir / "media").mkdir(exist_ok=True)
+    res = field_trip(args.url, screenshot_path=str(out_dir / "media" / "fieldwork.png"))
     (out_dir / "fieldwork.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     print({k: res.get(k) for k in ("status", "title", "cold_warning", "excerpt")})
 

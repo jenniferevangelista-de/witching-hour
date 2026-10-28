@@ -551,5 +551,6 @@
     if (start) openNight(start, !!state.byDate[fromHash]);
   }
 
+  window.WH = { BOARD, boardSVG, GLASS, placeGlass, esc, getJSON, CREW, reduceMotion, openNight, highlight };
   boot();
 })();

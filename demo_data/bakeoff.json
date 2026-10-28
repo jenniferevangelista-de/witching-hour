@@ -18,53 +18,52 @@
    "via": "Backboard (openrouter)",
    "stories": 12,
    "failed": 0,
-   "sentences": 38,
-   "verified": 34,
-   "grounded_share": 0.895,
-   "clean_stories": 8,
-   "avg_seconds": 4.8
+   "sentences": 48,
+   "verified": 46,
+   "grounded_share": 0.958,
+   "clean_stories": 10,
+   "avg_seconds": 13.7
   },
   {
    "model": "meta-llama/llama-3.3-70b-instruct",
    "via": "Backboard (openrouter)",
    "stories": 12,
    "failed": 0,
-   "sentences": 35,
-   "verified": 35,
-   "grounded_share": 1.0,
-   "clean_stories": 12,
-   "avg_seconds": 10.0
-  },
-  {
-   "model": "mistralai/mistral-small-3.1-24b-instruct",
-   "via": "Backboard (openrouter)",
-   "stories": 4,
-   "failed": 8,
-   "sentences": 9,
-   "verified": 9,
-   "grounded_share": 1.0,
-   "clean_stories": 4,
-   "avg_seconds": 12.8
+   "sentences": 50,
+   "verified": 48,
+   "grounded_share": 0.96,
+   "clean_stories": 11,
+   "avg_seconds": 16.1
   },
   {
    "model": "qwen/qwen-2.5-72b-instruct",
    "via": "Backboard (openrouter)",
    "stories": 12,
    "failed": 0,
-   "sentences": 35,
-   "verified": 35,
+   "sentences": 38,
+   "verified": 37,
+   "grounded_share": 0.974,
+   "clean_stories": 11,
+   "avg_seconds": 13.5
+  },
+  {
+   "model": "mistralai/mistral-small-3.1-24b-instruct",
+   "via": "Backboard (openrouter)",
+   "stories": 4,
+   "failed": 8,
+   "sentences": 13,
+   "verified": 13,
    "grounded_share": 1.0,
-   "clean_stories": 12,
-   "avg_seconds": 31.1,
-   "note": "rerun: the first pass hit 12 transient errors"
+   "clean_stories": 4,
+   "avg_seconds": 13.0
   }
  ],
  "local": {
   "model": "gemma4:e4b",
   "via": "Ollama, local (with one retry)",
   "stories": 12,
-  "sentences": 43,
-  "verified": 43,
+  "sentences": 45,
+  "verified": 45,
   "grounded_share": 1.0
  }
 }

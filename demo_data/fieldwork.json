@@ -1,0 +1,13 @@
+{
+ "url": "https://meteoalarm.org/en/live/region/BE",
+ "via": "Browserbase cloud browser + Playwright",
+ "session": "c6540437-37b6-474f-a4fd-4c7a8213bdca",
+ "fetched_at": "2026-10-28 17:39 UTC",
+ "status": 200,
+ "title": "Belgium | MeteoAlarm | Early Warnings for Europe",
+ "excerpt": "No active warnings listed (the page said: No results for this filter combination.)",
+ "cold_warning": false,
+ "no_warnings": true,
+ "cold_lines": [],
+ "screenshot": "fieldwork.png"
+}
