@@ -1,0 +1,41 @@
+{
+ "night": "2016-03-10",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Cold Night Watch",
+ "sentences": [
+  {
+   "text": "The parents' room felt cold, staying at 17.3 °C at 00:00.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The living room reached 16.7 °C at 05:30, and the bathroom was 17.7 °C at 05:10.",
+   "cites": [
+    "C2",
+    "C3"
+   ]
+  },
+  {
+   "text": "Since all these rooms stayed below 18.0 °C, remember that the WHO recommends at least 18 °C indoors in cold seasons.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3"
+   ]
+  },
+  {
+   "text": "Because of the low temperatures shown in C1, C2, and C3, perhaps checking the heating might help keep things cozy.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

@@ -2,35 +2,34 @@
  "night": "2016-03-09",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Night Watch Update",
+ "title": "A Gentle Morning Check",
  "sentences": [
   {
-   "text": "The living room temperature was observed at 16.6 °C between 04:20 and 06:00.",
+   "text": "The living room temperature dropped to 16.6 °C between 04:20 and 06:00, and the humidity was 41.2 %.",
    "cites": [
-    "E2"
-   ]
-  },
-  {
-   "text": "The living room stayed below 18.0 °C for 360 minutes, and the WHO recommends at least 18 °C indoors in cold seasons.",
-   "cites": [
-    "C1"
-   ]
-  },
-  {
-   "text": "Humidity in the living room was observed at 41.2 % from 03:00 to 06:00.",
-   "cites": [
+    "E2",
     "E1"
    ]
   },
   {
-   "text": "The living room stayed below 18.0 °C, so perhaps checking the heating system would be helpful.",
+   "text": "The living room stayed below 18.0 °C, and the parents' room and bathroom also stayed below 18.0 °C during the night.",
    "cites": [
-    "C1"
+    "C1",
+    "C2",
+    "C3"
+   ]
+  },
+  {
+   "text": "Since several rooms were below the recommended 18 °C, perhaps checking the heating system would be helpful.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3"
    ]
   }
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 3,
  "dropped": 0
 }

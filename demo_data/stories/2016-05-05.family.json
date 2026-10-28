@@ -2,22 +2,22 @@
  "night": "2016-05-05",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Bathroom Humidity Note",
+ "title": "A Gentle Night Watch",
  "sentences": [
   {
-   "text": "The bathroom humidity showed the air drying out from 03:00 to 05:20.",
+   "text": "The night looked calm, but the humidity in the bathroom was lower than expected.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed humidity was 41.9 %, which was below the expected range of 49.3 % to 50.0 %.",
+   "text": "Between 03:00 and 05:20, the air in the bathroom was observed at 41.9 %, which was below the expected range of 49.3 % to 50.0 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "It might be helpful to check the bathroom environment to keep the air comfortable.",
+   "text": "Since the humidity was quite low, perhaps checking the bathroom ventilation might help keep the air comfortable.",
    "cites": [
     "E1"
    ]

@@ -2,33 +2,40 @@
  "night": "2016-01-28",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Temperature Readings from the Night",
+ "title": "A Gentle Morning Watch",
  "sentences": [
   {
-   "text": "The parents' room stayed below 18.0 °C, reaching a low of 16.8 °C at 05:50.",
-   "cites": [
-    "C1"
-   ]
-  },
-  {
-   "text": "The bathroom also registered a low of 17.3 °C at 03:40, and the office temperature was 17.9 °C at 05:20.",
-   "cites": [
-    "C2",
-    "C4"
-   ]
-  },
-  {
-   "text": "Since WHO recommends at least 18 °C indoors in cold seasons, you might want to check the heating system.",
+   "text": "The temperatures in several rooms stayed below 18.0 °C during the night, which the WHO recommends against in cold seasons.",
    "cites": [
     "C1",
     "C2",
     "C3",
     "C4"
    ]
+  },
+  {
+   "text": "The parents' room was the coldest, reaching 16.8 °C at 05:50, while the bathroom was 17.3 °C at 03:40.",
+   "cites": [
+    "C1",
+    "C2"
+   ]
+  },
+  {
+   "text": "The teenager's room was 17.5 °C at 05:30, and the office dipped to 17.9 °C at 05:20.",
+   "cites": [
+    "C3",
+    "C4"
+   ]
+  },
+  {
+   "text": "Since the office temperature was low (17.9 °C at 05:20, C4), perhaps it is time to check the heating system.",
+   "cites": [
+    "C4"
+   ]
   }
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 3,
+ "verified": 4,
  "dropped": 0
 }

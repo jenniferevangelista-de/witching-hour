@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-24",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Temperature Spike in Ironing Room",
+ "sentences": [
+  {
+   "text": "Hmph. The data shows an unexpected temperature reading in the ironing room between 05:00 and 06:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The observed temperature of 21.6 °C was significantly higher than the expected range of 20.7 °C to 21.1 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This sudden warmth with no source was probably caused by a simple appliance or perhaps a change in ambient air, rather than any spectral activity.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "It is highly unlikely that a ghost caused this deviation from the expected 20.9 °C.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

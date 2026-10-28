@@ -1,0 +1,30 @@
+{
+ "night": "2016-02-05",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Humidity Spike in Teenager's Room",
+ "sentences": [
+  {
+   "text": "Hmph. Luna, I have reviewed the sensor data, and there is no evidence of anything spectral; we only have one event, E1, showing a humidity spike in the teenager's room.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The observed humidity of 55.2 % during the time frame of E1 was significantly above the expected range of 50.8 % to 53.9 % and the predicted value of 53.1 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Given that the sensor noted 'breath on the glass' in E1, I think it is probably just a mundane explanation—perhaps someone was breathing heavily in the room, causing the localized moisture increase.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

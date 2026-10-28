@@ -2,22 +2,22 @@
  "night": "2016-02-02",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Night Watch Summary",
+ "title": "A Gentle Morning Watch",
  "sentences": [
   {
-   "text": "The temperature in the parents' room dropped to 17.9 °C at 00:00. Since WHO recommends at least 18 °C indoors in cold seasons, this is something to note.",
+   "text": "The parents' room temperature dropped to 17.9 °C between 00:00 and 01:30, and since the WHO recommends at least 18 °C indoors in cold seasons, I wanted to let you know.",
    "cites": [
     "C1"
    ]
   },
   {
-   "text": "In the ironing room, the humidity was observed at 46.2 % from 03:00 to 06:00, which was below the expected range of 49.0 % to 51.2 %.",
+   "text": "In the ironing room, the humidity was 46.2 % from 03:00 to 06:00, which was below the expected range.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Given the temperature reading in the parents' room, perhaps checking the heating would be a gentle idea.",
+   "text": "Because the parents' room stayed below 18.0 °C, perhaps checking the heating would be a gentle idea.",
    "cites": [
     "C1"
    ]

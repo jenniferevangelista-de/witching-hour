@@ -1,0 +1,36 @@
+{
+ "night": "2016-05-01",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Gentle Night Watch",
+ "sentences": [
+  {
+   "text": "My lantern watched the living room, and I noticed the temperature stayed below 18.0 °C between 02:30 and 06:00.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The coldest time was 05:40, when the temperature reached 17.4 °C.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Since the WHO recommends at least 18 °C indoors in cold seasons, this is something to note.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Perhaps checking the heating system would be a gentle idea to keep the house warm.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

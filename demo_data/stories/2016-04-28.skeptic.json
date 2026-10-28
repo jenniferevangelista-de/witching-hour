@@ -2,22 +2,28 @@
  "night": "2016-04-28",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Appliance Energy Spike Observed",
+ "title": "Energy Spike, Not Ghosts",
  "sentences": [
   {
-   "text": "The sensor data shows a significant increase in appliance energy in the house between 05:40 and 06:00, which the system described as 'the machines waking up'.",
+   "text": "Hmph. I have reviewed the sensor events, and the claim of a haunting is not supported by the data.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed energy usage was 270 Wh, which is considerably higher than the expected 60 Wh and far outside the expected range of 33 Wh to 82 Wh.",
+   "text": "Between 05:40 and 06:00, the appliance energy in the house reached 270 Wh, which is significantly above the expected 60 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This sudden spike probably indicates a routine morning activity, such as several appliances starting up at once.",
+   "text": "This large increase in consumption, which is labeled as \"the machines waking up\", suggests a physical cause rather than a spectral one.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "I probably conclude that the high energy usage was simply normal morning activity, not any kind of disturbance.",
    "cites": [
     "E1"
    ]
@@ -25,6 +31,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 3,
+ "verified": 4,
  "dropped": 0
 }

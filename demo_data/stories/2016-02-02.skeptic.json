@@ -5,25 +5,25 @@
  "title": "Humidity Drop in Ironing Room",
  "sentences": [
   {
-   "text": "The reported events might simply be related to a change in air conditions in the ironing room.",
+   "text": "Hmph. I reviewed the sensor data, and I fail to see any evidence of a haunting; the readings point to a simple environmental change in the ironing room.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Between 03:00 and 06:00, the humidity was observed at 46.2 %, which indicates that the air was drying out.",
+   "text": "Between 03:00 and 06:00, the humidity dropped significantly, registering an observed value of 46.2 % when the expected value was 50.2 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This observed reading was below the expected range of \"49.0 % to 51.2 %\".",
+   "text": "Since the data indicates 'the air drying out', it is most probable that some physical factor caused this rapid drop, rather than any spectral activity.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "It is probably just a normal fluctuation, as the humidity dropped below the predicted levels during the early morning.",
+   "text": "Maybe the window was left open, which would explain the deviation below the expected range.",
    "cites": [
     "E1"
    ]

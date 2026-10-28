@@ -1,0 +1,16 @@
+{
+ "night": "2016-04-18",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "A quiet night",
+ "sentences": [
+  {
+   "text": "I listened all night, and the house did not whisper once.",
+   "cites": []
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 1,
+ "dropped": 0
+}

@@ -1,0 +1,30 @@
+{
+ "night": "2016-02-27",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Gentle Morning Watch",
+ "sentences": [
+  {
+   "text": "I kept watch all night, and the parents' room was quite chilly, reaching 17.7 °C at 00:00.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Since the WHO recommends at least 18 °C indoors in cold seasons, this is something to note.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Maybe checking the heating in the parents' room would help keep things cozy.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

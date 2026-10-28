@@ -1,0 +1,30 @@
+{
+ "night": "2016-04-25",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Gentle Morning Watch",
+ "sentences": [
+  {
+   "text": "My lantern saw that the living room stayed below 18.0 °C between 02:30 and 06:00.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The coldest time was 05:30, when the temperature reached 17.6 °C.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Since the WHO recommends at least 18 °C indoors in cold seasons, perhaps checking the heating would be a kind thought.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

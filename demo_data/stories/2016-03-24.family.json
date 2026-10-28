@@ -2,28 +2,22 @@
  "night": "2016-03-24",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Humidity Check for the Night",
+ "title": "A Calm Night Watch",
  "sentences": [
   {
-   "text": "Humidity in the teenager's room was noted between 01:10 and 03:10.",
+   "text": "The night looked calm, but I noticed the humidity in the teenager's room was higher than expected between 01:10 and 03:10.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed humidity reached 46.6 % at its peak time of 02:00.",
+   "text": "The observed humidity was 46.6 %, which was above the expected range of 42.2 % to 44.6 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This reading was above the expected range of 42.2 % to 44.6 %.",
-   "cites": [
-    "E1"
-   ]
-  },
-  {
-   "text": "You might want to check the ventilation in the teenager's room.",
+   "text": "If you have a chance, perhaps checking the ventilation in the teenager's room might help keep the air feeling fresh.",
    "cites": [
     "E1"
    ]
@@ -31,6 +25,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 3,
  "dropped": 0
 }

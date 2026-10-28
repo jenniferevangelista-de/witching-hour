@@ -1,0 +1,30 @@
+{
+ "night": "2016-02-16",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A gentle night watch",
+ "sentences": [
+  {
+   "text": "The night looked calm, but the parents' room got quite chilly early this morning.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "From 04:50 to 06:00, the temperature in the parents' room dropped, reaching 17.9 °C at 05:50.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Since the WHO recommends at least 18 °C indoors in cold seasons, I suggest checking the heating system.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

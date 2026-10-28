@@ -2,22 +2,22 @@
  "night": "2016-05-13",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Bathroom Humidity Check",
+ "title": "A Gentle Watch Over The Night",
  "sentences": [
   {
-   "text": "The bathroom humidity started drying out at 03:20.",
+   "text": "The air in the bathroom was drying out during the night.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed reading was 50.5 %, which was below the expected range of 53.6 % to 55.8 %.",
+   "text": "The humidity was observed at 50.5 % between 03:20 and 06:00, which was below the expected range of 53.6 % to 55.8 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "If you notice the air feeling very dry, you might want to check the bathroom environment.",
+   "text": "Since the humidity was lower than expected, perhaps checking the bathroom ventilation might help keep the air comfortable.",
    "cites": [
     "E1"
    ]

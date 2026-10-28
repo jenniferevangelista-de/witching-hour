@@ -1,0 +1,36 @@
+{
+ "night": "2016-05-04",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Ironing Room Humidity Spike",
+ "sentences": [
+  {
+   "text": "Hmph. The notion of a haunting is unsubstantiated, as the data only shows a localized humidity spike in the ironing room.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The humidity observed reached 35.5 % between 05:40 and 06:00, which is significantly higher than the expected range of 29.5 % to 32.0 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "I probably suggest that this sudden increase was caused by steam or moisture from an activity taking place in the ironing room.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Without any other sensor events, the evidence points toward a mundane physical occurrence rather than any spectral disturbance.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

@@ -2,28 +2,28 @@
  "night": "2016-05-24",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Energy Spike During Morning Hours",
+ "title": "Energy Spike, Not Ghosts",
  "sentences": [
   {
-   "text": "The sensor data shows a significant spike in appliance energy usage in the house between 05:40 and 05:50.",
+   "text": "Hmph. The notion of a haunting is unsupported by the data I have analyzed, which shows a clear energy anomaly in the house.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed energy usage was 340 Wh, which is considerably higher than the expected 57 Wh.",
+   "text": "Specifically, between 05:40 and 05:50, the appliance energy observed was 340 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This large deviation might simply be the machines waking up, as indicated by the sensor description.",
+   "text": "This usage is significantly higher than the expected 57 Wh and falls well outside the expected range of 44 Wh to 88 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "It is probably just normal morning activity causing the high energy draw.",
+   "text": "This spike, which the system labels as \"the machines waking up\", probably indicates a routine appliance cycle starting early in the morning.",
    "cites": [
     "E1"
    ]

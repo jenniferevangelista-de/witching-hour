@@ -2,22 +2,22 @@
  "night": "2016-02-12",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Energy Usage During the Night",
+ "title": "A Gentle Night Watch",
  "sentences": [
   {
-   "text": "The machines waking up were noted between 00:10 and 00:30.",
+   "text": "The night looked calm, but I noticed a little spike in energy usage early on.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed appliance energy was 90 Wh, which was above the expected range of 20 Wh to 54 Wh.",
+   "text": "Between 00:10 and 00:30, the appliances used 90 Wh, which was above the expected range of 20 Wh to 54 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "It might be helpful to check the appliances that were running during this time.",
+   "text": "If you have a moment, perhaps checking if any machines were running unexpectedly would be helpful.",
    "cites": [
     "E1"
    ]

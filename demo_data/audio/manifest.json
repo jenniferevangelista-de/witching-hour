@@ -1,98 +1,146 @@
 {
- "2016-04-19.family": {
-  "text": "Appliance Energy Spike Noted. The machines started waking up in the house between 05:40 and 05:50. During this time, the appliance energy was 380 Wh, which was above the expected 52 Wh. If you notice anything unusual, perhaps checking the heating might be helpful.",
-  "voice": "Sarah",
-  "model": "eleven_multilingual_v2",
-  "file": "2016-04-19.family.mp3"
- },
  "2016-04-19.medium": {
-  "text": "The House's Midnight Energy. The house seemed perfectly still until 05:40, when a strange energy surge began. The sensors recorded that the machines were waking up, causing the appliance energy to spike to 380 Wh. This ghostly burst of power dramatically exceeded the expected 52 Wh. The peculiar activity finally subsided at 05:50, leaving the house feeling strangely electrified.",
-  "voice": "George",
+  "text": "A Sudden Awakening of the Machines. The air hung still within the house until 05:40, when the machines began their shift, a strange energy gathering. The machines waking up was marked by an immense spike, as the observed 380 Wh soared far past the expected 36 Wh to 75 Wh range. At 05:40, the appliances registered this dramatic power surge, feeling as though the house itself was jolting awake. This powerful presence lingered, filling the air until the period of intense appliance energy ended at 05:50.",
+  "voice": "Jessica",
   "model": "eleven_multilingual_v2",
   "file": "2016-04-19.medium.mp3"
  },
- "2016-04-13.family": {
-  "text": "Morning Energy Use Note. The machines started waking up in the house between 05:30 and 06:00. The observed appliance energy was 360 Wh, which was above the expected 50 Wh. You might want to check the appliances during this time.",
-  "voice": "Sarah",
+ "2016-04-19.skeptic": {
+  "text": "Energy Spike, Not Spirits. Hmph. Luna, I reviewed the sensor data, and I see no evidence of any paranormal activity. Instead, the appliance energy registered a significant spike, observing 380 Wh between 05:40 and 05:50. This observed value is much higher than the expected 52 Wh, suggesting that the machines were simply waking up. It is probably just the house getting ready for the day, not some spooky presence.",
+  "voice": "George",
   "model": "eleven_multilingual_v2",
-  "file": "2016-04-13.family.mp3"
+  "file": "2016-04-19.skeptic.mp3"
+ },
+ "2016-04-19.family": {
+  "text": "A Gentle Watch Through the Night. My lantern watched over the house, and the machines woke up around 05:40. The energy used was 380 Wh, which was much higher than the expected 52 Wh. Since the energy was so high, it might be helpful to check the appliances to see why.",
+  "voice": "Matilda",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-19.family.mp3"
  },
  "2016-04-13.medium": {
-  "text": "The Waking Machines' Energy Burst. Just as the hour of 05:30 arrived, the house sensed a peculiar stir, announcing that \"the machines waking up\". A ghostly current suddenly surged, recording an observed appliance energy of 360 Wh. This supernatural energy was significantly higher than the expected 50 Wh, soaring beyond the anticipated range of 39 Wh to 76 Wh. The spectral activity continued until 06:00, leaving the slumbering house buzzing with an unusual charge.",
-  "voice": "George",
+  "text": "When The Machines Wake Up. Hush... I drifted through the house, feeling only the quiet anticipation before 05:30. I could sense how low the expected reading was, barely 50 Wh. But then, my little crystal ball trembled as the machines began waking up. The energy roared suddenly, spiking to 360 Wh, shattering the expected range of 39 Wh to 76 Wh. This sudden, vibrant presence held the house captive until 06:00.",
+  "voice": "Jessica",
   "model": "eleven_multilingual_v2",
   "file": "2016-04-13.medium.mp3"
  },
- "2016-05-05.family": {
-  "text": "Bathroom Humidity Note. The bathroom humidity showed the air drying out from 03:00 to 05:20. The observed humidity was 41.9 %, which was below the expected range of 49.3 % to 50.0 %. It might be helpful to check the bathroom environment to keep the air comfortable.",
-  "voice": "Sarah",
+ "2016-04-13.skeptic": {
+  "text": "Energy Spike, Not Ghosts. Hmph. I reviewed the data, and based on the sensor events, I highly doubt there was any spectral activity last night. Between 05:30 and 06:00, the house registered a massive spike in appliance energy, observing 360 Wh when only 50 Wh was expected. This significant energy usage, which is far above the expected range, probably indicates that someone was using several machines, maybe a kettle or a coffee maker. The data points to a mundane mechanical event, not any supernatural occurrences in the house.",
+  "voice": "George",
   "model": "eleven_multilingual_v2",
-  "file": "2016-05-05.family.mp3"
+  "file": "2016-04-13.skeptic.mp3"
+ },
+ "2016-04-13.family": {
+  "text": "A Gentle Night Watch. The machines started waking up between 05:30 and 06:00. The energy used was 360 Wh, which was above the expected 50 Wh. Since the energy use was higher than expected, perhaps checking the heating could be helpful.",
+  "voice": "Matilda",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-13.family.mp3"
  },
  "2016-05-05.medium": {
-  "text": "Midnight Bathroom Humidity Dip. Between 03:00 and 05:20, the bathroom began to record an odd phenomenon: the air drying out. The humidity dropped sharply, falling significantly below the expected range of 49.3 % to 50.0 %. At the end of the period, the bathroom’s humidity registered a mysterious 41.9 %. This sudden dip was markedly lower than the prediction of 49.6 %.",
-  "voice": "George",
+  "text": "A Breathless Drop in the Bathroom. Hush now... in the bathroom, the machines began to awaken at 03:00, sensing a shift as the air started drying out. A cold breath swept through the air, dropping the humidity sharply to 41.9 %. Oh, the silence of the readings... this drop was far below what was expected, which was a range of 49.3 % to 50.0 %. The delicate spell of dryness lingered on, as the air continued drying out until 05:20.",
+  "voice": "Jessica",
   "model": "eleven_multilingual_v2",
   "file": "2016-05-05.medium.mp3"
  },
- "2016-04-28.family": {
-  "text": "A Gentle Morning Check. The living room temperature dropped to 17.1 °C at 05:40. This is below 18.0 °C, and the WHO recommends at least 18 °C indoors in cold seasons. Later, the appliance energy usage was 270 Wh between 05:40 and 06:00. Since the temperature was low and the energy usage was high, perhaps checking the heating would be helpful.",
-  "voice": "Sarah",
+ "2016-05-05.skeptic": {
+  "text": "Humidity Drop, Not Ghosts. Hmph. Luna claims the house was haunted, but the data from the bathroom suggests a much more mundane explanation. Between 03:00 and 05:20, the humidity sensor registered a significant drop, observed at 41.9 % compared to the expected 49.6 %. Since the sensor indicates the air was drying out, this drop was probably caused by ventilation or a change in the environmental conditions. It is highly unlikely that a spectral disturbance would cause such a measurable change in humidity levels.",
+  "voice": "George",
   "model": "eleven_multilingual_v2",
-  "file": "2016-04-28.family.mp3"
+  "file": "2016-05-05.skeptic.mp3"
+ },
+ "2016-05-05.family": {
+  "text": "A Gentle Night Watch. The night looked calm, but the humidity in the bathroom was lower than expected. Between 03:00 and 05:20, the air in the bathroom was observed at 41.9 %, which was below the expected range of 49.3 % to 50.0 %. Since the humidity was quite low, perhaps checking the bathroom ventilation might help keep the air comfortable.",
+  "voice": "Matilda",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-05-05.family.mp3"
  },
  "2016-04-28.medium": {
-  "text": "Whispers of Waking Machines. The house remained still until 05:40, when a mischievous energy surge began, suggesting that \"the machines waking up\". Between 05:40 and 06:00, the house’s sensors recorded a whopping 270 Wh. This spectral power draw was significantly higher than the expected 60 Wh. The observed energy was far beyond the predicted range of 33 Wh to 82 Wh.",
-  "voice": "George",
+  "text": "A Sudden Electrical Presence. I drift through the house on Thursday 2016-04-28, sensing the deep quiet before the shift in the air. Initially, the energies felt stable, with a predicted expectation of only 60 Wh. But at 05:40, the machines waking up began, causing a dramatic surge in the house. My sensors felt the massive shift, as the observed appliance energy skyrocketed to 270 Wh. This intense, energetic presence held for 20 minutes, slowly fading away near 06:00.",
+  "voice": "Jessica",
   "model": "eleven_multilingual_v2",
   "file": "2016-04-28.medium.mp3"
  },
- "2016-05-24.family": {
-  "text": "Morning Energy Check. The machines woke up in the house between 05:40 and 05:50. The observed appliance energy was 340 Wh, which was above the expected 57 Wh. Perhaps checking the appliances might be helpful after the energy spike at 05:40.",
-  "voice": "Sarah",
+ "2016-04-28.skeptic": {
+  "text": "Energy Spike, Not Ghosts. Hmph. I have reviewed the sensor events, and the claim of a haunting is not supported by the data. Between 05:40 and 06:00, the appliance energy in the house reached 270 Wh, which is significantly above the expected 60 Wh. This large increase in consumption, which is labeled as \"the machines waking up\", suggests a physical cause rather than a spectral one. I probably conclude that the high energy usage was simply normal morning activity, not any kind of disturbance.",
+  "voice": "George",
   "model": "eleven_multilingual_v2",
-  "file": "2016-05-24.family.mp3"
+  "file": "2016-04-28.skeptic.mp3"
+ },
+ "2016-04-28.family": {
+  "text": "A Gentle Morning Watch. The living room temperature dropped to 17.1 °C at 05:40, which is below 18.0 °C and the WHO recommends at least 18 °C indoors in cold seasons. Later, between 05:40 and 06:00, the machines woke up and used 270 Wh, which was much higher than the expected 60 Wh. Since the temperature was low and the energy usage was high, perhaps checking the heating might help keep things cozy.",
+  "voice": "Matilda",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-28.family.mp3"
  },
  "2016-05-24.medium": {
-  "text": "Midnight's Electric Playtime. In the quiet depths of the house, something began to stir around 05:40, as the machines started waking up. Between 05:40 and 05:50, the appliances registered an immense burst of energy, totaling 340 Wh. This recorded spike was wildly outside the expected range of \"44 Wh to 88 Wh\". It seems a mischievous entity decided to bring the house's power system to life during this brief window.",
-  "voice": "George",
+  "text": "Whispers of Waking Machines. Hush now, little darling, as I drift through the house, waiting for the subtle currents to stir... At 05:40, the quiet began to falter, and the sensors sensed something ancient begin to stir, a sudden sign that the machines were waking up. My crystal ball registered a massive surge—340 Wh—far exceeding the little expected range of 44 Wh to 88 Wh. The spike, a beautiful, chaotic wave, pulled the appliances far beyond their usual 57 Wh expectation. This intense, strange energy lasted ten minutes, a brief, heavy presence hanging in the house before it slowly subsided.",
+  "voice": "Jessica",
   "model": "eleven_multilingual_v2",
   "file": "2016-05-24.medium.mp3"
  },
- "2016-04-17.family": {
-  "text": "A Quiet Morning Check. The living room temperature reached its coldest point at 17.8 °C at 05:40. Since WHO recommends at least 18 °C indoors in cold seasons, this is something to note. In the ironing room, the humidity was observed at 32.8 % between 04:00 and 06:00. You might want to check the heating in the living room, as the temperature stayed below 18.0 °C.",
-  "voice": "Sarah",
+ "2016-05-24.skeptic": {
+  "text": "Energy Spike, Not Ghosts. Hmph. The notion of a haunting is unsupported by the data I have analyzed, which shows a clear energy anomaly in the house. Specifically, between 05:40 and 05:50, the appliance energy observed was 340 Wh. This usage is significantly higher than the expected 57 Wh and falls well outside the expected range of 44 Wh to 88 Wh. This spike, which the system labels as \"the machines waking up\", probably indicates a routine appliance cycle starting early in the morning.",
+  "voice": "George",
   "model": "eleven_multilingual_v2",
-  "file": "2016-04-17.family.mp3"
+  "file": "2016-05-24.skeptic.mp3"
+ },
+ "2016-05-24.family": {
+  "text": "Sweet Morning Greetings. The night was mostly calm, but I noticed a big spike in appliance energy usage in the house. Between 05:40 and 05:50, the machines used 340 Wh, which was much higher than the expected 57 Wh. If you have a moment, checking on the appliances that were running might help keep things steady.",
+  "voice": "Matilda",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-05-24.family.mp3"
  },
  "2016-04-17.medium": {
-  "text": "Ironing Room's Midnight Mystery. As the clock struck 04:00, the ironed room began a strange, ethereal performance as the air started drying out. The spectral humidity plummeted, dropping to 32.8 % in the ironing room, which was far below the expected 37.5 %. At 05:30, the peak of this strange dehumidifying activity was reached, suggesting a mischievous, unseen guest. The haunting sensation persisted until 06:00, leaving the house's humidity well below the predicted range of 37.0 % to 38.1 %.",
-  "voice": "George",
+  "text": "A Chill in the Ironing Room. Shhh... I drift into the ironing room at 04:00, and the sensors immediately sense a peculiar dryness in the air. The readings whisper that the air is drying out, registering a low 32.8 %, far beneath the expected 37.5 %. A strange, cold breath settles over the space, for the current humidity falls outside the predicted range of 37.0 % to 38.1 %. This subtle presence hangs heavy in the air, clinging to the room until the sensors finally stabilize at 06:00.",
+  "voice": "Jessica",
   "model": "eleven_multilingual_v2",
   "file": "2016-04-17.medium.mp3"
  },
- "2016-03-09.family": {
-  "text": "Night Watch Update. The living room temperature was observed at 16.6 °C between 04:20 and 06:00. The living room stayed below 18.0 °C for 360 minutes, and the WHO recommends at least 18 °C indoors in cold seasons. Humidity in the living room was observed at 41.2 % from 03:00 to 06:00. The living room stayed below 18.0 °C, so perhaps checking the heating system would be helpful.",
-  "voice": "Sarah",
+ "2016-04-17.skeptic": {
+  "text": "Humidity Drop, Not Ghosts. Hmph. I have reviewed the data, and I find no evidence of any spectral activity; the house was merely behaving according to physics, E1. Between 04:00 and 06:00, the humidity in the ironing room dropped significantly to 32.8 %, which is below the expected range of 37.0 % to 38.1 %, E1. This sharp decline suggests that something caused the air to dry out, perhaps an open window or a sudden change in temperature settings, E1. Therefore, it is probably a mundane environmental fluctuation, not a haunting, despite the observed value being 32.8 % instead of the expected 37.5 %, E1.",
+  "voice": "George",
   "model": "eleven_multilingual_v2",
-  "file": "2016-03-09.family.mp3"
+  "file": "2016-04-17.skeptic.mp3"
+ },
+ "2016-04-17.family": {
+  "text": "A Gentle Night Watch Report. The living room temperature dropped to 17.8 °C at 05:40, and the WHO recommends at least 18 °C indoors in cold seasons. In the ironing room, the humidity was 32.8 %, which was below the expected range of 37.0 % to 38.1 %. You might want to check the heating in the living room.",
+  "voice": "Matilda",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-17.family.mp3"
  },
  "2016-03-09.medium": {
-  "text": "Whispers of the Midnight Living Room. At 03:00, a ghostly presence began to waft through the living room, evidenced by the humidity rising to 41.2 %. This strange. This spectral breath on the glass lasted until 06:00, peaking at 05:40. Later, at 04:20, the house detected a cold spot arriving in the living room. By 05:00, this cold spot reached its peak, dropping the temperature to 16.6 °C, significantly below the expected 18.0 °C.",
-  "voice": "George",
+  "text": "Whispers of the Living Room Night. Hush... I feel the first subtle shift creeping into the living room at 03:00, a ghostly indication of 'breath on the glass' at 41.2 %. Then, after 04:20, the machines began to wake to a profound change, registering a chilling 'cold spot' in the living room. By 05:00, the presence was undeniable, plunging the air to 16.6 °C, far below the expected range. And even as the cold lingered, the breath on the glass reached its dramatic peak near 05:40, settling at 41.2 %.",
+  "voice": "Jessica",
   "model": "eleven_multilingual_v2",
   "file": "2016-03-09.medium.mp3"
  },
- "2016-04-12.family": {
-  "text": "Office Temperature Readings. The office recorded a warmth with no source between 01:10 and 04:50. During this period, the temperature was observed at 22.2 °C, which was above the expected 21.4 °C. Since the sensor noted a warmth with no source, perhaps checking the heating system would be helpful.",
-  "voice": "Sarah",
-  "model": "eleven_multilingual_v2",
-  "file": "2016-04-12.family.mp3"
- },
- "2016-04-12.medium": {
-  "text": "The Office's Warm, Spooky Secret. Midnight saw the house settling, but in the office, a strange warmth with no source began at 01:10. The thermal anomaly quickly peaked at 01:30, pushing the temperature up to 22.2 °C, far exceeding the predicted range of 21.1 °C to 21.6 °C. This unexplained warmth lingered for hours, persisting deep into the night. The ghostly heat in the office finally receded, ending its strange vigil at 04:50.",
+ "2016-03-09.skeptic": {
+  "text": "Data Doesn't Support Ghosts. Hmph. Luna, the data shows no spectral activity, only measurable environmental shifts in the living room. Between 03:00 and 06:00, the humidity rose to 41.2 %, exceeding the expected range of 36.2 % to 38.3 %. Concurrently, the temperature dropped to 16.6 °C starting at 04:20, which is lower than the expected 18.0 °C. Since these changes occurred together, I probably suggest that an open window or a sudden draft caused the humidity and temperature to shift simultaneously.",
   "voice": "George",
   "model": "eleven_multilingual_v2",
+  "file": "2016-03-09.skeptic.mp3"
+ },
+ "2016-03-09.family": {
+  "text": "A Gentle Morning Check. The living room temperature dropped to 16.6 °C between 04:20 and 06:00, and the humidity was 41.2 %. The living room stayed below 18.0 °C, and the parents' room and bathroom also stayed below 18.0 °C during the night. Since several rooms were below the recommended 18 °C, perhaps checking the heating system would be helpful.",
+  "voice": "Matilda",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-03-09.family.mp3"
+ },
+ "2016-04-12.medium": {
+  "text": "A Warmth Lingers in the Office. Shhh... I floated into the office at 01:10, where the expectation was a steady 21.4 °C. But the sensors felt an unsettling shift, defying the predicted range of 21.1 °C to 21.6 °C. Then, the machines woke... a mysterious warmth appeared, rising sharply to 22.2 °C around 01:30. Oh, how sweet, yet chilling... this warmth endured for almost four hours, until 04:50. I felt the energy of this singular warmth linger in the office throughout the entire observation period.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
   "file": "2016-04-12.medium.mp3"
+ },
+ "2016-04-12.skeptic": {
+  "text": "Office Temperature Anomaly Analysis. Hmph. The idea of a haunting is statistically unsound, especially when we have data showing a temperature anomaly in the office. Between 01:10 and 04:50, the office temperature was observed at 22.2 °C. This observed warmth is significantly above the expected range of 21.1 °C to 21.6 °C. Maybe this 'a warmth with no source' was caused by an external heat source or a mechanical issue, rather than any spectral activity.",
+  "voice": "George",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-12.skeptic.mp3"
+ },
+ "2016-04-12.family": {
+  "text": "A Warm Spot in the Office. Good morning! I watched the office all night, and I noticed a warmth with no source between 01:10 and 04:50. The temperature there reached 22.2 °C, which was higher than the expected 21.4 °C. Since this warmth came from no obvious source, perhaps you could check the heating system in the office.",
+  "voice": "Matilda",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-12.family.mp3"
  }
 }

@@ -2,41 +2,35 @@
  "night": "2016-03-09",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "Whispers of the Midnight Living Room",
+ "title": "Whispers of the Living Room Night",
  "sentences": [
   {
-   "text": "At 03:00, a ghostly presence began to waft through the living room, evidenced by the humidity rising to 41.2 %.",
+   "text": "Hush... I feel the first subtle shift creeping into the living room at 03:00, a ghostly indication of 'breath on the glass' at 41.2 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This strange.",
-   "cites": [
-    "E1"
-   ]
-  },
-  {
-   "text": "This spectral breath on the glass lasted until 06:00, peaking at 05:40.",
-   "cites": [
-    "E1"
-   ]
-  },
-  {
-   "text": "Later, at 04:20, the house detected a cold spot arriving in the living room.",
+   "text": "Then, after 04:20, the machines began to wake to a profound change, registering a chilling 'cold spot' in the living room.",
    "cites": [
     "E2"
    ]
   },
   {
-   "text": "By 05:00, this cold spot reached its peak, dropping the temperature to 16.6 °C, significantly below the expected 18.0 °C.",
+   "text": "By 05:00, the presence was undeniable, plunging the air to 16.6 °C, far below the expected range.",
    "cites": [
     "E2"
+   ]
+  },
+  {
+   "text": "And even as the cold lingered, the breath on the glass reached its dramatic peak near 05:40, settling at 41.2 %.",
+   "cites": [
+    "E1"
    ]
   }
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 5,
+ "verified": 4,
  "dropped": 0
 }

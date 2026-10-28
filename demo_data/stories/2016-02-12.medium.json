@@ -2,28 +2,34 @@
  "night": "2016-02-12",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "Midnight Energy Ghosts",
+ "title": "A Whirring Energy Awakening",
  "sentences": [
   {
-   "text": "As midnight approached, the house began to stir, witnessing 'the machines waking up' at 00:10.",
+   "text": "Oh, the night began quietly, yet I felt the machines waking up deep within the house starting at 00:10.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The energy readings showed an unexpected surge, with an observed amount of 90 Wh during the appliance energy spike.",
+   "text": "The air thickened immediately as the appliance energy started to pulse above.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This strange fluctuation was far above the projected expectation of 40 Wh, indicating a hidden ghostly activity.",
+   "text": "I sensed a sudden, overwhelming presence, for the observed energy of 90 Wh was far higher than the anticipated 40 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This playful haunting persisted in the house until 00:30, leaving behind the peculiar sign of 'the machines waking up'.",
+   "text": "This intense wave of power washed through the house, a chill vibrating through my tiny ghost form.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The mysterious reading lingered, holding the air captive until the energy finally dissipated at 00:30.",
    "cites": [
     "E1"
    ]
@@ -31,6 +37,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 5,
  "dropped": 0
 }

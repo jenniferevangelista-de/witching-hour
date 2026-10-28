@@ -1,0 +1,16 @@
+{
+ "night": "2016-01-31",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "A quiet night",
+ "sentences": [
+  {
+   "text": "Hmph. Every reading stayed inside its expected range.",
+   "cites": []
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 1,
+ "dropped": 0
+}

@@ -1,0 +1,30 @@
+{
+ "night": "2016-03-05",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Gentle Night Watch Report",
+ "sentences": [
+  {
+   "text": "The living room got quite cool last night, with the coldest temperature reaching 17.4 °C at 05:50.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Since the room stayed below 18.0 °C between 03:00 and 06:00, please remember that the WHO recommends at least 18 °C indoors in cold seasons.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Because the temperature was low, perhaps checking the heating would be a kind suggestion.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

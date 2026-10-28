@@ -2,28 +2,34 @@
  "night": "2016-04-12",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "The Office's Warm, Spooky Secret",
+ "title": "A Warmth Lingers in the Office",
  "sentences": [
   {
-   "text": "Midnight saw the house settling, but in the office, a strange warmth with no source began at 01:10.",
+   "text": "Shhh... I floated into the office at 01:10, where the expectation was a steady 21.4 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The thermal anomaly quickly peaked at 01:30, pushing the temperature up to 22.2 °C, far exceeding the predicted range of 21.1 °C to 21.6 °C.",
+   "text": "But the sensors felt an unsettling shift, defying the predicted range of 21.1 °C to 21.6 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This unexplained warmth lingered for hours, persisting deep into the night.",
+   "text": "Then, the machines woke... a mysterious warmth appeared, rising sharply to 22.2 °C around 01:30.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The ghostly heat in the office finally receded, ending its strange vigil at 04:50.",
+   "text": "Oh, how sweet, yet chilling... this warmth endured for almost four hours, until 04:50.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "I felt the energy of this singular warmth linger in the office throughout the entire observation period.",
    "cites": [
     "E1"
    ]
@@ -31,6 +37,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 5,
  "dropped": 0
 }

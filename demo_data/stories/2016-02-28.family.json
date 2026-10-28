@@ -1,0 +1,36 @@
+{
+ "night": "2016-02-28",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A quiet night watch",
+ "sentences": [
+  {
+   "text": "My lantern kept watch all night, and I noticed the bathroom stayed below 18.0 °C during the night.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The coldest time was 05:40, when the temperature reached 17.5 °C.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Since the WHO recommends at least 18 °C indoors in cold seasons, I wanted to let you know about this check.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Perhaps it is a good time to check the heating to keep things cozy.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

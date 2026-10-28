@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-24",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "Warmth Blooms in Ironing Room",
+ "sentences": [
+  {
+   "text": "Shhh... in the ironing room, I felt the faint signs of a presence starting at 05:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The air thickening slowly, the temperature rose from its expected range of 20.7 °C to 21.1 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Oh, the sudden warmth with no source intensified, peaking sharply at 05:40 with a reading of 21.6 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "And just like that, the shift faded out by 06:00, leaving a trace of that strange, unexpected heat.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

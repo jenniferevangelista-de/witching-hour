@@ -1,0 +1,38 @@
+{
+ "night": "2016-01-26",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Gentle Night Watch",
+ "sentences": [
+  {
+   "text": "The parents' room stayed below 18.0 °C all night, with the coldest reading being 17.0 °C at 00:00.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The bathroom also stayed below 18.0 °C, reaching 17.6 °C at 05:40.",
+   "cites": [
+    "C2"
+   ]
+  },
+  {
+   "text": "Since both rooms were below 18.0 °C, please remember that the WHO recommends at least 18 °C indoors in cold seasons.",
+   "cites": [
+    "C1",
+    "C2"
+   ]
+  },
+  {
+   "text": "Because both rooms were below the recommended temperature, it might be a good idea to check the heating.",
+   "cites": [
+    "C1",
+    "C2"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

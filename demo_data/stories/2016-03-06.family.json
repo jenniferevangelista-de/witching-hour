@@ -1,0 +1,33 @@
+{
+ "night": "2016-03-06",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Gentle Morning Watch",
+ "sentences": [
+  {
+   "text": "The living room stayed below 18.0 °C, reaching 16.9 °C at 05:00, and the office was also cool, hitting 17.5 °C at 05:20.",
+   "cites": [
+    "C1",
+    "C2"
+   ]
+  },
+  {
+   "text": "Because both rooms stayed below 18.0 °C, please remember that the WHO recommends at least 18 °C indoors in cold seasons.",
+   "cites": [
+    "C1",
+    "C2"
+   ]
+  },
+  {
+   "text": "Since the temperatures were low in both rooms, perhaps it would be a good idea to check the heating system.",
+   "cites": [
+    "C1",
+    "C2"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

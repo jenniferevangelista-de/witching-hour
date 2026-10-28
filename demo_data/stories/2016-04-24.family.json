@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-24",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Gentle Watch Notes",
+ "sentences": [
+  {
+   "text": "The ironing room felt warmer than expected this morning, between 05:00 and 06:00.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The temperature was 21.6 °C, which was above the expected range of 20.7 °C to 21.1 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The sensor noted 'a warmth with no source' during this time.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Since this warmth was unexpected, perhaps checking the heating or for drafts might help.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

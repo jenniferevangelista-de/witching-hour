@@ -2,28 +2,34 @@
  "night": "2016-02-13",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "Living Room's Midnight Chill",
+ "title": "A Cold Presence in the Living Room",
  "sentences": [
   {
-   "text": "As the clock ticked past 04:20, the living room sensors began to register an unusual cold spot.",
+   "text": "Hush... at 04:20, the readings in the living room showed a strange deviation, as the expected 19.7 °C began to fail.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The temperature dipped down to 18.4 °C, falling below the predicted norm of 19.7 °C.",
+   "text": "I felt the machines waking as a whisper of a cold spot started to bloom in the room.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The ghostly chill peaked at 05:50, creating a mysterious drop from the expected range of 19.3 °C to 20.0 °C.",
+   "text": "Oh, the chill deepened, like a cold breath settling over the space, drawing the temperature below its expected range.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This strange, chilly presence remained in the living room until 06:00.",
+   "text": "This presence peaked at 05:50, reaching a dramatic 18.4 °C before the chill began to recede.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "I drifted through the living room until 06:00, feeling the cold spot slowly sighing away.",
    "cites": [
     "E1"
    ]
@@ -31,6 +37,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 5,
  "dropped": 0
 }

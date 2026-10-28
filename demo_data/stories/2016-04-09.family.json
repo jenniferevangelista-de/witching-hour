@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-09",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "Xochi's Night Watch Report",
+ "sentences": [
+  {
+   "text": "The living room temperature dropped to 17.8 °C at 05:50, and it stayed below 18.0 °C until 06:00.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The WHO recommends at least 18 °C indoors in cold seasons, so the living room was quite cool.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "In the teenager's room, the temperature was 22.9 °C between 04:40 and 05:10, which was higher than expected.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Since the living room was below 18.0 °C, perhaps checking the heating would be a gentle idea.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

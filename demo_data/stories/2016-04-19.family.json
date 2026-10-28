@@ -2,29 +2,29 @@
  "night": "2016-04-19",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Appliance Energy Spike Noted",
+ "title": "A Gentle Watch Through the Night",
  "sentences": [
   {
-   "text": "The machines started waking up in the house between 05:40 and 05:50.",
+   "text": "My lantern watched over the house, and the machines woke up around 05:40.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "During this time, the appliance energy was 380 Wh, which was above the expected 52 Wh.",
+   "text": "The energy used was 380 Wh, which was much higher than the expected 52 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "If you notice anything unusual, perhaps checking the heating might be helpful.",
+   "text": "Since the energy was so high, it might be helpful to check the appliances to see why.",
    "cites": [
     "E1"
    ]
   }
  ],
  "rejected": [],
- "attempts": 1,
+ "attempts": 2,
  "verified": 3,
  "dropped": 0
 }

@@ -2,22 +2,22 @@
  "night": "2016-03-24",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Humidity Spike in Teenager's Room",
+ "title": "Humidity is Not a Ghost",
  "sentences": [
   {
-   "text": "The sensor data indicates a notable increase in humidity within the teenager's room.",
+   "text": "Hmph. Before we discuss spectral activity, we must look at the data; the humidity in the teenager's room was elevated between 01:10 and 03:10.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed humidity reached 46.6 %, which is outside the expected range of 42.2 % to 44.6 %.",
+   "text": "Specifically, the observed humidity of 46.6 % exceeded the expected 43.8 % and was outside the expected range of 42.2 % to 44.6 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This spike, which peaked at 02:00, was probably caused by a simple, everyday source of moisture, such as someone breathing heavily in the room.",
+   "text": "Given that the sensor noted 'breath on the glass', it is probably just a mundane explanation that someone was present in the room and breathing heavily.",
    "cites": [
     "E1"
    ]

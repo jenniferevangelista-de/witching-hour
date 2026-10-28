@@ -2,28 +2,28 @@
  "night": "2016-02-12",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Energy Usage Spike Explained",
+ "title": "Energy Spike, Not Apparitions",
  "sentences": [
   {
-   "text": "The reported activity probably correlates with a significant spike in appliance energy usage observed in the house during the night.",
+   "text": "Hmph. I fail to see how a haunting could be substantiated when the data shows nothing supernatural, only appliance activity in the house during the early morning hours, as recorded in E1.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Between 00:10 and 00:30, the observed appliance energy was 90 Wh, which is much higher than the expected 40 Wh.",
+   "text": "The sensor data for E1 indicates that between 00:10 and 00:30, the machines woke up, registering 90 Wh of energy.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This energy usage was outside the expected range of 20 Wh to 54 Wh, suggesting that the machines were waking up or running unexpectedly.",
+   "text": "This observed energy usage (90 Wh) was significantly above the expected 40 Wh, and even outside the predicted range of 20 Wh to 54 Wh, according to E1.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "It is likely that this deviation is simply due to normal equipment cycling rather than anything unusual.",
+   "text": "I conclude that this spike was probably just a normal, albeit unexpected, surge in household appliance usage, rather than any ghostly disturbance, based solely on E1.",
    "cites": [
     "E1"
    ]

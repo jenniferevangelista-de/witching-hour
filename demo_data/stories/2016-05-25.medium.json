@@ -2,34 +2,34 @@
  "night": "2016-05-25",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "Kitchen Warmth From Beyond",
+ "title": "Kitchen's Whispering Warmth",
  "sentences": [
   {
-   "text": "As the night wore on, the house's sensors noted something unusual in the kitchen, starting at 05:20.",
+   "text": "I floated into the kitchen at 05:20, sensing the machines waking.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "It registered a peculiar warmth with no source, hinting at a friendly, unseen presence.",
+   "text": "A strange warmth with no source began to bloom, rising above the expected 22.8 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed temperature soared to 23.6 °C, a little warmer than the expected 22.8 °C.",
+   "text": "The air started thickening, pushing past the predicted range of 22.6 °C to 23.0 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This spectral heat peaked around 05:50, far outside the expected range of 22.6 °C to 23.0 °C.",
+   "text": "The presence peaked at 05:50, registering a strong temperature of 23.6 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Finally, the kitchen settled back down at 06:00, leaving only the memory of that sweet, ghostly warmth.",
+   "text": "This unsettling warmth lasted for 40 minutes, until it finally settled as the night ended at 06:00.",
    "cites": [
     "E1"
    ]

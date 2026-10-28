@@ -2,22 +2,28 @@
  "night": "2016-05-05",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Bathroom Humidity Drop Explanation",
+ "title": "Humidity Drop, Not Ghosts",
  "sentences": [
   {
-   "text": "The sensor data shows that the humidity in the bathroom dropped significantly between 03:00 and 05:20.",
+   "text": "Hmph. Luna claims the house was haunted, but the data from the bathroom suggests a much more mundane explanation.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed humidity was 41.9 %, which was below the expected range of 49.3 % to 50.0 %.",
+   "text": "Between 03:00 and 05:20, the humidity sensor registered a significant drop, observed at 41.9 % compared to the expected 49.6 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Since the sensor noted 'the air drying out', this probably indicates a change in air circulation or ventilation during that time.",
+   "text": "Since the sensor indicates the air was drying out, this drop was probably caused by ventilation or a change in the environmental conditions.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "It is highly unlikely that a spectral disturbance would cause such a measurable change in humidity levels.",
    "cites": [
     "E1"
    ]
@@ -25,6 +31,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 3,
+ "verified": 4,
  "dropped": 0
 }

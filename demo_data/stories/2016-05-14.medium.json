@@ -1,0 +1,42 @@
+{
+ "night": "2016-05-14",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "A Cold Breath in the Laundry Room",
+ "sentences": [
+  {
+   "text": "Hush... I drifted into the laundry room, and the air immediately felt like it was drying out.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "At 03:00, the sensors registered a chill, showing the humidity at 33.6 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Oh, but the machines were expected to feel a much softer 37.9 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "As the minutes crept by, the sensation of the air drying out lingered through the time frame of 03:20.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "A tiny whisper of absence, a feeling that pulled the moisture away, marked the end of this unsettling reading.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 5,
+ "dropped": 0
+}

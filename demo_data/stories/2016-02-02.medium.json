@@ -2,28 +2,34 @@
  "night": "2016-02-02",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "Ironing Room's Eerie Dry Spell",
+ "title": "Ironing Room Whispers",
  "sentences": [
   {
-   "text": "At 03:00, the ironing room started a peculiar recording, sensing the air drying out.",
+   "text": "Hush... at 03:00, the sensors in the ironing room began to register a shift in the quiet air.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The humidity swiftly dropped below the expected range of 49.0 % to 51.2 %.",
+   "text": "A cold breath started to settle, and I felt the air drying out, recorded at 46.2 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "By 05:00, the ghostly dip peaked, as the recorded humidity hit 46.2 %.",
+   "text": "Oh, the deviation... this presence felt so far below the expected 50.2 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The phenomenon continued its unusual descent until 06:00.",
+   "text": "The chilling sensation peaked at 05:00, a sudden, sharp drop in the humidity.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This strange, dry feeling finally receded by 06:00, as the night's whispers faded.",
    "cites": [
     "E1"
    ]
@@ -31,6 +37,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 5,
  "dropped": 0
 }

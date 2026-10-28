@@ -2,28 +2,28 @@
  "night": "2016-04-19",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "The House's Midnight Energy",
+ "title": "A Sudden Awakening of the Machines",
  "sentences": [
   {
-   "text": "The house seemed perfectly still until 05:40, when a strange energy surge began.",
+   "text": "The air hung still within the house until 05:40, when the machines began their shift, a strange energy gathering.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The sensors recorded that the machines were waking up, causing the appliance energy to spike to 380 Wh.",
+   "text": "The machines waking up was marked by an immense spike, as the observed 380 Wh soared far past the expected 36 Wh to 75 Wh range.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This ghostly burst of power dramatically exceeded the expected 52 Wh.",
+   "text": "At 05:40, the appliances registered this dramatic power surge, feeling as though the house itself was jolting awake.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The peculiar activity finally subsided at 05:50, leaving the house feeling strangely electrified.",
+   "text": "This powerful presence lingered, filling the air until the period of intense appliance energy ended at 05:50.",
    "cites": [
     "E1"
    ]

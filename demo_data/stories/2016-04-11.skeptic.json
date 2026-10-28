@@ -2,28 +2,28 @@
  "night": "2016-04-11",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Temperature Fluctuation in Ironing Room",
+ "title": "Ironing Room Temperature Anomaly",
  "sentences": [
   {
-   "text": "During the night, the ironing room registered a warmth with no source between 02:00 and 06:00.",
+   "text": "Hmph. The temperature in the ironing room was observed at 22.4 °C between 02:00 and 06:00.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed temperature was 22.4 °C, which is higher than the expected range of 20.8 °C to 21.6 °C.",
+   "text": "This reading significantly exceeded the expected range of 20.8 °C to 21.6 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This indicates that the temperature rose above the predicted 21.2 °C during that time frame.",
+   "text": "The peak of this warmth with no source occurred at 03:00.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Maybe this increase was caused by a simple external factor, such as a change in the house's ventilation or insulation.",
+   "text": "Maybe this spike was caused by a nearby appliance or a change in airflow, rather than anything spectral.",
    "cites": [
     "E1"
    ]

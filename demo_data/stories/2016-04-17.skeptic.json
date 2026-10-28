@@ -2,28 +2,28 @@
  "night": "2016-04-17",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Humidity Drop in Ironing Room",
+ "title": "Humidity Drop, Not Ghosts",
  "sentences": [
   {
-   "text": "The sensor data indicates a noticeable drop in humidity within the ironing room between 04:00 and 06:00.",
+   "text": "Hmph. I have reviewed the data, and I find no evidence of any spectral activity; the house was merely behaving according to physics, E1.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed humidity was 32.8 %, which is significantly below the expected value of 37.5 %.",
+   "text": "Between 04:00 and 06:00, the humidity in the ironing room dropped significantly to 32.8 %, which is below the expected range of 37.0 % to 38.1 %, E1.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This sudden decrease suggests that maybe the air was drying out rapidly.",
+   "text": "This sharp decline suggests that something caused the air to dry out, perhaps an open window or a sudden change in temperature settings, E1.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This pattern could probably be the result of increased ventilation or temperature changes in the ironing room.",
+   "text": "Therefore, it is probably a mundane environmental fluctuation, not a haunting, despite the observed value being 32.8 % instead of the expected 37.5 %, E1.",
    "cites": [
     "E1"
    ]

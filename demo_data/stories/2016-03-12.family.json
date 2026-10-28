@@ -1,0 +1,30 @@
+{
+ "night": "2016-03-12",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Quiet Night Watch",
+ "sentences": [
+  {
+   "text": "The night was calm, but the living room stayed below 18.0 °C between 01:00 and 06:00.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The coldest time was 05:50, when the temperature reached 16.8 °C, and the WHO recommends at least 18 °C indoors in cold seasons.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "Since it was quite chilly, I gently suggest checking the heating to keep the house warm.",
+   "cites": [
+    "C1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

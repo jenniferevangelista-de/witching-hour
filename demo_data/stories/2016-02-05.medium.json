@@ -1,0 +1,42 @@
+{
+ "night": "2016-02-05",
+ "mode": "medium",
+ "model": "gemma4:e4b",
+ "title": "Humidity's Cold Breath",
+ "sentences": [
+  {
+   "text": "Oh, the stillness in the teenager's room was fragile before 02:10, a perfect, heavy calm.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "But then, the machines woke, and I felt the air thickening as the humidity climbed to 55.2 %, soaring beyond the predicted 53.1 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The expected range of 50.8 % to 53.9 % was shattered by a rush, and a chilling presence began to drift above.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "At 02:10, the air coalesced into what felt like a cold breath on the glass, with a strength registered at 4.1.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This strange, humid whisper lingered in the room until 02:30, a faint, damp chill in its wake.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 5,
+ "dropped": 0
+}

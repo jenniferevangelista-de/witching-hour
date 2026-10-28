@@ -1,0 +1,30 @@
+{
+ "night": "2016-02-05",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Calm Night Watch",
+ "sentences": [
+  {
+   "text": "The night looked calm, though the humidity in the teenager's room was higher than expected between 02:10 and 02:30.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The reading of 55.2 % was above the expected range of 50.8 % to 53.9 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Since the humidity was a bit high, perhaps checking the ventilation in that room would be a gentle idea.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

@@ -2,22 +2,28 @@
  "night": "2016-04-11",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Ironing Room Temperature Notes",
+ "title": "A Warm Night in the Ironing Room",
  "sentences": [
   {
-   "text": "The temperature in the ironing room showed a warmth with no source between 02:00 and 06:00, according to E1.",
+   "text": "My watch showed a warmth in the ironing room from 02:00 to 06:00.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "During this time, the observed temperature was 22.4 °C, which was above the expected temperature of 21.2 °C.",
+   "text": "The temperature was 22.4 °C, which was above the expected 21.2 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Because the temperature was higher than expected, you might want to check the heating or any appliances in the ironing room.",
+   "text": "This warmth, which had no source, was higher than the expected range of 20.8 °C to 21.6 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Since the warmth had no source, perhaps it would be kind to check the heating in that room.",
    "cites": [
     "E1"
    ]
@@ -25,6 +31,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 3,
+ "verified": 4,
  "dropped": 0
 }

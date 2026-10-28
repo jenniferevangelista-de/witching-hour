@@ -1,0 +1,36 @@
+{
+ "night": "2016-04-09",
+ "mode": "skeptic",
+ "model": "gemma4:e4b",
+ "title": "Data Shows Thermal Fluctuation",
+ "sentences": [
+  {
+   "text": "Hmph. Luna, I have analyzed the sensor events, and I see no spectral evidence of a haunting in the teenager's room.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The temperature reading showed a warmth with no source, peaking at 22.9 °C around 04:50 between 04:40 and 05:10.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This observed temperature was significantly higher than the expected 21.5 °C, exceeding the expected range of 21.1 °C to 21.9 °C.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Maybe this sudden spike is simply due to a minor thermal fluctuation or perhaps a nearby heat source, rather than any supernatural disturbance.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

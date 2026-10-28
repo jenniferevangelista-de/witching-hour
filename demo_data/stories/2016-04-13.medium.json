@@ -2,28 +2,34 @@
  "night": "2016-04-13",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "The Waking Machines' Energy Burst",
+ "title": "When The Machines Wake Up",
  "sentences": [
   {
-   "text": "Just as the hour of 05:30 arrived, the house sensed a peculiar stir, announcing that \"the machines waking up\".",
+   "text": "Hush... I drifted through the house, feeling only the quiet anticipation before 05:30.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "A ghostly current suddenly surged, recording an observed appliance energy of 360 Wh.",
+   "text": "I could sense how low the expected reading was, barely 50 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This supernatural energy was significantly higher than the expected 50 Wh, soaring beyond the anticipated range of 39 Wh to 76 Wh.",
+   "text": "But then, my little crystal ball trembled as the machines began waking up.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The spectral activity continued until 06:00, leaving the slumbering house buzzing with an unusual charge.",
+   "text": "The energy roared suddenly, spiking to 360 Wh, shattering the expected range of 39 Wh to 76 Wh.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This sudden, vibrant presence held the house captive until 06:00.",
    "cites": [
     "E1"
    ]
@@ -31,6 +37,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 5,
  "dropped": 0
 }

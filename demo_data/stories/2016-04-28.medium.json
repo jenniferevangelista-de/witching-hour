@@ -2,28 +2,34 @@
  "night": "2016-04-28",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "Whispers of Waking Machines",
+ "title": "A Sudden Electrical Presence",
  "sentences": [
   {
-   "text": "The house remained still until 05:40, when a mischievous energy surge began, suggesting that \"the machines waking up\".",
+   "text": "I drift through the house on Thursday 2016-04-28, sensing the deep quiet before the shift in the air.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Between 05:40 and 06:00, the house’s sensors recorded a whopping 270 Wh.",
+   "text": "Initially, the energies felt stable, with a predicted expectation of only 60 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This spectral power draw was significantly higher than the expected 60 Wh.",
+   "text": "But at 05:40, the machines waking up began, causing a dramatic surge in the house.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed energy was far beyond the predicted range of 33 Wh to 82 Wh.",
+   "text": "My sensors felt the massive shift, as the observed appliance energy skyrocketed to 270 Wh.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This intense, energetic presence held for 20 minutes, slowly fading away near 06:00.",
    "cites": [
     "E1"
    ]
@@ -31,6 +37,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 5,
  "dropped": 0
 }

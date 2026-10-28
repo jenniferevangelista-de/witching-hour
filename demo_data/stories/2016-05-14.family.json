@@ -1,0 +1,30 @@
+{
+ "night": "2016-05-14",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Gentle Watch from Xochi",
+ "sentences": [
+  {
+   "text": "I kept watch all night, and the humidity in the laundry room was lower than expected between 03:00 and 03:20.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "The air in the laundry room was observed at 33.6 %, which was below the expected range of 36.2 % to 40.3 %.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "Since the air seems to be drying out quickly, perhaps checking the laundry room ventilation might help.",
+   "cites": [
+    "E1"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

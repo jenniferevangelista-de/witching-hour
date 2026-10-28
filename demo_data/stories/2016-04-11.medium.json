@@ -2,28 +2,34 @@
  "night": "2016-04-11",
  "mode": "medium",
  "model": "gemma4:e4b",
- "title": "The Ironing Room's Ghostly Heat",
+ "title": "The Ironing Room's Warm Whisper",
  "sentences": [
   {
-   "text": "As the night deepened at 02:00, the ironing room began to host a strange warmth with no discernible source.",
+   "text": "Hush... I float into the ironing room at 02:00, where the air was already hinting at a change, deviating from the expected 21.2 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This mysterious heat, observed at 22.4 °C, felt notably warmer than the predicted 21.2 °C.",
+   "text": "The machines started waking as the temperature climbed, pushing beyond the expected range of 20.8 °C to 21.6 °C.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The temperature reached its peak at 03:00, making the house feel like it was being hugged by an unseen spirit.",
+   "text": "Then, at 03:00, the presence arrived; a strange warmth with no source began to bloom in the space.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Finally, the warmth in the ironing room began to recede, lasting until 06:00.",
+   "text": "Oh, the air thickened... the observed temperature soared to 22.4 °C, far exceeding the initial expectations.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "This warmth lingered like a soft sigh, holding steady until 06:00, a lingering trace of the mysterious reading.",
    "cites": [
     "E1"
    ]
@@ -31,6 +37,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 5,
  "dropped": 0
 }

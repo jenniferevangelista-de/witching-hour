@@ -1,0 +1,41 @@
+{
+ "night": "2016-01-30",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Night of Cold Air",
+ "sentences": [
+  {
+   "text": "My little lantern saw that the parents' room stayed below 18.0 °C, reaching 16.3 °C at 00:00.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The office also dropped to 16.5 °C at 03:30, and the bathroom was 16.7 °C at 00:00.",
+   "cites": [
+    "C2",
+    "C3"
+   ]
+  },
+  {
+   "text": "Since all these rooms stayed below 18.0 °C, please remember that the WHO recommends at least 18 °C indoors in cold seasons.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3"
+   ]
+  },
+  {
+   "text": "Because of these low temperatures, I gently suggest checking the heating system to keep things cozy.",
+   "cites": [
+    "C1",
+    "C2",
+    "C3"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 4,
+ "dropped": 0
+}

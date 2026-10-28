@@ -1,0 +1,31 @@
+{
+ "night": "2016-02-18",
+ "mode": "family",
+ "model": "gemma4:e4b",
+ "title": "A Gentle Night Watch Report",
+ "sentences": [
+  {
+   "text": "The parents' room stayed below 18.0 °C, reaching its coldest point of 17.9 °C at 00:40.",
+   "cites": [
+    "C1"
+   ]
+  },
+  {
+   "text": "The living room also dropped below 18.0 °C, with the temperature hitting 17.7 °C at 05:40.",
+   "cites": [
+    "C2"
+   ]
+  },
+  {
+   "text": "Since both rooms were below 18.0 °C, which the WHO recommends, perhaps checking the heating would be helpful.",
+   "cites": [
+    "C1",
+    "C2"
+   ]
+  }
+ ],
+ "rejected": [],
+ "attempts": 1,
+ "verified": 3,
+ "dropped": 0
+}

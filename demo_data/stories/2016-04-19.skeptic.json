@@ -2,22 +2,28 @@
  "night": "2016-04-19",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Appliance Energy Spike Explained",
+ "title": "Energy Spike, Not Spirits",
  "sentences": [
   {
-   "text": "The sensor data shows a significant spike in appliance energy usage in the house between 05:40 and 05:50.",
+   "text": "Hmph. Luna, I reviewed the sensor data, and I see no evidence of any paranormal activity.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "The observed energy of 380 Wh was much higher than the expected range of 36 Wh to 75 Wh.",
+   "text": "Instead, the appliance energy registered a significant spike, observing 380 Wh between 05:40 and 05:50.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "This sudden increase probably indicates that several machines were waking up or starting up during that time.",
+   "text": "This observed value is much higher than the expected 52 Wh, suggesting that the machines were simply waking up.",
+   "cites": [
+    "E1"
+   ]
+  },
+  {
+   "text": "It is probably just the house getting ready for the day, not some spooky presence.",
    "cites": [
     "E1"
    ]
@@ -25,6 +31,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 3,
+ "verified": 4,
  "dropped": 0
 }

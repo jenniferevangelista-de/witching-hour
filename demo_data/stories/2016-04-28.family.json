@@ -2,28 +2,22 @@
  "night": "2016-04-28",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "A Gentle Morning Check",
+ "title": "A Gentle Morning Watch",
  "sentences": [
   {
-   "text": "The living room temperature dropped to 17.1 °C at 05:40.",
+   "text": "The living room temperature dropped to 17.1 °C at 05:40, which is below 18.0 °C and the WHO recommends at least 18 °C indoors in cold seasons.",
    "cites": [
     "C1"
    ]
   },
   {
-   "text": "This is below 18.0 °C, and the WHO recommends at least 18 °C indoors in cold seasons.",
-   "cites": [
-    "C1"
-   ]
-  },
-  {
-   "text": "Later, the appliance energy usage was 270 Wh between 05:40 and 06:00.",
+   "text": "Later, between 05:40 and 06:00, the machines woke up and used 270 Wh, which was much higher than the expected 60 Wh.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "Since the temperature was low and the energy usage was high, perhaps checking the heating would be helpful.",
+   "text": "Since the temperature was low and the energy usage was high, perhaps checking the heating might help keep things cozy.",
    "cites": [
     "C1",
     "E1"
@@ -32,6 +26,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 4,
+ "verified": 3,
  "dropped": 0
 }

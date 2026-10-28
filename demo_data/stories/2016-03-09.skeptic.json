@@ -2,22 +2,29 @@
  "night": "2016-03-09",
  "mode": "skeptic",
  "model": "gemma4:e4b",
- "title": "Living Room Sensor Anomalies",
+ "title": "Data Doesn't Support Ghosts",
  "sentences": [
   {
-   "text": "The living room showed an elevated humidity, reaching 41.2 % between 03:00 and 06:00.",
+   "text": "Hmph. Luna, the data shows no spectral activity, only measurable environmental shifts in the living room.",
+   "cites": [
+    "E1",
+    "E2"
+   ]
+  },
+  {
+   "text": "Between 03:00 and 06:00, the humidity rose to 41.2 %, exceeding the expected range of 36.2 % to 38.3 %.",
    "cites": [
     "E1"
    ]
   },
   {
-   "text": "At the same time, the temperature dropped to 16.6 °C, which is below the expected 18.0 °C, starting at 04:20.",
+   "text": "Concurrently, the temperature dropped to 16.6 °C starting at 04:20, which is lower than the expected 18.0 °C.",
    "cites": [
     "E2"
    ]
   },
   {
-   "text": "Because the humidity and temperature changed together, it is probably due to a common environmental factor, such as a draft or a change in the outside weather.",
+   "text": "Since these changes occurred together, I probably suggest that an open window or a sudden draft caused the humidity and temperature to shift simultaneously.",
    "cites": [
     "E1",
     "E2"
@@ -26,6 +33,6 @@
  ],
  "rejected": [],
  "attempts": 1,
- "verified": 3,
+ "verified": 4,
  "dropped": 0
 }

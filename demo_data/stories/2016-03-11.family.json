@@ -2,10 +2,10 @@
  "night": "2016-03-11",
  "mode": "family",
  "model": "gemma4:e4b",
- "title": "Cold Spots Noticed This Morning",
+ "title": "A Gentle Night Watch",
  "sentences": [
   {
-   "text": "The living room temperature was observed at 16.9 °C between 04:20 and 06:00.",
+   "text": "I noticed a cold spot in the living room, where the temperature was 16.9 °C at 05:20, which was below the expected 18.0 °C.",
    "cites": [
     "E1"
    ]
@@ -17,15 +17,16 @@
    ]
   },
   {
-   "text": "The bathroom also stayed below 18.0 °C from 04:00 to 06:00.",
+   "text": "The bathroom also stayed below 18.0 °C, with the coldest reading being 17.8 °C.",
    "cites": [
     "C2"
    ]
   },
   {
-   "text": "It might be helpful to check the heating system, especially since the living room was below 18.0 °C.",
+   "text": "Since both rooms were below 18.0 °C, I suggest checking the heating to help keep things warm.",
    "cites": [
-    "C1"
+    "C1",
+    "C2"
    ]
   }
  ],
