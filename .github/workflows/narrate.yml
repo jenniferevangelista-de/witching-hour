@@ -1,5 +1,5 @@
 # Stories and agent runs with Gemma, reusing the TabPFN scans of an earlier haunt run.
-# Four runners write the stories in parallel; a last job merges them, fetches tonight's
+# Eight runners write the stories in parallel; a last job merges them, fetches tonight's
 # live forecast (SerpApi + TabPFN) and records the agent investigations.
 name: narrate
 
@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -61,7 +61,7 @@ jobs:
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:11434/api/tags >/dev/null && break; sleep 2; done
           ollama pull ${{ inputs.model }}
       - name: Stories
-        run: witching-hour narrate --data demo_data --top ${{ inputs.narrate_top }} --cold ${{ inputs.cold }} --shard ${{ matrix.shard }}/4 --model ${{ inputs.model }} --no-index
+        run: witching-hour narrate --data demo_data --top ${{ inputs.narrate_top }} --cold ${{ inputs.cold }} --shard ${{ matrix.shard }}/8 --model ${{ inputs.model }} --no-index
       - uses: actions/upload-artifact@v4
         with:
           name: stories-${{ matrix.shard }}
