@@ -231,7 +231,7 @@ class Story:
         return d
 
 
-_INLINE_CITE = re.compile(r"\s*[\(\[]\s*['\"]?[EC]\d+['\"]?(?:\s*,\s*['\"]?[EC]\d+['\"]?)*\s*[\)\]]")
+_INLINE_CITE = re.compile(r"\s*[\(\[]\s*['\"`]?[EC]\d+['\"`]?(?:\s*,\s*['\"`]?[EC]\d+['\"`]?)*\s*[\)\]]|\s*`[EC]\d+`")
 _QUOTED_VALUE = re.compile(r"\"(\d[^\"]{0,12})\"")
 
 
