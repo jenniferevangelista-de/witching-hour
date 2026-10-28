@@ -201,6 +201,39 @@ def cmd_fieldwork(args):
     print({k: res.get(k) for k in ("status", "title", "cold_warning", "excerpt")})
 
 
+def cmd_season(args):
+    from .season import season_report
+    from .voice import load_env
+
+    load_env(args.env)
+    res = season_report(args.data)
+    Path(args.data, "season_report.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(res["title"], f"{len(res['findings'])} findings, {res['dropped']} dropped, cost ${res['cost_usd']}")
+
+
+def cmd_atlas(args):
+    from . import atlas_memory
+    from .voice import load_env
+
+    load_env(args.env)
+    out = {"sync": atlas_memory.sync(args.data)}
+    out["examples"] = {d: atlas_memory.seen_before(d) for d in args.nights.split(",")}
+    Path(args.data, "atlas_memory.json").write_text(json.dumps(out, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
+    print(json.dumps(out, default=str)[:600])
+
+
+def cmd_tiger(args):
+    from . import tiger_store
+    from .voice import load_env
+
+    load_env(args.env)
+    out = {"load": tiger_store.load(load_house(args), args.data)}
+    out["coldest_living_room_nights"] = tiger_store.coldest_nights("T2", 5)
+    out["searches"] = {q: tiger_store.search_stories(q, 3) for q in args.queries.split("|")}
+    Path(args.data, "tiger_store.json").write_text(json.dumps(out, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
+    print(json.dumps(out, default=str)[:600])
+
+
 def cmd_worker(args):
     import asyncio
 
@@ -321,6 +354,24 @@ def main(argv=None):
     sp.add_argument("--url", default="https://meteoalarm.org/en/live/region/BE")
     sp.add_argument("--env", default=".env")
     sp.set_defaults(fn=cmd_fieldwork)
+
+    sp = sub.add_parser("season", help="Ultramarine reads every case file and writes the season report")
+    sp.add_argument("--data", default="demo_data")
+    sp.add_argument("--env", default=".env")
+    sp.set_defaults(fn=cmd_season)
+
+    sp = sub.add_parser("atlas", help="case files + embeddings into MongoDB Atlas, vector search examples")
+    sp.add_argument("--data", default="demo_data")
+    sp.add_argument("--nights", default="2016-04-19,2016-03-09")
+    sp.add_argument("--env", default=".env")
+    sp.set_defaults(fn=cmd_atlas)
+
+    sp = sub.add_parser("tiger", help="readings hypertable + hybrid story search on Tiger Data")
+    house_args(sp)
+    sp.add_argument("--data", default="demo_data")
+    sp.add_argument("--queries", default="the bathroom air at night|machines waking before dawn|a cold living room")
+    sp.add_argument("--env", default=".env")
+    sp.set_defaults(fn=cmd_tiger)
 
     sp = sub.add_parser("worker", help="run a Temporal worker for the night watch")
     sp.add_argument("--address", default="localhost:7233")

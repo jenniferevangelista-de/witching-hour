@@ -23,6 +23,8 @@ tabpfn = ["tabpfn>=9.2,<10", "lightgbm>=4.4"]
 durable = ["temporalio>=1.7"]
 tracing = ["sentry-sdk>=2.20,<3"]
 auth = ["authlib>=1.3", "itsdangerous>=2.1", "httpx>=0.27"]
+atlas = ["pymongo>=4.10"]
+tiger = ["psycopg[binary]>=3.2"]
 dev = ["pytest>=8", "httpx>=0.27"]
 
 [project.scripts]
