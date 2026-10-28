@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 260" role="img" aria-labelledby="t">
+  <title id="t">Xochi, the Night Watch: a kawaii xoloitzcuintli with a marigold collar, a lantern and a letter for the family</title>
+  <defs>
+    <radialGradient id="lamp" cx="50%" cy="55%" r="50%">
+      <stop offset="0" stop-color="#ffd36e" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#ffd36e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <style>
+    .bob { animation: bob 3s ease-in-out infinite; }
+    .blink { transform-box: fill-box; transform-origin: center; animation: blink 4.1s infinite; }
+    .flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flame .9s ease-in-out infinite alternate; }
+    .halo { animation: halo 1.8s ease-in-out infinite alternate; }
+    .tail { transform-origin: 170px 214px; animation: wag .6s ease-in-out infinite alternate; }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+    @keyframes flame { from { transform: scale(.9, .95); } to { transform: scale(1.05, 1.12); } }
+    @keyframes halo { from { opacity: .55; } to { opacity: 1; } }
+    @keyframes wag { from { transform: rotate(-10deg); } to { transform: rotate(14deg); } }
+    @media (prefers-reduced-motion: reduce) { .bob, .blink, .flame, .halo, .tail { animation: none; } }
+  </style>
+  <g class="bob" stroke="#2a2048" stroke-linejoin="round" stroke-linecap="round">
+    <!-- wagging tail -->
+    <path class="tail" d="M170 214 Q204 206 210 176" fill="none" stroke="#2a2048" stroke-width="16"/>
+    <path class="tail" d="M170 214 Q204 206 210 176" fill="none" stroke="#6e7a97" stroke-width="8"/>
+    <!-- body and belly -->
+    <ellipse cx="120" cy="198" rx="58" ry="50" fill="#6e7a97" stroke-width="6"/>
+    <ellipse cx="120" cy="210" rx="32" ry="30" fill="#8e99b6" stroke="none"/>
+    <!-- tall xolo ears -->
+    <path d="M72 96 L50 16 L110 62 Z" fill="#6e7a97" stroke-width="6"/>
+    <path d="M168 96 L190 16 L130 62 Z" fill="#6e7a97" stroke-width="6"/>
+    <path d="M78 80 L62 34 L100 62 Z" fill="#ff9fb8" stroke="none"/>
+    <path d="M162 80 L178 34 L140 62 Z" fill="#ff9fb8" stroke="none"/>
+    <!-- head -->
+    <circle cx="120" cy="112" r="60" fill="#6e7a97" stroke-width="6"/>
+    <!-- the little tuft of hair xolos have -->
+    <path d="M102 58 Q106 36 115 52 Q119 30 126 52 Q134 34 140 60" fill="#f7f1e3" stroke-width="4"/>
+    <ellipse cx="120" cy="136" rx="30" ry="20" fill="#9aa4bd" stroke="none"/>
+    <!-- glossy eyes -->
+    <g class="blink">
+      <circle cx="95" cy="110" r="16" fill="#2a2048" stroke="none"/>
+      <circle cx="145" cy="110" r="16" fill="#2a2048" stroke="none"/>
+      <circle cx="90" cy="104" r="6" fill="#fff" stroke="none"/><circle cx="100" cy="116" r="2.6" fill="#fff" stroke="none"/>
+      <circle cx="140" cy="104" r="6" fill="#fff" stroke="none"/><circle cx="150" cy="116" r="2.6" fill="#fff" stroke="none"/>
+    </g>
+    <!-- nose, smile with tongue, blush -->
+    <ellipse cx="120" cy="127" rx="9" ry="6" fill="#2a2048" stroke="none"/>
+    <ellipse cx="117" cy="125" rx="3" ry="1.8" fill="#fff" opacity=".8" stroke="none"/>
+    <path d="M106 137 Q120 151 134 137" fill="#2a2048" stroke-width="3"/>
+    <path d="M114 144 Q120 154 126 144 Z" fill="#ff7a9a" stroke="none"/>
+    <ellipse cx="76" cy="134" rx="10" ry="6" fill="#ff8fb3" opacity=".7" stroke="none"/>
+    <ellipse cx="164" cy="134" rx="10" ry="6" fill="#ff8fb3" opacity=".7" stroke="none"/>
+    <!-- marigold collar -->
+    <g stroke-width="2.5">
+      <circle cx="80" cy="160" r="9" fill="#ff9f1c"/><circle cx="93" cy="168" r="9" fill="#ffbf3c"/>
+      <circle cx="106" cy="173" r="9" fill="#ff9f1c"/><circle cx="120" cy="175" r="10" fill="#e83f8b"/>
+      <circle cx="134" cy="173" r="9" fill="#ff9f1c"/><circle cx="147" cy="168" r="9" fill="#ffbf3c"/>
+      <circle cx="160" cy="160" r="9" fill="#ff9f1c"/>
+      <circle cx="120" cy="175" r="3.5" fill="#ffd36e" stroke="none"/>
+    </g>
+    <!-- lantern with a candle -->
+    <circle class="halo" cx="54" cy="196" r="34" fill="url(#lamp)" stroke="none"/>
+    <path d="M44 172 Q54 156 64 172" fill="none" stroke-width="4"/>
+    <rect x="40" y="172" width="28" height="40" rx="5" fill="#fff6d8" fill-opacity=".85" stroke="#2a2048" stroke-width="4"/>
+    <rect x="37" y="168" width="34" height="7" rx="3" fill="#ffd36e" stroke-width="3"/>
+    <rect x="37" y="209" width="34" height="7" rx="3" fill="#ffd36e" stroke-width="3"/>
+    <rect x="50" y="194" width="8" height="14" rx="2" fill="#fbf7ff" stroke-width="2"/>
+    <path class="flame" d="M54 180 Q61 189 54 194 Q47 189 54 180 Z" fill="#ff9f1c" stroke="#c2410c" stroke-width="1.5"/>
+    <ellipse cx="74" cy="198" rx="12" ry="9" fill="#6e7a97" stroke-width="5"/>
+    <!-- the morning letter -->
+    <rect x="158" y="182" width="40" height="28" rx="3" fill="#fbf7ff" stroke-width="4" transform="rotate(-8 178 196)"/>
+    <path d="M160 186 L178 198 L196 182" fill="none" stroke-width="3" transform="rotate(-8 178 196)"/>
+    <path d="M178 205 C174 201 173 198 176 197 C177 196.6 178 197.6 178 198.4 C178 197.6 179 196.6 180 197 C183 198 182 201 178 205 Z" fill="#e83f8b" stroke-width="1.5"/>
+    <ellipse cx="164" cy="204" rx="12" ry="9" fill="#6e7a97" stroke-width="5"/>
+  </g>
+</svg>

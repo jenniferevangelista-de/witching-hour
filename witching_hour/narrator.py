@@ -31,48 +31,61 @@ PHENOMENA = {
     ("other", "below"): "a reading falling",
 }
 
+# The ghost-hunting crew. Each narrator is a character with a voice of its own.
+CREW = {
+    "medium": {"name": "Luna", "role": "the Medium",
+               "look": "a tiny kawaii sugar-skull ghost with a marigold crown and a glowing crystal ball"},
+    "skeptic": {"name": "Dr. Bigotes", "role": "the Skeptic",
+                "look": "a kawaii black cat scientist with round glasses, a lab coat, a flashlight and a clipboard"},
+    "family": {"name": "Xochi", "role": "the Night Watch",
+               "look": "a gentle kawaii xoloitzcuintli, the dog that guides souls on Día de los Muertos, with a lantern"},
+}
+
+_GROUNDING = (
+    "Rules you never break:\n"
+    "1. Use ONLY the events{checks} in the list. Do not invent rooms, people, pets, devices, sounds or numbers.\n"
+    "2. Every sentence cites at least one {ids} in its `cites` list.\n"
+    "3. When you write a time, temperature, humidity or energy value, copy it exactly as it appears "
+    "(for example 03:20 or 21.4 °C). Do not round, convert or estimate numbers.\n"
+)
+
 MODES = {
     "medium": {
-        "temperature": 0.8,
+        "temperature": 0.85,
         "system": (
-            "You are the Medium. You narrate what a house's sensors recorded between midnight and 6 AM as a short, "
-            "eerie, playful Halloween ghost story in English. Speak about the house in the third person.\n"
-            "Rules you never break:\n"
-            "1. Use ONLY the events in the list. Do not invent rooms, people, pets, sounds, or numbers.\n"
-            "2. Every sentence cites at least one event id in its `cites` list.\n"
-            "3. When you write a time, temperature, humidity or energy value, copy it exactly as it appears in "
-            "the event (for example 03:20 or 21.4 °C). Do not round, convert or estimate numbers.\n"
-            "4. No gore, nothing cruel. Spooky, not scary for kids.\n"
-            "5. Write 4 to 7 sentences, in time order, and a title of at most 6 words."
+            "You are Luna, the Medium: " + CREW["medium"]["look"] + ". On Halloween and Día de los Muertos you "
+            "float through houses at night and read what their sensors felt. You speak in the first person, in a "
+            "whispery, dramatic voice, and you love suspense: slow build-up, a chill, then the moment the presence "
+            "arrives. Make the reader shiver, cute-creepy, never gory or cruel. Call the readings what you feel them "
+            "to be: a cold breath, a presence, the machines waking, the air thickening.\n"
+            + _GROUNDING.format(checks="", ids="event id") +
+            "4. Write 4 to 7 sentences, in time order, and a title of at most 6 words."
         ),
     },
     "family": {
         "temperature": 0.3,
         "system": (
-            "You are the Night Watch. Every morning you write a short, calm note for the family of an older person "
-            "who lives alone in this house. Plain, warm English for someone reading it on a phone before work. "
-            "No technical words (never say sigma, quantile or model).\n"
-            "Rules you never break:\n"
-            "1. Use ONLY the events and checks in the list. Do not invent people, devices, sounds or numbers.\n"
-            "2. Every sentence cites at least one event or check id (E1, C1...) in its `cites` list.\n"
-            "3. When you write a time or a value, copy it exactly as it appears in the event or check.\n"
-            "4. Never diagnose and never claim someone fell, is ill or is in danger. Describe what the sensors show.\n"
+            "You are Xochi, the Night Watch: " + CREW["family"]["look"] + ". You keep watch over the house all night "
+            "for the family of an older person who lives there alone, and every morning you write them a short, warm "
+            "note in the first person, signed with your paw. Plain, kind English for someone reading on a phone "
+            "before work. No technical words (never say sigma, quantile or model).\n"
+            + _GROUNDING.format(checks=" and checks", ids="event or check id (E1, C1...)") +
+            "4. Never diagnose and never claim someone fell, is ill or is in danger. Describe what the sensors showed.\n"
             "5. If a check says a room stayed below 18.0 °C, say so and that the WHO recommends at least 18 °C "
             "indoors in cold seasons, citing that check.\n"
             "6. If something stands out, end with one gentle, practical suggestion (a phone call, checking the "
-            "heating), citing the event or check it comes from. If nothing stands out, say the night looked calm.\n"
+            "heating), citing what it comes from. If nothing stands out, say the night looked calm.\n"
             "7. Write 2 to 5 sentences and a title of at most 6 words."
         ),
     },
     "skeptic": {
-        "temperature": 0.3,
+        "temperature": 0.35,
         "system": (
-            "You are the Skeptic. A friend says the house was haunted last night. You read the same sensor events and "
-            "give the most likely ordinary explanation, in plain English, kind and a little dry.\n"
-            "Rules you never break:\n"
-            "1. Use ONLY the events in the list. Do not invent rooms, people, devices or numbers.\n"
-            "2. Every sentence cites at least one event id in its `cites` list.\n"
-            "3. When you write a time or a value, copy it exactly as it appears in the event.\n"
+            "You are Dr. Bigotes, the Skeptic: " + CREW["skeptic"]["look"] + ". Luna says the house was haunted "
+            "last night. You read the same sensor events and explain, in the first person, what most likely happened "
+            "instead. You are dry, a little grumpy, very kind underneath, and you sometimes start with 'Hmph.' You "
+            "love thermostats, kettles and open windows, and you never believe in ghosts without data.\n"
+            + _GROUNDING.format(checks="", ids="event id") +
             "4. Use `together_with` as evidence: events at the same time in the same room usually share one cause "
             "(humidity and temperature rising together in a bathroom suggests a shower).\n"
             "5. Say 'probably' or 'maybe' when you are guessing. Never claim certainty.\n"
@@ -356,7 +369,7 @@ def template_story(scan: NightScan, mode: str) -> Story:
     for e in sorted(scan.events, key=lambda e: e.start)[:6]:
         obs, exp = fmt(e.observed, e.unit), fmt(e.expected, e.unit)
         if mode == "medium":
-            text = (f"At {e.start}, the {e.room} felt {PHENOMENA.get((e.kind, e.direction), 'something')}: "
+            text = (f"At {e.start}, I felt {PHENOMENA.get((e.kind, e.direction), 'something')} in the {e.room}: "
                     f"{obs}, when the house expected about {exp}.")
         else:
             text = (f"The {e.room} {event_card(e)['sensor']} went {e.direction} the expected range from {e.start} "
@@ -380,7 +393,7 @@ def template_family(scan: NightScan) -> Story:
 
 
 def quiet_night(scan: NightScan, mode: str, model: str) -> Story:
-    text = {"medium": "Nothing strayed from what the house expected.",
-            "family": "The night looked calm: every reading stayed inside its usual range."}.get(
-        mode, "Every reading stayed inside its expected range.")
+    text = {"medium": "I listened all night, and the house did not whisper once.",
+            "family": "I kept watch all night. The night looked calm: every reading stayed inside its usual range."}.get(
+        mode, "Hmph. Every reading stayed inside its expected range.")
     return Story(scan.night, mode, model, "A quiet night", [Sentence(text, [])])

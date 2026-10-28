@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 260" role="img" aria-labelledby="t">
+  <title id="t">Dr. Bigotes, the Skeptic: a kawaii black cat scientist with round glasses, a lab coat and a flashlight</title>
+  <defs>
+    <linearGradient id="beamfade" x1="193" y1="148" x2="240" y2="70" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff3a6" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#fff3a6" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bob { animation: bob 3.6s ease-in-out infinite; }
+    .blink { transform-box: fill-box; transform-origin: center; animation: blink 5.2s infinite; }
+    .beam { animation: beam 2.8s ease-in-out infinite; }
+    .tail { transform-origin: 175px 205px; animation: tail 3s ease-in-out infinite; }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes blink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+    @keyframes beam { 0%, 100% { opacity: .55; } 50% { opacity: .85; } }
+    @keyframes tail { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-8deg); } }
+    @media (prefers-reduced-motion: reduce) { .bob, .blink, .beam, .tail { animation: none; } }
+  </style>
+  <g class="bob" stroke="#1b1530" stroke-linejoin="round" stroke-linecap="round">
+    <!-- flashlight beam -->
+    <path class="beam" d="M193 148 L214 60 L240 76 L240 104 Z" fill="url(#beamfade)" stroke="none"/>
+    <!-- tail -->
+    <g class="tail" fill="none">
+      <path d="M172 210 C214 206 222 156 202 140 C192 132 182 144 193 153" stroke="#1b1530" stroke-width="20"/>
+      <path d="M172 210 C214 206 222 156 202 140 C192 132 182 144 193 153" stroke="#40365e" stroke-width="10"/>
+    </g>
+    <!-- body and lab coat -->
+    <ellipse cx="120" cy="196" rx="62" ry="54" fill="#40365e" stroke-width="6"/>
+    <path d="M66 176 Q120 156 174 176 L180 232 Q120 252 60 232 Z" fill="#f7f3ff" stroke-width="5"/>
+    <path d="M120 158 L99 204 L120 192 L141 204 Z" fill="#40365e" stroke-width="3.5"/>
+    <rect x="146" y="206" width="18" height="14" rx="3" fill="#e9e4f7" stroke-width="3"/>
+    <path d="M151 206 L151 196" stroke="#2ec4b6" stroke-width="4"/>
+    <!-- ears -->
+    <path d="M64 82 L68 20 L114 54 Z" fill="#40365e" stroke-width="6"/>
+    <path d="M176 82 L172 20 L126 54 Z" fill="#40365e" stroke-width="6"/>
+    <path d="M76 68 L78 38 L101 55 Z" fill="#ff8fb3" stroke="none"/>
+    <path d="M164 68 L162 38 L139 55 Z" fill="#ff8fb3" stroke="none"/>
+    <!-- head -->
+    <circle cx="120" cy="106" r="62" fill="#40365e" stroke-width="6"/>
+    <ellipse cx="120" cy="130" rx="27" ry="17" fill="#574c7a" stroke="none"/>
+    <!-- bow tie -->
+    <path d="M120 160 L100 150 L100 172 Z M120 160 L140 150 L140 172 Z" fill="#2ec4b6" stroke-width="3.5"/>
+    <circle cx="120" cy="161" r="5" fill="#1f9e92" stroke-width="3"/>
+    <!-- amber eyes behind round glasses -->
+    <g class="blink">
+      <circle cx="96" cy="104" r="15" fill="#ffd36e" stroke-width="3"/>
+      <circle cx="144" cy="104" r="15" fill="#ffd36e" stroke-width="3"/>
+      <ellipse cx="96" cy="105" rx="5.5" ry="11" fill="#1b1530" stroke="none"/>
+      <ellipse cx="144" cy="105" rx="5.5" ry="11" fill="#1b1530" stroke="none"/>
+      <circle cx="91" cy="98" r="4.5" fill="#fff" stroke="none"/><circle cx="139" cy="98" r="4.5" fill="#fff" stroke="none"/>
+      <circle cx="100" cy="111" r="2" fill="#fff" stroke="none"/><circle cx="148" cy="111" r="2" fill="#fff" stroke="none"/>
+    </g>
+    <g fill="#bfe3ff" fill-opacity=".14" stroke="#ffd36e" stroke-width="5">
+      <circle cx="96" cy="104" r="22"/><circle cx="144" cy="104" r="22"/>
+    </g>
+    <path d="M118 102 L122 102" stroke="#ffd36e" stroke-width="5"/>
+    <path d="M74 100 L62 94 M166 100 L178 94" stroke="#ffd36e" stroke-width="4"/>
+    <!-- one sceptical raised eyebrow -->
+    <path d="M80 75 Q96 71 110 77" fill="none" stroke="#c9c0e6" stroke-width="5"/>
+    <path d="M130 70 Q146 58 163 66" fill="none" stroke="#c9c0e6" stroke-width="5"/>
+    <!-- nose, mouth, whiskers (bigotes), blush -->
+    <path d="M114 122 L126 122 L120 129 Z" fill="#ff8fb3" stroke-width="2.5"/>
+    <path d="M110 133 Q115 139 120 133 Q125 139 130 133" fill="none" stroke-width="3"/>
+    <g stroke="#f7f3ff" stroke-width="2.5">
+      <path d="M100 127 L58 118"/><path d="M100 132 L56 133"/><path d="M101 137 L60 148"/>
+      <path d="M140 127 L182 118"/><path d="M140 132 L184 133"/><path d="M139 137 L180 148"/>
+    </g>
+    <ellipse cx="80" cy="130" rx="9" ry="5" fill="#ff8fb3" opacity=".55" stroke="none"/>
+    <ellipse cx="160" cy="130" rx="9" ry="5" fill="#ff8fb3" opacity=".55" stroke="none"/>
+    <!-- clipboard with a tiny chart -->
+    <rect x="34" y="168" width="40" height="52" rx="5" fill="#b07a4f" stroke-width="4"/>
+    <rect x="40" y="176" width="28" height="38" rx="2" fill="#fff" stroke-width="2"/>
+    <path d="M44 206 L50 196 L56 200 L64 184" fill="none" stroke="#e83f8b" stroke-width="3"/>
+    <rect x="48" y="164" width="12" height="7" rx="2" fill="#c9c0e6" stroke-width="2.5"/>
+    <ellipse cx="70" cy="196" rx="12" ry="9" fill="#40365e" stroke-width="5"/>
+    <!-- paw with flashlight -->
+    <rect x="176" y="146" width="16" height="30" rx="4" fill="#8f93a8" stroke-width="4" transform="rotate(35 184 161)"/>
+    <ellipse cx="174" cy="180" rx="12" ry="9" fill="#40365e" stroke-width="5"/>
+  </g>
+</svg>

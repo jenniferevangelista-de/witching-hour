@@ -10,10 +10,16 @@ import json
 import os
 from pathlib import Path
 
+# One voice per character of the crew.
 VOICES = {
-    "family": ("EXAVITQu4vr4xnSDxMaL", "Sarah"),  # calm, warm
-    "medium": ("JBFqnCBsd6RMkjVDRZzb", "George"),  # storyteller
-    "skeptic": ("EXAVITQu4vr4xnSDxMaL", "Sarah"),
+    "medium": ("cgSgspJ2msm6clMCkdW9", "Jessica"),  # Luna: playful, a little breathless
+    "skeptic": ("JBFqnCBsd6RMkjVDRZzb", "George"),  # Dr. Bigotes: dry British professor
+    "family": ("XrExE9yKIg1WjnnlVkGX", "Matilda"),  # Xochi: warm and calm
+}
+SETTINGS = {
+    "medium": {"stability": 0.3, "similarity_boost": 0.8, "style": 0.6},
+    "skeptic": {"stability": 0.55, "similarity_boost": 0.8, "style": 0.3},
+    "family": {"stability": 0.6, "similarity_boost": 0.8, "style": 0.15},
 }
 MODEL = "eleven_multilingual_v2"
 API = "https://api.elevenlabs.io/v1/text-to-speech/{voice}?output_format=mp3_44100_64"
@@ -42,8 +48,7 @@ def speak(text: str, mode: str, out: Path, api_key: str | None = None, timeout: 
     if not key:
         raise RuntimeError("ELEVENLABS_API_KEY is not set")
     voice, _ = VOICES[mode]
-    settings = {"stability": 0.35, "similarity_boost": 0.8, "style": 0.45} if mode == "medium" else \
-        {"stability": 0.6, "similarity_boost": 0.8, "style": 0.1}
+    settings = SETTINGS[mode]
     r = requests.post(API.format(voice=voice), headers={"xi-api-key": key, "Content-Type": "application/json"},
                       json={"text": text, "model_id": MODEL, "voice_settings": settings}, timeout=timeout)
     r.raise_for_status()

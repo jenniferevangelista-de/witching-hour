@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 260" role="img" aria-labelledby="t">
+  <title id="t">Luna, the Medium: a kawaii sugar-skull ghost with a marigold crown and a crystal ball</title>
+  <defs>
+    <radialGradient id="aura" cx="50%" cy="45%" r="50%">
+      <stop offset="0" stop-color="#ffbf3c" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#ffbf3c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ball" cx="38%" cy="32%" r="70%">
+      <stop offset="0" stop-color="#e9ddff"/>
+      <stop offset=".45" stop-color="#a77bff"/>
+      <stop offset="1" stop-color="#4b23a8"/>
+    </radialGradient>
+    <radialGradient id="ballglow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#8dffcf" stop-opacity=".7"/>
+      <stop offset="1" stop-color="#8dffcf" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <style>
+    .float { animation: float 3.2s ease-in-out infinite; }
+    .blink { transform-box: fill-box; transform-origin: center; animation: blink 4.6s infinite; }
+    .glow { animation: glow 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+    @keyframes glow { 0%, 100% { opacity: .55; transform: scale(.92); } 50% { opacity: 1; transform: scale(1.06); } }
+    @media (prefers-reduced-motion: reduce) { .float, .blink, .glow { animation: none; } }
+  </style>
+  <circle cx="120" cy="118" r="112" fill="url(#aura)"/>
+  <g class="float" stroke="#2a2048" stroke-linejoin="round" stroke-linecap="round">
+    <!-- ghost body with a wavy hem -->
+    <path d="M50 112 A70 70 0 0 1 190 112 L190 200 Q182 222 168 206 Q156 192 144 210 Q132 226 120 208 Q108 192 96 210 Q84 226 72 206 Q58 192 50 205 Z" fill="#fbf7ff" stroke-width="6"/>
+    <!-- marigold crown -->
+    <g stroke-width="3">
+      <ellipse cx="82" cy="58" rx="9" ry="5" fill="#3fae6a" transform="rotate(-30 82 58)"/>
+      <ellipse cx="158" cy="58" rx="9" ry="5" fill="#3fae6a" transform="rotate(30 158 58)"/>
+      <circle cx="68" cy="68" r="13" fill="#ffbf3c"/><circle cx="68" cy="68" r="7" fill="#ff9f1c"/><circle cx="68" cy="68" r="2.5" fill="#c2410c" stroke="none"/>
+      <circle cx="94" cy="48" r="14" fill="#ff9f1c"/><circle cx="94" cy="48" r="8" fill="#ffbf3c"/><circle cx="94" cy="48" r="2.5" fill="#c2410c" stroke="none"/>
+      <circle cx="120" cy="40" r="15" fill="#e83f8b"/><circle cx="120" cy="40" r="8" fill="#ff8fb3"/><circle cx="120" cy="40" r="3" fill="#2a2048" stroke="none"/>
+      <circle cx="146" cy="48" r="14" fill="#ff9f1c"/><circle cx="146" cy="48" r="8" fill="#ffbf3c"/><circle cx="146" cy="48" r="2.5" fill="#c2410c" stroke="none"/>
+      <circle cx="172" cy="68" r="13" fill="#ffbf3c"/><circle cx="172" cy="68" r="7" fill="#ff9f1c"/><circle cx="172" cy="68" r="2.5" fill="#c2410c" stroke="none"/>
+    </g>
+    <!-- sugar-skull forehead heart and dots -->
+    <path d="M120 86 C112 79 110 72 116 70 C118 69 120 71 120 73 C120 71 122 69 124 70 C130 72 128 79 120 86 Z" fill="#e83f8b" stroke-width="2.5"/>
+    <circle cx="104" cy="80" r="2.6" fill="#2ec4b6" stroke="none"/><circle cx="136" cy="80" r="2.6" fill="#2ec4b6" stroke="none"/>
+    <!-- petal rings around the eyes -->
+    <g stroke-width="2.5">
+      <g transform="translate(92 110)">
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#ff9f1c"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#e83f8b" transform="rotate(45)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#ff9f1c" transform="rotate(90)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#e83f8b" transform="rotate(135)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#ff9f1c" transform="rotate(180)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#e83f8b" transform="rotate(225)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#ff9f1c" transform="rotate(270)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#e83f8b" transform="rotate(315)"/>
+      </g>
+      <g transform="translate(148 110)">
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#e83f8b"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#ff9f1c" transform="rotate(45)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#e83f8b" transform="rotate(90)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#ff9f1c" transform="rotate(135)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#e83f8b" transform="rotate(180)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#ff9f1c" transform="rotate(225)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#e83f8b" transform="rotate(270)"/>
+        <ellipse cx="0" cy="-22" rx="6" ry="9" fill="#ff9f1c" transform="rotate(315)"/>
+      </g>
+    </g>
+    <!-- big glossy eyes -->
+    <g class="blink">
+      <circle cx="92" cy="110" r="18" fill="#2a2048" stroke="none"/>
+      <circle cx="148" cy="110" r="18" fill="#2a2048" stroke="none"/>
+      <circle cx="86" cy="103" r="6.5" fill="#fff" stroke="none"/><circle cx="98" cy="116" r="3" fill="#fff" stroke="none"/>
+      <circle cx="142" cy="103" r="6.5" fill="#fff" stroke="none"/><circle cx="154" cy="116" r="3" fill="#fff" stroke="none"/>
+    </g>
+    <!-- blush, heart nose, stitched smile -->
+    <ellipse cx="74" cy="140" rx="11" ry="6" fill="#ff8fb3" opacity=".75" stroke="none"/>
+    <ellipse cx="166" cy="140" rx="11" ry="6" fill="#ff8fb3" opacity=".75" stroke="none"/>
+    <path d="M120 140 C114 135 113 130 117 129 C118.5 128.5 120 130 120 131 C120 130 121.5 128.5 123 129 C127 130 126 135 120 140 Z" fill="#2a2048" stroke-width="1.5"/>
+    <path d="M103 150 Q120 163 137 150" fill="none" stroke-width="4"/>
+    <g stroke-width="2.5"><path d="M110 151 L109 159"/><path d="M116 153 L116 161"/><path d="M124 153 L124 161"/><path d="M130 151 L131 159"/></g>
+    <!-- little arms and the crystal ball -->
+    <circle class="glow" cx="120" cy="190" r="40" fill="url(#ballglow)" stroke="none"/>
+    <ellipse cx="88" cy="186" rx="13" ry="9" fill="#fbf7ff" stroke-width="5" transform="rotate(25 88 186)"/>
+    <ellipse cx="152" cy="186" rx="13" ry="9" fill="#fbf7ff" stroke-width="5" transform="rotate(-25 152 186)"/>
+    <path d="M100 214 L140 214 L147 228 L93 228 Z" fill="#ffd36e" stroke-width="4"/>
+    <circle cx="120" cy="192" r="25" fill="url(#ball)" stroke-width="5"/>
+    <ellipse cx="111" cy="182" rx="7" ry="4.5" fill="#fff" opacity=".85" stroke="none" transform="rotate(-25 111 182)"/>
+    <path d="M128 198 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 Z" fill="#8dffcf" stroke="none"/>
+  </g>
+</svg>

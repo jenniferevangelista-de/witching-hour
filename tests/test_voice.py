@@ -25,6 +25,6 @@ def test_voice_stories_writes_files_and_skips_unchanged(tmp_path, monkeypatch):
     r = voice.voice_stories(tmp_path, ["2016-02-10", "2016-02-11"], ["family", "medium"])
     assert calls == [("Morning. The night looked calm.", "family")] and r["files"] == 1
     manifest = json.loads((tmp_path / "audio" / "manifest.json").read_text(encoding="utf-8"))
-    assert manifest["2016-02-10.family"]["voice"] == "Sarah"
+    assert manifest["2016-02-10.family"]["voice"] == "Matilda"
     voice.voice_stories(tmp_path, ["2016-02-10"], ["family"])
     assert len(calls) == 1  # same text, file exists: no second request
