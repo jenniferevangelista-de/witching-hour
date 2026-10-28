@@ -14,7 +14,7 @@ clause): https://priorlabs.ai/tabpfn-license. A copy of that license is in
 `licenses/PRIOR_LABS_LICENSE.txt`.
 
 Hollmann, N., Müller, S., Purucker, L. et al. Accurate predictions on small data with a tabular
-foundation model. Nature 637, 319–326 (2025). https://doi.org/10.1038/s41586-024-08328-6
+foundation model. Nature 637, 319-326 (2025). https://doi.org/10.1038/s41586-024-08328-6
 
 ## Gemma (Google)
 
@@ -25,7 +25,7 @@ https://huggingface.co/google/gemma-4-E4B-it. Weights are not included in this r
 ## Data: Appliances energy prediction (UCI)
 
 Candanedo, L. M., Feldheim, V., & Deramaix, D. (2017). Data driven prediction models of energy use
-of appliances in a low-energy house. Energy and Buildings, 140, 81–97.
+of appliances in a low-energy house. Energy and Buildings, 140, 81-97.
 https://doi.org/10.1016/j.enbuild.2017.01.083
 
 Dataset: https://archive.ics.uci.edu/dataset/374/appliances+energy+prediction, licensed CC BY 4.0
