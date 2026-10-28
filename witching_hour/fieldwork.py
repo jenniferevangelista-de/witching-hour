@@ -16,13 +16,20 @@ WARNINGS_URL = "https://meteoalarm.org/en/live/region/BE"
 COLD = re.compile(r"low[- ]temperature|extreme(ly)? low|cold|frost|snow|ice|icy", re.I)
 
 
+NONE = re.compile(r"no results for this filter|no (active )?warnings|no particular awareness", re.I)
+
+
 def summarize(text: str, limit: int = 700) -> dict:
     """Keep the lines that mention warnings and say whether any is about cold."""
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
-    keep = [ln for ln in lines if re.search(r"warning|awareness|alert|no (active )?warnings", ln, re.I)]
-    excerpt = " · ".join(keep)[:limit] or " ".join(lines)[:limit]
+    keep = [ln for ln in lines if re.search(r"warning|alert|no results|no particular", ln, re.I)]
     cold = [ln for ln in keep if COLD.search(ln)]
-    return {"excerpt": excerpt, "cold_warning": bool(cold), "cold_lines": cold[:5]}
+    none = any(NONE.search(ln) for ln in lines) and not cold
+    if none:
+        excerpt = "No active warnings listed (the page said: " + next(ln for ln in lines if NONE.search(ln)) + ")"
+    else:
+        excerpt = " · ".join(keep)[:limit] or " ".join(lines)[:limit]
+    return {"excerpt": excerpt[:limit], "cold_warning": bool(cold), "no_warnings": none, "cold_lines": cold[:5]}
 
 
 def field_trip(url: str = WARNINGS_URL, screenshot_path: str | None = None) -> dict:
