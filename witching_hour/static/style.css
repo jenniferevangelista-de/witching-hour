@@ -87,6 +87,7 @@ h2 { font-size: 22px; margin: 0 0 6px; }
 .cite { display: inline-block; font: 600 11px/1 ui-monospace, Consolas, monospace; color: var(--bg); background: var(--violet); border-radius: 6px; padding: 3px 5px; margin-left: 3px; vertical-align: 2px; cursor: pointer; border: 0; }
 .cite:hover, .cite.on { background: var(--ghost); }
 .verify { color: var(--muted); font-size: 13px; margin-top: 12px; }
+audio.voice { width: 100%; margin-top: 14px; height: 36px; }
 .verify b { color: var(--ghost); }
 details.dropped { margin-top: 8px; color: var(--muted); font-size: 13px; }
 details.dropped li { margin: 4px 0; }

@@ -112,6 +112,7 @@
     return `<div class="story ${state.mode}">
       <h3>${esc(story.title)}</h3>
       <p>${sentences}</p>
+      ${story.audio ? `<audio class="voice" controls preload="none" src="${esc(story.audio)}"></audio><div class="verify">Read aloud with ElevenLabs, verified sentences only.</div>` : ""}
       <div class="verify"><b>${story.sentences.length} of ${story.sentences.length + (story.rejected || []).length}</b> sentences verified against the sensor events · narrated by ${esc(story.model)}</div>
       ${dropped}
     </div>`;

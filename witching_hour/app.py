@@ -70,7 +70,21 @@ def night(night: str):
         raise HTTPException(404, "no scan for that night")
     out = scan.to_dict()
     out["stories"] = {m: h.story(night, m) for m in ("medium", "skeptic", "family") if h.story(night, m)}
+    for m, st in out["stories"].items():
+        if (data_dir() / "audio" / f"{night}.{m}.mp3").exists():
+            st["audio"] = f"/audio/{night}.{m}.mp3"
     return out
+
+
+AUDIO = re.compile(r"^\d{4}-\d{2}-\d{2}\.(medium|skeptic|family)\.mp3$")
+
+
+@app.get("/audio/{name}", include_in_schema=False)
+def audio(name: str):
+    p = data_dir() / "audio" / name
+    if not AUDIO.match(name) or not p.exists():
+        raise HTTPException(404, "no audio")
+    return FileResponse(p, media_type="audio/mpeg")
 
 
 def _read_json(name: str, default):

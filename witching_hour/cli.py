@@ -140,6 +140,16 @@ def cmd_evaluate(args):
         print(json.dumps(r.to_dict()))
 
 
+def cmd_voice(args):
+    from .agent import Haunting
+    from .voice import load_env, voice_stories
+
+    load_env(args.env)
+    h = Haunting(args.data)
+    dates = args.dates.split(",") if args.dates else [n["night"] for n in sorted(h.nights, key=lambda n: -n["score"])[: args.top]]
+    print(voice_stories(args.data, dates, args.modes.split(",")))
+
+
 def cmd_serve(args):
     import os
 
@@ -208,6 +218,14 @@ def main(argv=None):
     sp.add_argument("--seed", type=int, default=0)
     sp.add_argument("--out", default="demo_data/eval.json")
     sp.set_defaults(fn=cmd_evaluate)
+
+    sp = sub.add_parser("voice", help="read the verified stories out loud with ElevenLabs")
+    sp.add_argument("--data", default="demo_data")
+    sp.add_argument("--dates")
+    sp.add_argument("--top", type=int, default=8)
+    sp.add_argument("--modes", default="family,medium")
+    sp.add_argument("--env", default=".env")
+    sp.set_defaults(fn=cmd_voice)
 
     sp = sub.add_parser("serve", help="open the web app")
     sp.add_argument("--data", default="demo_data")
