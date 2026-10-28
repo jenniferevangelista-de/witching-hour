@@ -248,6 +248,36 @@ def cmd_ouija(args):
         print(f"{d}: {msg['archetype']} spells {msg['message']!r} ({msg['by']})", flush=True)
 
 
+def cmd_footage(args):
+    from .footage import investigate
+
+    res = investigate(args.video)
+    res["title"] = args.title
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    for e in res["evidence"]:
+        print(f"{e['id']} {e['start']:6.2f}s {e['type']:12} {e['description']} (confidence {e['confidence']})")
+
+
+def cmd_seance(args):
+    from . import spirits
+    from .providers import describe, make_chat
+
+    case = json.loads(Path(args.case).read_text(encoding="utf-8"))
+    chat = make_chat()
+    s = spirits.summon(case.get("title", "recording"), case["evidence"], chat=chat, archetype=args.archetype)
+    print(f"summoned {s.spirit.name}, {s.spirit.title}: {s.spirit.goal} ({describe(chat)})")
+    turns = []
+    for q in args.questions.split("|"):
+        r = spirits.ask(s, q, chat=chat)
+        turns.append(r)
+        print(f"Q: {q}\n   board: {r['response']['message']} | {r['response']['spoken']} | {r['grounding']['related_evidence_ids']} ({r['response']['by']})")
+    turns.append(spirits.close(s))
+    case["seance"] = {"model": describe(chat), "spirit": {**spirits.asdict(s.spirit), "title": s.spirit.title}, "turns": turns}
+    Path(args.case).write_text(json.dumps(case, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
 def cmd_worker(args):
     import asyncio
 
@@ -393,6 +423,18 @@ def main(argv=None):
     sp.add_argument("--model", default=None)
     sp.add_argument("--template", action="store_true")
     sp.set_defaults(fn=cmd_ouija)
+
+    sp = sub.add_parser("footage", help="The Unheard: investigate a recording (OpenCV + audio), no spirits yet")
+    sp.add_argument("video")
+    sp.add_argument("--out", default="demo_data/cases/recording.json")
+    sp.add_argument("--title", default="A recording")
+    sp.set_defaults(fn=cmd_footage)
+
+    sp = sub.add_parser("seance", help="summon a fictional spirit from a case's evidence and record a Ouija session")
+    sp.add_argument("--case", required=True)
+    sp.add_argument("--archetype")
+    sp.add_argument("--questions", default="Is someone here?|Who are you?|What were you trying to say?|Why?|Will you come back?")
+    sp.set_defaults(fn=cmd_seance)
 
     sp = sub.add_parser("worker", help="run a Temporal worker for the night watch")
     sp.add_argument("--address", default="localhost:7233")
