@@ -43,3 +43,8 @@ def test_forecast_ranks_rooms_and_skips_utility_rooms():
     assert [r["room"] for r in res["rooms"]] == ["kitchen"]
     r = res["rooms"][0]
     assert r["coldest_time"] == "06:00" and r["expected"] == 12.0 and r["p_below_18"] > 0.99
+
+
+def test_parse_hourly_accepts_midnight_as_first_entry():
+    hours = [{"time": f"Thursday {h:02d}:00", "temperature": "5", "humidity": "90%", "wind": "0 km/h"} for h in range(8)]
+    assert parse_hourly({"hourly_forecast": hours})[0]["time"] == "00:00"

@@ -36,7 +36,7 @@ def _num(s) -> float:
 def parse_hourly(answer_box: dict) -> list[dict]:
     """The next 00:00 to 06:00 from SerpApi's hourly forecast."""
     hourly = answer_box.get("hourly_forecast") or []
-    start = next((i for i, h in enumerate(hourly) if str(h.get("time", "")).endswith("00:00") and i > 0), None)
+    start = next((i for i, h in enumerate(hourly) if str(h.get("time", "")).endswith(" 00:00")), None)
     if start is None:
         raise ValueError("no midnight in the hourly forecast")
     out = []

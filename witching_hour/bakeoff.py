@@ -24,6 +24,10 @@ MODELS = [
 ]
 
 
+class BackboardConfigError(RuntimeError):
+    """Key, credit or request problem: stop the whole bake-off instead of scoring zeros."""
+
+
 class BackboardChat:
     """Same call shape as OllamaChat, but through Backboard."""
 
@@ -52,7 +56,7 @@ class BackboardChat:
                 time.sleep(3 * (attempt + 1))
                 continue
             if r.status_code >= 400:
-                raise RuntimeError(f"Backboard HTTP {r.status_code} for {self.model}")  # never print the body
+                raise BackboardConfigError(f"Backboard HTTP {r.status_code} for {self.model}")  # never print the body
             data = r.json()
             self.seconds += time.perf_counter() - t0
             return str(data.get("content") or "")
@@ -70,6 +74,8 @@ def run_bakeoff(data_dir: str | Path, dates: list[str], modes: list[str], models
             for mode in modes:
                 try:
                     st = narrate(scan, mode, chat=chat, retries=0)
+                except BackboardConfigError:
+                    raise
                 except Exception as e:  # a model that cannot answer in JSON scores zero for that story
                     failed += 1
                     print(f"  {model} {d} {mode}: {type(e).__name__}", flush=True)
