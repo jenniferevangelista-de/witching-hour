@@ -1,0 +1,45 @@
+# Planted-ghost benchmark on its own (TabPFN vs LightGBM quantile vs a seasonal rule).
+name: benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      eval_nights:
+        description: "nights in the benchmark"
+        default: "40"
+      sensors:
+        description: "sensors"
+        default: "T1,T5,T9,RH_1,RH_5,Appliances"
+
+permissions:
+  contents: read
+
+env:
+  TABPFN_MODEL_CACHE_DIR: ${{ github.workspace }}/.cache/tabpfn
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install (CPU torch)
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[tabpfn]"
+      - uses: actions/cache@v4
+        with:
+          path: .cache/tabpfn
+          key: tabpfn-v2-reg
+      - run: witching-hour fetch
+      - run: witching-hour evaluate --nights ${{ inputs.eval_nights }} --sensors ${{ inputs.sensors }} --out out/eval.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eval
+          path: out
+          retention-days: 14

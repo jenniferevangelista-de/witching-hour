@@ -141,3 +141,5 @@ footer { margin-top: 48px; color: var(--muted); font-size: 13px; border-top: 1px
 footer p { margin: 4px 0; }
 .built { color: var(--text); font-weight: 600; }
 .loading { color: var(--muted); }
+
+.ci { color: var(--muted); font-size: 12px; }

@@ -28,3 +28,12 @@ def test_evaluate_runs_and_prefers_planted_nights(house):
     assert 0.5 <= r.auc <= 1.0
     assert 0.0 <= r.coverage90 <= 1.0
     assert set(r.recall_fpr5_by_strength) <= {"1.0", "2.0", "3.0"}
+    assert r.auc_ci95[0] <= r.auc <= r.auc_ci95[1] + 1e-9
+    assert len(r.clean) == len(r.planted) == 6
+
+
+def test_paired_intervals_compare_against_the_first_model(house):
+    nights = [date(2016, 1, 15), date(2016, 1, 16), date(2016, 1, 18)]
+    res = evaluate(house, [SeasonalBackend(), SeasonalBackend(half_window_hours=2.0)], nights, ["T1", "T2"])
+    diff = res[1].to_dict()["vs_seasonal-same-hour"]
+    assert diff["auc_diff_ci95"][0] <= diff["auc_diff"] <= diff["auc_diff_ci95"][1]

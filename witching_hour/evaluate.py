@@ -67,6 +67,11 @@ class EvalResult:
     coverage90: float  # share of real readings inside the 5% to 95% band
     seconds: float
     n_cases: int
+    clean: list = None  # per-case night maxima, kept so intervals can be recomputed
+    planted: list = None
+    strengths: list = None
+    auc_ci95: list = None
+    recall_fpr5_ci95: list = None
 
     def to_dict(self):
         return self.__dict__
@@ -117,5 +122,37 @@ def evaluate(house: House, backends: list[Backend], nights, sensors: list[str], 
             coverage90=round(inside / max(total, 1), 3),
             seconds=round(time.time() - t0, 1),
             n_cases=len(plan),
+            clean=[round(float(v), 3) for v in clean], planted=[round(float(v), 3) for v in planted],
+            strengths=[float(v) for v in strengths],
         ))
+    add_intervals(results, seed=seed)
     return results
+
+
+def _recall(planted: np.ndarray, clean: np.ndarray, fpr: float = 0.05) -> float:
+    return float((planted > np.quantile(clean, 1 - fpr)).mean())
+
+
+def add_intervals(results: list[EvalResult], n_boot: int = 2000, seed: int = 0) -> None:
+    """Bootstrap over cases (same resampled cases for every model), so the
+    differences between models are paired. Threshold is re-picked in every resample."""
+    rng = np.random.default_rng(seed)
+    n = results[0].n_cases
+    idx = rng.integers(0, n, size=(n_boot, n))
+    boots = {}
+    for r in results:
+        c, p = np.asarray(r.clean), np.asarray(r.planted)
+        a = np.array([auc(p[i], c[i]) for i in idx])
+        rec = np.array([_recall(p[i], c[i]) for i in idx])
+        boots[r.backend] = (a, rec)
+        r.auc_ci95 = [round(float(v), 3) for v in np.quantile(a, [0.025, 0.975])]
+        r.recall_fpr5_ci95 = [round(float(v), 3) for v in np.quantile(rec, [0.025, 0.975])]
+    ref = results[0].backend
+    for r in results[1:]:
+        d_auc = boots[ref][0] - boots[r.backend][0]
+        d_rec = boots[ref][1] - boots[r.backend][1]
+        r.__dict__[f"vs_{ref}"] = {
+            "auc_diff": round(float(d_auc.mean()), 3), "auc_diff_ci95": [round(float(v), 3) for v in np.quantile(d_auc, [0.025, 0.975])],
+            "recall_diff": round(float(d_rec.mean()), 3), "recall_diff_ci95": [round(float(v), 3) for v in np.quantile(d_rec, [0.025, 0.975])],
+            "share_ref_better_auc": round(float((d_auc > 0).mean()), 3),
+        }
