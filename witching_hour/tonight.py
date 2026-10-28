@@ -92,8 +92,8 @@ def p_below(q_row: np.ndarray, threshold: float) -> float:
 
 def forecast_house(house: House, forecast: dict, backend) -> dict:
     train = night_training_rows(house)
-    tod_tr = train.index.hour + train.index.minute / 60
-    X_tr = _features(tod_tr, train["T_out"], train["RH_out"], train["Windspeed"], train["Tdewpoint"])
+    tod_tr = np.asarray(train.index.hour + train.index.minute / 60, dtype=float)
+    X_tr = _features(tod_tr, *(train[c].to_numpy(dtype=float) for c in ("T_out", "RH_out", "Windspeed", "Tdewpoint")))
     hours = forecast["hours"]
     tod_q = np.array([int(h["time"][:2]) for h in hours], dtype=float)
     X_q = _features(tod_q, [h["temp_c"] for h in hours], [h["humidity"] for h in hours],
