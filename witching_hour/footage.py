@@ -89,6 +89,22 @@ def _runs(mask: np.ndarray, max_gap: int = 1) -> list[tuple[int, int]]:
     return runs
 
 
+ONSET_DB = 12.0
+
+
+def _split_onsets(runs: list[tuple[int, int]], x: np.ndarray) -> list[tuple[int, int]]:
+    """A new sound starts where the level jumps by ONSET_DB or more (a whisper, then knocks)."""
+    out = []
+    for a, b in runs:
+        start = a
+        for i in range(a + 1, b + 1):
+            if x[i] - x[i - 1] >= ONSET_DB:
+                out.append((start, i - 1))
+                start = i
+        out.append((start, b))
+    return out
+
+
 def detect(rows: list[dict], levels: list[float], z_thr: float = 4.0, min_windows: int = 1) -> list[dict]:
     """Evidence from features: light changes, motion and sounds that stand out from the clip itself."""
     if len(rows) < 8:
@@ -102,13 +118,23 @@ def detect(rows: list[dict], levels: list[float], z_thr: float = 4.0, min_window
         lv = np.array(levels[: len(rows)] + [levels[-1]] * max(0, len(rows) - len(levels)))
         signals.append(("audio", lv, None))
     evidence = []
+    light_mask = None
     for kind, x, _ in signals:
         z = robust_z(x)
         floor = {"light_change": 0.03, "motion": 0.012, "audio": None}[kind]
         mask = z > z_thr
         if floor is not None:
             mask &= x > floor
-        for a, b in _runs(mask):
+        if kind == "light_change":
+            light_mask = mask.copy()
+        elif kind == "motion" and light_mask is not None:
+            # when the light changes, every pixel changes: that is not movement
+            near = light_mask | np.roll(light_mask, 1) | np.roll(light_mask, -1)
+            mask &= ~near
+        runs = _runs(mask)
+        if kind == "audio":
+            runs = _split_onsets(runs, x)
+        for a, b in runs:
             if b - a + 1 < min_windows:
                 continue
             peak = a + int(np.argmax(z[a:b + 1]))

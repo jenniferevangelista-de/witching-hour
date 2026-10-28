@@ -21,9 +21,9 @@ from . import tracing
 
 ARCHETYPES = {
     "guardian": {"title": "The Guardian", "personality": "protective and worried",
-                 "style": "short warnings in careful words", "voice": "XrExE9yKIg1WjnnlVkGX"},
+                 "style": "short warnings in careful words", "voice": "pFZP5JQG7iQjIQuC4Bku"},
     "lost_one": {"title": "The Lost One", "personality": "sad and confused",
-                 "style": "fragmented memories and quiet requests for help", "voice": "pFZP5JQG7iQjIQuC4Bku"},
+                 "style": "fragmented memories and quiet requests for help", "voice": "Xb7hH8MSUJpSbSDYk0k2"},
     "trickster": {"title": "The Trickster", "personality": "playful and provocative",
                   "style": "riddles and ambiguous answers", "voice": "cgSgspJ2msm6clMCkdW9"},
     "watcher": {"title": "The Watcher", "personality": "observant and mysterious",
@@ -53,7 +53,8 @@ ASK_SYSTEM = (
     "1. `message` is what the glass spells: at most 3 words, CAPITAL letters, digits and spaces only (no punctuation; "
     "write DONT, not DON'T).\n"
     "2. `spoken` is one short whispered line (max 18 words) the player may hear; English; no numbers you did not get.\n"
-    "3. `evidence_ids`: the evidence that inspired the answer (ids from the list). If no evidence fits, answer YES, NO "
+    "3. `evidence_ids`: only the one or two pieces of evidence that inspired THIS answer (ids from the list), not the "
+    "whole list; different answers usually point at different moments. If no evidence fits, answer YES, NO "
     "or GOODBYE with an empty list. Never pretend something was detected.\n"
     "4. Never threaten the player, never predict accidents, illness or death, never give real-world advice as a spirit.\n"
     "5. Stay in character and remember the conversation.\n"

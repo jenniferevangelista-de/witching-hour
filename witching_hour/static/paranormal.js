@@ -85,6 +85,18 @@
     return out;
   }
 
+  const ONSET_DB = 12;
+  function splitOnsets(rs, x) {
+    // a new sound starts where the level jumps by ONSET_DB or more (a whisper, then knocks)
+    const out = [];
+    for (const [a, b] of rs) {
+      let start = a;
+      for (let i = a + 1; i <= b; i++) if (x[i] - x[i - 1] >= ONSET_DB) { out.push([start, i - 1]); start = i; }
+      out.push([start, b]);
+    }
+    return out;
+  }
+
   function detect(rows, levels, zThr = 4) {
     if (rows.length < 8) return [];
     const t = rows.map((r) => r.t), bright = rows.map((r) => r.brightness);
@@ -93,10 +105,16 @@
     const signals = [["light_change", dbright, 0.03], ["motion", motion, 0.012]];
     if (levels.length) signals.push(["audio", rows.map((_, i) => levels[Math.min(i, levels.length - 1)]), null]);
     const ev = [];
+    let lightMask = null;
     for (const [kind, x, floor] of signals) {
       const z = robustZ(x);
-      const mask = z.map((v, i) => v > zThr && (floor == null || x[i] > floor));
-      for (const [a, b] of runs(mask)) {
+      let mask = z.map((v, i) => v > zThr && (floor == null || x[i] > floor));
+      if (kind === "light_change") lightMask = mask.slice();
+      // when the light changes, every pixel changes: that is not movement
+      else if (kind === "motion" && lightMask) mask = mask.map((m, i) => m && !(lightMask[i] || lightMask[i - 1] || lightMask[i + 1]));
+      let rs = runs(mask);
+      if (kind === "audio") rs = splitOnsets(rs, x);
+      for (const [a, b] of rs) {
         let peak = a;
         for (let i = a; i <= b; i++) if (z[i] > z[peak]) peak = i;
         const e = { type: kind, start: t[a], end: t[b] + STEP, confidence: Math.round(Math.min(1, z[peak] / 8) * 100) / 100 };

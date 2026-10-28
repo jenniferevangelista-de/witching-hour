@@ -44,9 +44,9 @@ jobs:
       - name: The séance
         env:
           WH_MODEL: ${{ inputs.model }}
-        run: witching-hour seance --case demo/out/the_warning.json --questions "Is someone here?|Who are you?|What were you trying to say?|Why did you knock?|Will you come back?"
+        run: witching-hour seance --case demo/out/the_warning.json --archetype guardian --questions "Is someone here?|Who are you?|What were you trying to tell me that night?|Why did you knock?|What would have happened if I had gone out?|Will you come back?"
       - name: Keep three stills
-        run: for s in 4 9.4 10.2; do ffmpeg -y -loglevel error -ss $s -i demo/out/the_warning.mp4 -frames:v 1 demo/out/still_$s.png; done
+        run: for s in 4 7.1 9.4 10.2 14; do ffmpeg -y -loglevel error -ss $s -i demo/out/the_warning.mp4 -frames:v 1 demo/out/still_$s.png; done
       - uses: actions/upload-artifact@v4
         with:
           name: warning

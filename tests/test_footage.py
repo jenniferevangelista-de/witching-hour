@@ -39,3 +39,20 @@ def test_detect_finds_light_motion_and_sound_with_where_and_ids():
 def test_a_quiet_clip_has_no_evidence():
     assert detect(rows(), [-50.0 + 0.2 * np.sin(i) for i in range(80)]) == []
     assert where(0.1) == "left" and where(0.5) == "center" and where(None) is None
+
+
+def test_a_light_flicker_is_not_counted_as_movement():
+    r = rows(flicker_at=28)
+    for i in (28, 29, 30):  # the whole frame changes when the light does
+        r[i]["motion"], r[i]["area"], r[i]["cx"] = 0.09, 0.6, 0.5
+    kinds = {e["type"] for e in detect(r, [])}
+    assert kinds == {"light_change"}
+
+
+def test_a_whisper_then_knocks_are_two_sounds():
+    levels = [-60.0 + 0.3 * np.sin(i) for i in range(80)]
+    levels[33], levels[34] = -52.0, -45.0  # a whisper rising
+    levels[36] = levels[37] = levels[38] = -22.0  # knocks, a sudden jump
+    levels[35] = -50.0
+    sounds = [e for e in detect(rows(), levels) if e["type"] == "audio"]
+    assert [s["start"] for s in sounds] == [8.25, 9.0]

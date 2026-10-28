@@ -1,8 +1,8 @@
 """Render "The Warning", the staged demo recording (python demo/make_warning.py out_dir).
 
 A hallway camera at night. A woman takes her coat and walks to the front door.
-The lamp flickers, something whispers, three knocks, a shadow crosses the light
-under the door. She hesitates, walks back, hangs the coat again and stays home.
+The lamp flickers, something whispers, three knocks, a tall shadow passes behind
+her along the wall by the door. She hesitates, walks back, hangs the coat again and stays home.
 Everything here is drawn and synthesised by this script: it is a staged clip for
 the demo, not found footage.
 """
@@ -107,6 +107,12 @@ def frame(t, font, small):
     a[::2] *= 0.94
     vy, vx = np.ogrid[:H, :W]
     a *= (1 - 0.55 * (((vx - W / 2) / (W / 2)) ** 2 + ((vy - H / 2) / (H / 2)) ** 2) / 2)[..., None]
+    if 9.95 <= t < 10.5:  # the shadow of someone tall passes behind her, along the wall by the door
+        u = (t - 9.95) / 0.55
+        sx = int(360 + 260 * u)
+        x0, x1 = max(0, sx), min(W, sx + 80)
+        if x1 > x0:
+            a[36:292, x0:x1] *= 0.3
     img = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
     d = ImageDraw.Draw(img)
     if int(t * 2) % 2 == 0:
