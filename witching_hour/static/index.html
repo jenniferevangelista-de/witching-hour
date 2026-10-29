@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Witching Hour</title>
-  <meta name="description" content="A paranormal activity detector for Halloween and Día de los Muertos. TabPFN learns what a house feels like at night; Luna, Dr. Bigotes and Xochi tell you what came at 3 AM, and every sentence cites a sensor.">
+  <meta name="description" content="A fictional ghost hunt built around measured signals. Explore recorded TabPFN investigations, compare the crew’s interpretations, and follow their citations.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👻</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,15 +17,17 @@
 <div class="papel" id="papel" aria-hidden="true"></div>
 <main>
   <header class="hero">
-    <div class="kicker">Halloween · Día de los Muertos · Paranormal activity detector</div>
+    <div class="kicker">Halloween · Día de los Muertos · Fictional investigations</div>
     <h1>Witching Hour</h1>
-    <p class="hook">What if someone tried to warn you, and you never heard them?</p>
-    <p class="tagline">Witching Hour is a ghost-hunting crew with an open-source kit. Their terminal, <b>PARANORMAL.exe</b>, opens three kinds of cases: a house that keeps a log every night, a recording of the moment you felt something, and the room you are sitting in right now. <b>The evidence is real. The spirits are fiction.</b> The crew cites measured moments; its interpretations remain stories, not proof of a cause.</p>
+    <p class="hook">Even a ghost has to cite its sources.</p>
+    <p class="tagline">A flicker. Three knocks. What changed, and what story will you tell? Luna tells the ghost story. Dr. Bigotes offers an ordinary explanation. Xochi writes the morning note. Follow a citation to inspect the measured moment.</p>
+    <div class="hero-actions"><button id="start-warning" class="big">▶ Start the staged case</button><a class="big alt" href="#case-house">Explore the house logs</a></div>
+    <p class="mode-note"><b>Fictional spirits. Measured signals.</b> The public demo replays recorded model investigations. New board sessions label whether a template or a model answered. A citation is not proof of a supernatural claim.</p>
     <div class="crew" id="crew"></div>
     <nav class="doors" aria-label="Choose a case">
       <a class="door" href="#case-house"><span class="n">Case 1</span><b>🏚️ The House</b><span>A real house's night logs and the spirit meter</span></a>
-      <a class="door" href="#unheard"><span class="n">Case 2</span><b>🎞️ The Unheard</b><span>Bring the recording of the night you almost left</span></a>
-      <a class="door" href="#room"><span class="n">Case 3</span><b>📹 The Room</b><span>A live séance with your own camera</span></a>
+      <a class="door" href="#unheard"><span class="n">Case 2</span><b>🎞️ The Unheard</b><span>Investigate a staged hallway clip or your recording</span></a>
+      <a class="door" href="#room"><span class="n">Case 3</span><b>📹 The Room</b><span>Experimental camera and microphone analysis</span></a>
     </nav>
   </header>
 
@@ -65,7 +67,7 @@
         <input id="q" name="q" placeholder="Which night was the most haunted, and was it really a ghost?" maxlength="300">
         <button type="submit">Ask</button>
       </form>
-      <p class="notice" id="ask-notice"></p>
+      <p class="notice" id="ask-notice" role="status" aria-live="polite"></p>
       <div id="runs"></div>
     </div>
   </section>
@@ -94,9 +96,9 @@
     <div class="term-body">
       <div class="term-actions">
         <button id="uh-demo" class="big">▶ Open the case: <i>The Warning</i></button>
-        <label class="big alt">Bring your own recording<input id="uh-file" type="file" accept="video/*" hidden></label>
+        <label class="big alt" tabindex="0" role="button" aria-controls="uh-file">Bring your own recording<input id="uh-file" type="file" accept="video/*" hidden></label>
       </div>
-      <p class="status" id="uh-status">No recording loaded. The demo is a staged clip made for this project.</p>
+      <p class="status" id="uh-status" role="status" aria-live="polite">No recording loaded. The demo is staged. Your own recording is limited to 90 seconds and 24 MiB.</p>
       <div class="uh-story" id="uh-story"></div>
       <div class="layout">
         <div>
@@ -118,14 +120,14 @@
     </div>
   </section>
 
-  <div class="case-title" id="room"><span class="n">Case 3</span><h2>📹 The Room</h2><p>Turn on your camera and microphone and ask the board. Camera video and microphone audio stay in this browser. When you summon, measured event summaries and your questions go to this app's server and, if configured, its model provider. If something really moves right after the glass stops, the game will notice.</p></div>
+  <div class="case-title" id="room"><span class="n">Case 3</span><h2>📹 The Room <span class="ci">experimental</span></h2><p>This is a fictional interactive scene, not a detector of danger. Turn on your camera and microphone and ask the board. Camera video and microphone audio stay in this browser. When you summon, measured event summaries and your questions go to this app's server and, if configured, its model provider. If something really moves right after the glass stops, the game will notice.</p></div>
   <section class="terminal" aria-label="PARANORMAL.exe, The Room">
     <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">PARANORMAL.exe · THE ROOM · live</span></div>
     <div class="term-body">
       <div class="term-actions"><button id="rm-start" class="big">Turn on camera and microphone</button><button id="rm-seance-open" class="big alt" hidden>🔮 Summon the spirit of this room</button></div>
-      <p class="status" id="rm-status">Off. Camera and microphone stay off until you press the button.</p>
+      <p class="status" id="rm-status" role="status" aria-live="polite">Off. Camera and microphone stay off until you press the button.</p>
       <div class="layout">
-        <div><video id="rm-video" muted playsinline></video><p class="status" id="rm-meters"></p><ol class="live-log" id="rm-log"></ol></div>
+        <div><video id="rm-video" muted playsinline></video><p class="status" id="rm-meters" role="status" aria-live="polite"></p><ol class="live-log" id="rm-log"></ol></div>
         <div id="rm-seance-slot"></div>
       </div>
     </div>
@@ -139,7 +141,7 @@
       <li><b>The crew</b>Luna, Dr. Bigotes and Xochi are Gemma 4 running on your own machine through Ollama, each with a personality and a job.</li>
       <li><b>Cite or vanish</b>Generated story sentences need a known citation and numbers within the validator's tolerance. This checks references and numbers, not explanations or supernatural claims. Quiet nights use labeled scripted summaries.</li>
       <li><b>The watch never sleeps</b>Each night is a durable Temporal workflow. Kill the worker or the model mid-night and it picks up where it stopped.</li>
-      <li><b>Voices</b>The crew reads aloud with ElevenLabs. Only verified sentences are spoken.</li>
+      <li><b>Voices</b>Recorded application voices use ElevenLabs. Audio is shown only when its saved text matches the displayed story.</li>
       <li><b>Private by design</b>A house's night logs say when people sleep and when the house is empty. A home install can run locally. This demo replays the house investigations; opening a live board sends evidence summaries, questions and optional memory text to the server and, when configured, its model provider.</li>
     </ul>
   </section>
