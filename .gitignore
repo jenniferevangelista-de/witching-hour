@@ -32,3 +32,5 @@ mastra/*.db*
 mastra/mastra_runs.json
 train/out/
 demo/out/
+
+video/out/
