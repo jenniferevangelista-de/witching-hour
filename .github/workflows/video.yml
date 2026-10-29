@@ -31,6 +31,8 @@ jobs:
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/api/health && break; sleep 1; done
       - name: Make the videos
         run: python video/make_videos.py http://127.0.0.1:8000 video/out "${{ inputs.which }}"
+      - name: Inspect video and audio
+        run: python video/qa_media.py video/out
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -38,4 +40,7 @@ jobs:
           path: |
             video/out/*.mp4
             video/out/*.srt
+            video/out/qa_*.json
+            video/out/qa_*.jpg
+            video/out/qa_*.mp3
           retention-days: 14
