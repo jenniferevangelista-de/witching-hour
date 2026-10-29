@@ -410,3 +410,10 @@ def quiet_night(scan: NightScan, mode: str) -> Story:
             "family": "I kept watch. The scanner raised no event alerts or cold-room checks in this night log."}.get(
         mode, "Hmph. The scanner found no events above its alert threshold. That does not mean every reading was inside its expected range.")
     return Story(scan.night, mode, "template", "A quiet night", [Sentence(text, [])], attempts=0)
+
+
+def normalize_saved_story(scan: NightScan, mode: str, story: dict) -> dict:
+    """Present historical quiet shortcuts without rewriting recorded artifacts."""
+    if not scan.events and not (mode == "family" and scan.checks):
+        return quiet_night(scan, mode).to_dict()
+    return dict(story)
