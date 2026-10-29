@@ -188,9 +188,14 @@ def test_duration_rejection_releases_video_and_url_before_decode(page, media):
     expect(page.locator("#uh-demo")).to_be_enabled()
 
 def test_keyboard_selection_and_motion_after_still_opening(page, media):
-    page.get_by_role("button", name="Bring your own recording").focus()
+    page.bring_to_front()
+    trigger = page.get_by_role("button", name="Bring your own recording")
+    expect(trigger).to_be_visible()
+    expect(page.locator("#uh-file")).to_be_enabled()
+    trigger.focus()
+    expect(trigger).to_be_focused()
     with page.expect_file_chooser() as chosen:
-        page.keyboard.press("Enter")
+        trigger.press("Enter")
     chosen.value.set_files(str(media["motion"]))
     expect(page.locator("#uh-status")).to_contain_text("measured moment", timeout=30000)
     motion = page.locator("#uh-evidence .event").filter(has=page.locator(".what", has_text="motion"))
