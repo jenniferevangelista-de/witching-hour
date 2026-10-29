@@ -50,7 +50,7 @@ def say(who: str, text: str, name: str) -> Path:
     p = WORK / "voice" / f"{name}.mp3"
     p.parent.mkdir(parents=True, exist_ok=True)
     if not p.exists():
-        run("edge-tts", "--voice", VOICE[who], "--rate", "-4%", "--text", text, "--write-media", str(p))
+        run("edge-tts", "--voice", VOICE[who], "--rate=-4%", "--text", text, "--write-media", str(p))
     return p
 
 
