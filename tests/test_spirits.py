@@ -74,7 +74,8 @@ def test_session_api(monkeypatch):
     s = c.post("/api/sessions", json={"investigation": "the-warning", "evidence": EVIDENCE}).json()
     assert s["spirit"]["archetype"] == "guardian" and s["model"].startswith("template")
     r = c.post(f"/api/sessions/{s['session_id']}/ask", json={"question": "What were you trying to say?"}).json()
-    assert r["response"]["message"] == "STAY HOME" and r["response"]["fictional"] is True
+    assert r["response"]["message"] == "I AM HERE" and r["response"]["fictional"] is True
+    assert r["response"]["by"] == "template" and r["spirit"]["by"] == "template"
     assert c.post(f"/api/sessions/{s['session_id']}/close").json()["response"]["message"] == "GOODBYE"
     assert c.post(f"/api/sessions/{s['session_id']}/ask", json={"question": "hello?"}).status_code == 409
     assert c.get("/api/sessions/nope").status_code == 404
@@ -116,3 +117,76 @@ def test_the_players_memory_reaches_the_spirit_but_is_never_evidence():
     again = spirits.Session.from_dict(s.to_dict())
     assert again.context == s.context
     assert {e["id"] for e in again.evidence} == {"ev-001", "ev-002", "ev-003"}
+
+
+
+@pytest.mark.parametrize("question", [
+    "What were you trying to say?",
+    "Should I go out tonight?",
+    "Should I stay home?",
+])
+def test_guardian_template_offers_fictional_presence_not_real_world_advice(question):
+    session = spirits.summon("the-warning", EVIDENCE, context="Something made me stay.")
+    result = spirits.ask(session, question)
+
+    answer = result["response"]
+    assert answer["fictional"] is True
+    assert answer["by"] == "template"
+    assert answer["message"] == "I AM HERE"
+    assert "in this story" in answer["spoken"].lower()
+    assert "stay home" not in answer["spoken"].lower()
+    assert "not tonight" not in answer["spoken"].lower()
+    assert result["grounding"]["related_evidence_ids"]
+
+
+def test_template_spirit_and_model_answer_keep_separate_provenance():
+    chat = Scripted([
+        {"archetype": "unknown", "name": "Invalid",
+         "backstory": "", "goal": "", "evidence_ids": []},
+        {"message": "I AM HERE", "spoken": "In this story, I waited by the door.",
+         "evidence_ids": ["ev-003"]},
+    ])
+    session = spirits.summon("the-warning", EVIDENCE, chat=chat)
+    result = spirits.ask(session, "What were you trying to say?", chat=chat)
+
+    assert result["spirit"]["by"] == "template"
+    assert result["response"]["by"] == "fake-gemma"
+
+
+def test_model_spirit_and_fallback_answer_keep_separate_provenance():
+    chat = Scripted([
+        {"archetype": "guardian", "name": "Aegis",
+         "backstory": "A fictional presence in the hallway.",
+         "goal": "to be noticed in the story", "evidence_ids": ["ev-003"]},
+        {"message": "YOU WILL DIE", "spoken": "", "evidence_ids": ["ev-001"]},
+        {"message": "CRASH TONIGHT", "spoken": "", "evidence_ids": ["ev-001"]},
+    ])
+    session = spirits.summon("the-warning", EVIDENCE, chat=chat)
+    result = spirits.ask(session, "What were you trying to say?", chat=chat)
+
+    assert result["spirit"]["by"] == "fake-gemma"
+    assert result["response"]["by"] == "template"
+    assert result["response"]["message"] == "I AM HERE"
+
+
+def test_session_api_reports_actual_summon_source_separately_from_provider(monkeypatch):
+    from witching_hour import app as app_module
+
+    chat = Scripted([
+        {"archetype": "unknown", "name": "Invalid",
+         "backstory": "", "goal": "", "evidence_ids": []},
+    ])
+    monkeypatch.delenv("MONGODB_URI", raising=False)
+    monkeypatch.setattr(app_module, "_store", None)
+    monkeypatch.setattr(app_module, "make_chat", lambda: chat)
+    client = TestClient(app_module.app)
+
+    response = client.post("/api/sessions", json={
+        "investigation": "the-warning",
+        "evidence": EVIDENCE,
+    })
+    assert response.status_code == 200
+    session = response.json()
+    assert session["spirit"]["by"] == "template"
+    assert session["model"] == "template"
+    assert "fake-gemma" in session["configured_model"]
