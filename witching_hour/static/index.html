@@ -20,7 +20,7 @@
     <div class="kicker">Halloween · Día de los Muertos · Paranormal activity detector</div>
     <h1>Witching Hour</h1>
     <p class="hook">What if someone tried to warn you, and you never heard them?</p>
-    <p class="tagline">Witching Hour is a ghost-hunting crew with an open-source kit. Their terminal, <b>PARANORMAL.exe</b>, opens three kinds of cases: a house that keeps a log every night, a recording of the moment you felt something, and the room you are sitting in right now. <b>The evidence is real. The spirits are fiction.</b> And nobody on the crew may say a word the evidence cannot back.</p>
+    <p class="tagline">Witching Hour is a ghost-hunting crew with an open-source kit. Their terminal, <b>PARANORMAL.exe</b>, opens three kinds of cases: a house that keeps a log every night, a recording of the moment you felt something, and the room you are sitting in right now. <b>The evidence is real. The spirits are fiction.</b> The crew cites measured moments; its interpretations remain stories, not proof of a cause.</p>
     <div class="crew" id="crew"></div>
     <nav class="doors" aria-label="Choose a case">
       <a class="door" href="#case-house"><span class="n">Case 1</span><b>🏚️ The House</b><span>A real house's night logs and the spirit meter</span></a>
@@ -78,13 +78,13 @@
 
   <section aria-labelledby="eval-title">
     <h2 id="eval-title"><span class="em">🧪</span>Calibrating the spirit meter</h2>
-    <p class="sub">Dr. Bigotes insisted: I planted fake ghosts (smooth bumps of known size and time) into real nights and checked which meter noticed them, at a 5% false alarm rate.</p>
+    <p class="sub">Dr. Bigotes insisted: I planted fake ghosts (smooth bumps of known size and time) into real nights and checked which meter noticed them, at a threshold chosen from these same nights to target 5% false alarms. This is an exploratory benchmark, not a held-out deployment guarantee.</p>
     <div class="panel table-wrap" id="eval"><span class="loading">Loading the benchmark...</span></div>
   </section>
 
   <section id="bakeoff-sec" hidden aria-labelledby="bakeoff-title">
-    <h2 id="bakeoff-title"><span class="em">🎃</span>Which spirit makes things up the least?</h2>
-    <p class="sub">Same nights, same prompts, same rule, one shot each. Open-weight models reached through one Backboard API key, against Gemma 4 running locally.</p>
+    <h2 id="bakeoff-title"><span class="em">🎃</span>Which narrator passes the number checks?</h2>
+    <p class="sub">Four open-weight models through Backboard, one attempt each. A separate Gemma 4 local reference allows one retry; these are different protocols.</p>
     <div class="panel table-wrap" id="bakeoff"></div>
   </section>
 
@@ -108,6 +108,7 @@
         </div>
         <div>
           <div class="with-guide luna"><img src="/static/characters/luna.svg" alt="Luna, the Medium"><div><h3 style="margin:0">Luna opens the board</h3><p class="notice" style="margin-top:4px">She summons the spirit the evidence suggests: a Guardian, a Lost One, a Trickster, a Watcher, a Hostile Presence or a Silent One. Its answers are fiction, and each one must point at a real moment of the recording.</p></div></div>
+          <p class="notice">Before summoning: the clip stays in your browser. Evidence summaries, questions and any memory text below are sent to this app's server, and to Backboard if its model is enabled. Use the recorded replay to explore without sending your own text.</p>
           <label class="words">What happened that night? <span class="ci">(your words, optional: the spirit hears them as a memory, never as evidence)</span>
             <input id="uh-words" maxlength="200" placeholder="I was about to go out, and something made me stay."></label>
           <div class="term-actions"><button id="uh-open" class="big" hidden>🔮 Summon the spirit</button><button id="uh-replay" class="big alt" hidden>⏺ Replay the recorded séance</button><button id="uh-dossier" class="big alt">📜 Xochi's dossier</button></div>
@@ -117,7 +118,7 @@
     </div>
   </section>
 
-  <div class="case-title" id="room"><span class="n">Case 3</span><h2>📹 The Room</h2><p>Turn on your camera and microphone and ask the board. Nothing is recorded or uploaded: the browser measures light, motion and sound, and only the list of moments goes to the spirit. If something really moves right after the glass stops, the game will notice.</p></div>
+  <div class="case-title" id="room"><span class="n">Case 3</span><h2>📹 The Room</h2><p>Turn on your camera and microphone and ask the board. Camera video and microphone audio stay in this browser. When you summon, measured event summaries and your questions go to this app's server and, if configured, its model provider. If something really moves right after the glass stops, the game will notice.</p></div>
   <section class="terminal" aria-label="PARANORMAL.exe, The Room">
     <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">PARANORMAL.exe · THE ROOM · live</span></div>
     <div class="term-body">
@@ -136,10 +137,10 @@
     <ul>
       <li><b>The spirit meter</b>TabPFN, an open tabular foundation model, reads the house's last 14 days in context and predicts a range for every room, every 10 minutes. Readings far outside it are apparitions.</li>
       <li><b>The crew</b>Luna, Dr. Bigotes and Xochi are Gemma 4 running on your own machine through Ollama, each with a personality and a job.</li>
-      <li><b>Cite or vanish</b>Every sentence must cite an apparition or a cold-room check, and every number must match. Anything else is dropped before you read it.</li>
+      <li><b>Cite or vanish</b>Generated story sentences need a known citation and numbers within the validator's tolerance. This checks references and numbers, not explanations or supernatural claims. Quiet nights use labeled scripted summaries.</li>
       <li><b>The watch never sleeps</b>Each night is a durable Temporal workflow. Kill the worker or the model mid-night and it picks up where it stopped.</li>
       <li><b>Voices</b>The crew reads aloud with ElevenLabs. Only verified sentences are spoken.</li>
-      <li><b>Private by design</b>A house's night logs say when people sleep and when the house is empty. Everything runs at home; this public demo only replays results.</li>
+      <li><b>Private by design</b>A house's night logs say when people sleep and when the house is empty. A home install can run locally. This demo replays the house investigations; opening a live board sends evidence summaries, questions and optional memory text to the server and, when configured, its model provider.</li>
     </ul>
   </section>
 

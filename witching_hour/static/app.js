@@ -204,6 +204,9 @@
       .map((s) => `${esc(s.text)}${(s.cites || []).map((ci) => ` <button class="cite" data-ev="${esc(ci)}" title="show ${esc(ci)}">${esc(ci)}</button>`).join("")}`)
       .join(" ");
     const total = story.sentences.length + (story.rejected || []).length;
+    const scripted = story.model === "template" && story.sentences.every((s) => !(s.cites || []).length);
+    const checked = story.sentences.filter((s) => (s.cites || []).length).length;
+    const verification = scripted ? "Scripted scan summary; no model called" : `${checked} of ${total} sentences passed citation and numeric checks (not a check of the explanation)`;
     const dropped = story.rejected && story.rejected.length
       ? `<details class="dropped"><summary>${story.rejected.length} sentence(s) vanished: no proof</summary><ul>${story.rejected
           .map((r) => `<li>"${esc(r.text)}" <em>(${esc(r.reason)})</em></li>`).join("")}</ul></details>` : "";
@@ -213,7 +216,7 @@
         <h3>${esc(story.title)}</h3>
         <p>${sentences}</p>
         ${audio}
-        <div class="verify"><b>${story.sentences.length} of ${total}</b> sentences backed by the sensors · voice of ${esc(c.name)} by ${esc(story.model)}${story.audio ? " · read aloud with ElevenLabs" : ""}</div>
+        <div class="verify"><b>${verification}</b> · voice of ${esc(c.name)} by ${esc(story.model)}${story.audio ? " · read aloud with ElevenLabs" : ""}</div>
         ${dropped}
       </div></div>`;
   }
@@ -302,7 +305,7 @@
   }
 
   function eventsHTML(night) {
-    if (!night.events.length) return '<p class="notice">No apparitions: every reading stayed inside the range the spirit meter expected.</p>';
+    if (!night.events.length) return '<p class="notice">No events crossed the alert threshold. Some readings may still fall outside the predicted range.</p>';
     return night.events.slice().sort((a, b) => b.sigma - a.sigma).slice(0, 10).sort((a, b) => a.start.localeCompare(b.start))
       .map((e) => `<div class="event" id="ev-${esc(e.id)}" data-ev="${esc(e.id)}">
         <div class="top"><span><span class="id">apparition ${esc(e.id)}</span> <span class="what">${esc(e.room)}: ${esc(PHENOMENA[`${e.kind}|${e.direction}`] || "a strange reading")}</span></span><span>${esc(e.start)} to ${esc(e.end)}</span></div>
@@ -423,9 +426,9 @@
       const best = Math.max(...ev.results.map((r) => r.recall_fpr5));
       const strengths = Object.keys(ev.results[0].recall_fpr5_by_strength);
       const ci = (a, pct) => (a ? ` <span class="ci">[${esc(pct ? Math.round(a[0] * 100) : a[0])}, ${esc(pct ? Math.round(a[1] * 100) : a[1])}]</span>` : "");
-      $("#eval").innerHTML = `<table><thead><tr><th>Meter</th><th>Ghosts caught (5% false alarms)</th>${strengths.map((s) => `<th>ghost size ${esc(s)}x</th>`).join("")}<th>AUC</th><th>Found the right time</th><th>90% band coverage</th></tr></thead><tbody>${ev.results
+      $("#eval").innerHTML = `<table><thead><tr><th>Meter</th><th>Ghosts caught (5% target, same sample)</th>${strengths.map((s) => `<th>ghost size ${esc(s)}x</th>`).join("")}<th>AUC</th><th>Found the right time</th><th>90% band coverage</th></tr></thead><tbody>${ev.results
         .map((r) => `<tr class="${r.recall_fpr5 === best ? "best" : ""}"><td>${esc(r.backend)}</td><td class="num">${(r.recall_fpr5 * 100).toFixed(0)}%${ci(r.recall_fpr5_ci95, true)}</td>${strengths.map((s) => `<td class="num">${(r.recall_fpr5_by_strength[s] * 100).toFixed(0)}%</td>`).join("")}<td class="num">${r.auc.toFixed(3)}${ci(r.auc_ci95, false)}</td><td class="num">${(r.located * 100).toFixed(0)}%</td><td class="num">${(r.coverage90 * 100).toFixed(0)}%</td></tr>`)
-        .join("")}</tbody></table><p class="notice">${ev.results[0].n_cases} planted ghosts on ${ev.nights.length} real nights, sensors ${esc(ev.sensors.join(", "))}. Ghost size is a multiple of the sensor's typical night-time wobble. A perfectly calibrated 90% band covers 90% of real readings. Brackets: 95% bootstrap intervals.</p>`;
+        .join("")}</tbody></table><p class="notice">${ev.results[0].n_cases} planted ghosts on ${ev.nights.length} real nights, sensors ${esc(ev.sensors.join(", "))}. Ghost size is a multiple of the sensor's typical night-time wobble. A perfectly calibrated 90% band covers 90% of real readings. Brackets: exploratory 95% case-bootstrap intervals; sensors from one night are correlated. Threshold selection and scoring use the same sample.</p>`;
     } catch (_) {
       $("#eval").innerHTML = '<p class="notice">Benchmark not available.</p>';
     }
@@ -438,9 +441,9 @@
       const rows = [...b.results].sort((x, y) => y.grounded_share - x.grounded_share);
       const best = rows[0].grounded_share;
       const local = b.local && b.local.stories ? `<tr class="best"><td>${esc(b.local.model)} <span class="ci">(${esc(b.local.via)})</span></td><td class="num">${esc(Math.round(b.local.grounded_share * 100))}%</td><td class="num">${esc(b.local.verified)} / ${esc(b.local.sentences)}</td><td class="num">${esc(b.local.stories)}</td><td></td></tr>` : "";
-      $("#bakeoff").innerHTML = `<table><thead><tr><th>Model</th><th>Sentences backed by the sensors</th><th>Verified / written</th><th>Stories</th><th>Avg seconds</th></tr></thead><tbody>${local}${rows
+      $("#bakeoff").innerHTML = `<table><thead><tr><th>Model</th><th>Passed citation / number checks</th><th>Verified / written</th><th>Stories</th><th>Avg seconds</th></tr></thead><tbody>${local}${rows
         .map((r) => `<tr class="${r.grounded_share === best && !local ? "best" : ""}"><td>${esc(r.model)}</td><td class="num">${esc(Math.round(r.grounded_share * 100))}%</td><td class="num">${esc(r.verified)} / ${esc(r.sentences)}</td><td class="num">${esc(r.stories)}${r.failed ? ` (+${esc(r.failed)} not valid JSON)` : ""}</td><td class="num">${esc(r.avg_seconds)}</td></tr>`)
-        .join("")}</tbody></table><p class="notice">${esc(b.nights.length)} nights × ${esc(b.modes.join(" and "))}. A sentence counts when every number and time in it matches what it cites.</p>`;
+        .join("")}</tbody></table><p class="notice">${esc(b.nights.length)} nights × ${esc(b.modes.join(" and "))}. A sentence counts when its references exist and numbers pass the validator tolerance. This does not validate the explanation. Remote models get one attempt; the local reference allows a retry.</p>`;
       $("#bakeoff-sec").hidden = false;
     } catch (_) { /* optional */ }
   }
@@ -452,9 +455,9 @@
       const out = t.hours.map((h) => `${esc(h.time)} ${esc(h.temp_c)} °C`).join(" · ");
       $("#tonight-sub").textContent = `Xochi checked the live weather for ${t.place} (${t.source}, fetched ${t.fetched_at}) and asked the spirit meter how each room will feel, learned from ${t.trained_on}.`;
       $("#tonight-body").innerHTML = `<p class="notice" style="margin-top:0">Outside tonight: ${out}</p>
-        <div class="table-wrap"><table><thead><tr><th>Room</th><th>Coldest expected</th><th>90% range</th><th>Chance below 18 °C</th></tr></thead><tbody>${t.rooms
+        <div class="table-wrap"><table><thead><tr><th>Room</th><th>Coldest expected</th><th>90% range</th><th>Below 18 °C at listed hour</th></tr></thead><tbody>${t.rooms
           .map((r) => `<tr class="${r.p_below_18 >= 0.5 ? "best" : ""}"><td>${esc(r.room)}</td><td class="num">${esc(r.expected)} °C at ${esc(r.coldest_time)}</td><td class="num">${esc(r.low)} to ${esc(r.high)} °C</td><td class="num">${esc((r.p_below_18 * 100).toFixed(1))}%</td></tr>`)
-          .join("")}</tbody></table></div><p class="notice">A forecast, not a reading: the demo house's logs end in 2016, so this is how that house would feel under tonight's weather.</p>`;
+          .join("")}</tbody></table></div><p class="notice">An illustration using 2016 house logs and the weather snapshot dated above, not a validated forecast for today. Each probability is for the listed hour, not for any drop over the whole night.</p>`;
       $("#tonight").hidden = false;
     } catch (_) { /* optional */ }
   }
@@ -463,7 +466,7 @@
     try {
       const f = await getJSON("/api/fieldwork");
       if (!f.url) return;
-      const verdict = f.cold_warning ? "There IS an official cold warning. Even I will not blame a kettle tonight." : "No official cold warning. Hmph. If a room goes cold, check the heating before you call a priest.";
+      const verdict = f.cold_warning ? "There IS an official cold warning. Even I will not blame a kettle tonight." : "No cold-warning text was found in this captured view. That does not establish that there were no active warnings; check the official service.";
       $("#field-body").innerHTML = `<h3 style="margin:0 0 6px">Dr. Bigotes's field trip</h3>
         <p class="notice" style="margin-top:0">He opened the official warnings page in a real cloud browser (${esc(f.via)}, ${esc(f.fetched_at)}): <a href="${esc(f.url)}">${esc(f.url)}</a></p>
         <p><b>"${esc(verdict)}"</b></p>

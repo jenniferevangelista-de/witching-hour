@@ -209,6 +209,22 @@
     return r;
   }
 
+  async function openBoard(prefix, investigation, evidence, context = "") {
+    const button = $(prefix === "uh" ? "#uh-open" : "#rm-seance-open");
+    const status = $(`#${prefix}-status`);
+    button.disabled = true;
+    status.textContent = "Opening a fictional spirit session...";
+    try {
+      const result = await summon(prefix, investigation, evidence, context);
+      status.textContent = `Fictional session ready. Answering with ${result.model}.`;
+      $(`#${prefix}-seance`).scrollIntoView({ behavior: WH.reduceMotion ? "auto" : "smooth", block: "center" });
+    } catch (error) {
+      status.textContent = `Could not open the board: ${error.message}`;
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   async function ask(prefix, question, afterSpell) {
     const s = sessions[prefix];
     if (!s) return;
@@ -452,12 +468,12 @@
         await investigate(URL.createObjectURL(f), await f.arrayBuffer(), f.name);
       } catch (e) { $("#uh-status").textContent = e.message; }
     });
-    $("#uh-open").addEventListener("click", async () => { await summon("uh", unheard.title || "recording", unheard.evidence, $("#uh-words").value.trim()); $("#uh-seance").scrollIntoView({ behavior: "smooth", block: "center" }); });
+    $("#uh-open").addEventListener("click", () => openBoard("uh", unheard.title || "recording", unheard.evidence, $("#uh-words").value.trim()));
     $("#uh-replay").addEventListener("click", replaySeance);
     $("#uh-dossier").addEventListener("click", dossier);
     $("#uh-ask").addEventListener("submit", (e) => { e.preventDefault(); const i = $("input", e.target); if (i.value.trim()) { ask("uh", i.value.trim()); i.value = ""; } });
     $("#rm-start").addEventListener("click", () => (room.stream ? stopRoom() : startRoom()));
-    $("#rm-seance-open").addEventListener("click", () => summon("rm", "the room", room.evidence));
+    $("#rm-seance-open").addEventListener("click", () => openBoard("rm", "the room", room.evidence));
     $("#rm-ask").addEventListener("submit", (e) => {
       e.preventDefault();
       const i = $("input", e.target);
