@@ -21,7 +21,7 @@ from . import tracing
 
 ARCHETYPES = {
     "guardian": {"title": "The Guardian", "personality": "tender and worried, like someone who once loved the people of this house",
-                 "style": "short, gentle warnings spoken to someone it cares about", "voice": "pFZP5JQG7iQjIQuC4Bku"},
+                 "style": "short, gentle statements of presence within the fictional story", "voice": "pFZP5JQG7iQjIQuC4Bku"},
     "lost_one": {"title": "The Lost One", "personality": "sad and confused",
                  "style": "fragmented memories and quiet requests for help", "voice": "Xb7hH8MSUJpSbSDYk0k2"},
     "trickster": {"title": "The Trickster", "personality": "playful and provocative",
@@ -174,7 +174,7 @@ def template_spirit(evidence: list[dict]) -> Spirit:
     arche = "guardian" if {"motion", "light_change"} & types else "watcher"
     return Spirit("Agnes" if arche == "guardian" else "The Hallway", arche,
                   "A presence that has watched this place for a long time.",
-                  "to warn whoever lives here" if arche == "guardian" else "to be noticed",
+                  "to make its presence felt in the story" if arche == "guardian" else "to be noticed",
                   [e["id"] for e in sorted(evidence, key=lambda e: -e["confidence"])[:3]], "template")
 
 
@@ -191,7 +191,7 @@ def template_answer(session: Session, question: str) -> dict:
         place = (ev[0].get("where") or "HERE").upper()
         return {"message": place[:24], "spoken": "Look where it moved.", "evidence_ids": [ev[0]["id"]]}
     if session.spirit.archetype == "guardian":
-        return {"message": "STAY HOME", "spoken": "Not tonight. Please, not tonight.", "evidence_ids": [ev[0]["id"]]}
+        return {"message": "I AM HERE", "spoken": "In this story, I stayed beside the door.", "evidence_ids": [ev[0]["id"]]}
     return {"message": "LOOK AGAIN", "spoken": "You missed something.", "evidence_ids": [ev[0]["id"]]}
 
 
@@ -293,7 +293,7 @@ def response(session: Session, turn: dict) -> dict:
     return {
         "session_id": session.session_id,
         "question": turn["question"],
-        "spirit": {"name": sp.name, "archetype": sp.archetype, "title": sp.title},
+        "spirit": {"name": sp.name, "archetype": sp.archetype, "title": sp.title, "by": sp.by},
         "response": {"message": turn["message"], "spoken": turn["spoken"], "fictional": True,
                      "animation_sequence": board_sequence(turn["message"]), "by": turn["by"]},
         "grounding": {"related_evidence_ids": turn["evidence_ids"],
