@@ -43,4 +43,6 @@ jobs:
             video/out/qa_*.json
             video/out/qa_*.jpg
             video/out/qa_*.mp3
+            video/out/work/shots/*.png
+            video/out/work/shots/capture_manifest.json
           retention-days: 14
