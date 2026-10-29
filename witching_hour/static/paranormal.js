@@ -400,9 +400,13 @@
     const timer = setTimeout(() => controller.abort(), 180000);
     try { await task(controller.signal); }
     catch (error) {
-      if (version === analysisVersion) $("#uh-status").textContent = error.name === "AbortError"
-        ? "Analysis cancelled or timed out. Try a shorter recording."
-        : error.message;
+      if (version === analysisVersion) {
+        const message = error.name === "AbortError"
+          ? "Analysis cancelled or timed out. Try a shorter recording."
+          : error.message;
+        resetRecording();
+        $("#uh-status").textContent = message;
+      }
     } finally {
       clearTimeout(timer);
       if (version === analysisVersion) { analysisController = null; refreshUnheardControls(); }
@@ -669,7 +673,8 @@
           if (history.motion.length < 20) return;
           const now = performance.now(), lastZ = (values) => { const z = robustZ(values); return z[z.length - 1]; };
           const zm = lastZ(history.motion), za = lastZ(history.db), zl = lastZ(history.dbright);
-          if (zm > 5 && row.motion > 0.012 && now > cool.motion) {
+          const lightChange = zl > 6 && dbright > 0.03;
+          if (!lightChange && zm > 5 && row.motion > 0.012 && now > cool.motion) {
             cool.motion = now + 2500;
             liveEvent("motion", "movement on the " + (whereOf(row.cx) || "center") + " side", zm, { where: whereOf(row.cx) || "center" });
           }
@@ -677,7 +682,7 @@
             cool.audio = now + 2500;
             liveEvent("audio", "a sound " + (db - median(history.db)).toFixed(0) + " dB above the room", za);
           }
-          if (zl > 6 && dbright > 0.03 && now > cool.light) {
+          if (lightChange && now > cool.light) {
             cool.light = now + 2500; liveEvent("light_change", "the light changed suddenly", zl);
           }
         } catch (error) { stopRoom("Capture stopped after a measurement error: " + error.message); }
