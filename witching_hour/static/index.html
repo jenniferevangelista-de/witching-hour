@@ -60,7 +60,7 @@
 
   <section class="ask" aria-labelledby="ask-title">
     <h2 id="ask-title"><span class="em">🔮</span>Ask the ghost hunters</h2>
-    <p class="sub">An agent with five tools: rank the haunted nights, open a case file, ask the spirit meter what it expected at a given minute, read tonight's forecast, and call one of the crew. Gemma 4 decides which tool to use.</p>
+    <p class="sub">The agent can rank nights, open case files, inspect expected readings, read saved forecasts and official warnings, and call a narrator. This public demo shows recorded investigations. Live questions require the optional local model pipeline.</p>
     <div class="panel">
       <form id="ask-form">
         <label class="sr" for="q">Question</label>
@@ -74,7 +74,7 @@
 
   <section id="archive" hidden aria-labelledby="archive-title">
     <h2 id="archive-title"><span class="em">📜</span>The crew's archive</h2>
-    <p class="sub">What the crew remembers across the whole season, kept on partner services.</p>
+    <p class="sub">Recorded experiments and optional archive integrations, with their saved results.</p>
     <div class="archive" id="archive-body"></div>
   </section>
 
@@ -138,9 +138,9 @@
     <h2 id="how-title"><span class="em">🧰</span>What is in the kit</h2>
     <ul>
       <li><b>The spirit meter</b>TabPFN, an open tabular foundation model, reads the house's last 14 days in context and predicts a range for every room, every 10 minutes. Readings far outside it are apparitions.</li>
-      <li><b>The crew</b>Luna, Dr. Bigotes and Xochi are Gemma 4 running on your own machine through Ollama, each with a personality and a job.</li>
+      <li><b>The crew</b>Luna, Dr. Bigotes and Xochi offer three interpretations of the evidence. The public demo presents recorded model stories; new board sessions identify the source of the spirit and each reply. The optional local pipeline runs Gemma through Ollama.</li>
       <li><b>Cite or vanish</b>Generated story sentences need a known citation and numbers within the validator's tolerance. This checks references and numbers, not explanations or supernatural claims. Quiet nights use labeled scripted summaries.</li>
-      <li><b>The watch never sleeps</b>Each night is a durable Temporal workflow. Kill the worker or the model mid-night and it picks up where it stopped.</li>
+      <li><b>The watch never sleeps</b>An optional Temporal workflow runs a night scan and narration with retries. Recorded failure tests show recovery after worker and model interruptions.</li>
       <li><b>Voices</b>Recorded application voices use ElevenLabs. Audio is shown only when its saved text matches the displayed story.</li>
       <li><b>Private by design</b>A house's night logs say when people sleep and when the house is empty. A home install can run locally. This demo replays the house investigations; opening a live board sends evidence summaries, questions and optional memory text to the server and, when configured, its model provider.</li>
     </ul>
