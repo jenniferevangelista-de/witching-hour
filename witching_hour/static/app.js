@@ -218,7 +218,7 @@
     const story = night.stories && night.stories[state.mode];
     const who = `<div class="who"><img src="${c.img}" alt="${esc(c.name)}, ${esc(c.role)}"><div class="name">${esc(c.name)}</div><div class="line">"${esc(c.line)}"</div></div>`;
     if (!story) {
-      return `<div class="scene">${who}<div class="bubble ${state.mode}"><p>${esc(c.name)} has not written about this night yet. The apparitions and the charts are still real.</p></div></div>`;
+      return `<div class="scene">${who}<div class="bubble ${state.mode}"><p>${esc(c.name)} has not written about this night yet. The recorded readings and charts remain available.</p></div></div>`;
     }
     const sentences = story.sentences
       .map((s) => `${esc(s.text)}${(s.cites || []).map((ci) => ` <button class="cite" data-ev="${esc(ci)}" title="show ${esc(ci)}">${esc(ci)}</button>`).join("")}`)
@@ -283,7 +283,7 @@
       <div class="board">${boardSVG()}${GLASS}</div>
       <div class="spelled" aria-live="polite"></div>
       <div class="spirit-meta" hidden>${arch}${esc(o.why || "")}${cites}</div>
-      <div class="fiction">Fiction on purpose: the message is spelled by ${esc(o.by === "template" ? "a fixed rule" : (o.by || "the model"))} from the apparitions it cites. The apparitions are real; the spirit is not.</div>
+      <div class="fiction">Fiction on purpose: the message is spelled by ${esc(o.by === "template" ? "a fixed rule" : (o.by || "the model"))} from the measurements it cites. The readings were measured; the spirit is fictional.</div>
     </div>`;
   }
 
@@ -566,7 +566,7 @@
     } catch (_) { /* older server */ }
     try {
       const h = await getJSON("/api/health");
-      if (!h.live) $("#ask-notice").textContent = "Live questions are off on this public demo (a house's night logs are private). Below are hunts recorded with Gemma 4 running locally.";
+      if (!h.live) $("#ask-notice").textContent = "Live questions are off on this public demo. Below are hunts recorded with Gemma 4 running locally.";
     } catch (_) { /* ignore */ }
     const fromHash = location.hash.slice(1);
     const start = state.byDate[fromHash] ? fromHash
