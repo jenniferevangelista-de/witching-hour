@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import textwrap
 import subprocess
@@ -18,6 +19,7 @@ import time
 import urllib.request
 import wave
 from pathlib import Path
+from datetime import datetime, timezone
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -26,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BASE = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8000"
 OUT = Path(sys.argv[2] if len(sys.argv) > 2 else "video/out")
 WORK = OUT / "work"
-SHOTS = ROOT / "docs" / "screens"
+SHOTS: Path | None = None  # Set only after current-UI captures have all passed.
 W, H, FPS, SR = 1920, 1080, 24, 24000
 VOICE = {"luna": "en-US-AvaMultilingualNeural", "bigotes": "en-GB-RyanNeural", "xochi": "en-US-EmmaMultilingualNeural"}
 NAME = {"luna": ("Luna", "the Medium", (255, 191, 60)), "bigotes": ("Dr. Bigotes", "the Skeptic", (121, 207, 161)),
@@ -179,6 +181,8 @@ def rounded(img: Image.Image, r: int = 22) -> Image.Image:
 
 
 def frame_shot(shot: str, who: str, title: str, crop_top: float | None = None) -> Image.Image:
+    if SHOTS is None:
+        raise RuntimeError("Capture and verify the current UI before building film frames.")
     img = backdrop().convert("RGBA")
     d = ImageDraw.Draw(img)
     d.text((W // 2, 104), title, font=font("Creepster.ttf", 64), fill=(141, 255, 207), anchor="mm")
@@ -258,6 +262,229 @@ def wrap(text: str, n: int) -> list[str]:
     return out + ([cur] if cur else [])
 
 
+def capture_film_shots(base: str, destination: Path) -> Path:
+    """Capture the running candidate and public fixtures; never reuse docs/screens."""
+    from playwright.sync_api import sync_playwright
+
+    expected = {
+        "top.png", "night-medium.png", "night-skeptic.png", "benchmark.png",
+        "doors.png", "seance.png", "warning-9_4.png", "room.png",
+    }
+    required = {scene[1][0] for scene in FILM if scene[0] == "shot"}
+    if not required <= expected:
+        raise RuntimeError(f"No fresh capture is defined for: {sorted(required - expected)}")
+    destination.mkdir(parents=True, exist_ok=True)
+    captured, errors = {}, []
+    manifest = {
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+        "source_commit": os.environ.get("GITHUB_SHA", "not supplied"),
+        "base": base,
+        "night": "2016-04-19",
+        "room_input": "Chrome fake camera/microphone test devices on the runner",
+        "recorded_reply": "The Warning, first completed recorded Guardian turn",
+        "shots": captured,
+    }
+
+    def save_png(name, target, description):
+        if name not in expected or name in captured:
+            raise RuntimeError(f"Unexpected or duplicate film capture: {name}")
+        temporary = destination / f".{name}.capture.tmp"
+        target.screenshot(
+            path=str(temporary), type="png", animations="disabled",
+        )
+        with Image.open(temporary) as image:
+            image.verify()
+        with Image.open(temporary) as image:
+            width, height = image.size
+            if width < 300 or height < 80:
+                raise RuntimeError(f"Film capture is unexpectedly small: {name}")
+        payload = temporary.read_bytes()
+        if len(payload) < 1000:
+            raise RuntimeError(f"Film capture is empty or incomplete: {name}")
+        temporary.replace(destination / name)
+        captured[name] = {
+            "target": description, "width": width, "height": height,
+            "size_bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest(),
+        }
+
+    with sync_playwright() as playwright:
+        # These flags replace media hardware. This capture never accesses a
+        # person's camera, microphone, uploaded recording, or live model.
+        args = [
+            "--use-fake-ui-for-media-stream",
+            "--use-fake-device-for-media-stream",
+            "--autoplay-policy=no-user-gesture-required",
+        ]
+        try:
+            browser = playwright.chromium.launch(channel="chrome", args=args)
+        except Exception:
+            browser = playwright.chromium.launch(args=args)
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 900},
+            device_scale_factor=2, color_scheme="dark",
+        )
+        context.grant_permissions(["camera", "microphone"], origin=base)
+        page = context.new_page()
+        page.on("pageerror", lambda error: errors.append(str(error)))
+        try:
+            response = page.goto(base, wait_until="networkidle", timeout=45000)
+            if response is None or not response.ok:
+                raise RuntimeError("The candidate application did not load successfully.")
+            page.bring_to_front()
+            page.evaluate("document.fonts.ready.then(() => true)")
+            page.wait_for_function(
+                """(() => {
+                    const images = [...document.querySelectorAll('#crew img')];
+                    return images.length === 3 && images.every(i => i.complete && i.naturalWidth > 0);
+                })()""",
+                timeout=15000,
+            )
+            hero = page.locator("header.hero").inner_text()
+            hero_lower = hero.lower()
+            if "fictional investigations" not in hero_lower or "a citation is not proof" not in hero_lower:
+                raise RuntimeError("Candidate hero disclosure is missing or stale.")
+            if "paranormal activity detector" in hero_lower:
+                raise RuntimeError("The retired hero claim is still visible.")
+            manifest["hero_copy"] = {
+                "kicker": page.locator("header.hero .kicker").inner_text(),
+                "mode_note": page.locator("header.hero .mode-note").inner_text(),
+            }
+            doors = page.locator("nav.doors")
+            if doors.locator("a").count() != 3 or doors.locator("a[href='#room']").count() != 1:
+                raise RuntimeError("Expected all three case doors, including The Room.")
+            save_png("doors.png", doors, "Current case navigation; auxiliary shot, no camera activated")
+
+            night_button = page.locator(".cell[data-night='2016-04-19']")
+            night_button.wait_for(state="visible", timeout=15000)
+            page.locator("#eval table").wait_for(state="visible", timeout=15000)
+            save_png(
+                "top.png", page.locator("section:has(#map-title)"),
+                "Current House haunting map and explanatory text",
+            )
+            night_button.click()
+            page.wait_for_function(
+                "document.querySelector('#night h2')?.textContent.includes('19 April 2016')",
+                timeout=15000,
+            )
+            for mode in ("medium", "skeptic"):
+                page.locator(f"button.tab.{mode}").click()
+                page.locator(
+                    f"button.tab.{mode}[aria-pressed='true']"
+                ).wait_for(state="visible")
+                page.locator(f"#night .bubble.{mode}").wait_for(state="visible")
+                page.locator("#night .charts svg").first.wait_for(state="visible")
+                save_png(f"night-{mode}.png", page.locator("#night"),
+                         f"2016-04-19 case file, {mode} selected")
+            save_png(
+                "benchmark.png", page.locator("section:has(#eval)"),
+                "Benchmark table together with its exploratory-method disclosure",
+            )
+
+            page.locator("#uh-demo").click()
+            page.wait_for_function(
+                "document.querySelectorAll('#uh-evidence .event').length > 0",
+                timeout=120000,
+            )
+            replay = page.locator("#uh-replay")
+            replay.wait_for(state="visible", timeout=15000)
+            page.wait_for_function(
+                "!document.querySelector('#uh-replay').disabled",
+                timeout=15000,
+            )
+            video = page.locator("#uh-video")
+            seek = video.evaluate(
+                """async (video) => {
+                    const wanted = 9.4;
+                    video.pause();
+                    if (!Number.isFinite(video.duration) || video.duration < wanted)
+                        throw new Error('The staged clip cannot provide the requested frame.');
+                    if (Math.abs(video.currentTime - wanted) > .01) {
+                        await new Promise((resolve, reject) => {
+                            const timer = setTimeout(() => {
+                                video.removeEventListener('seeked', done);
+                                reject(new Error('Timed out seeking the staged clip.'));
+                            }, 10000);
+                            function done() { clearTimeout(timer); resolve(); }
+                            video.addEventListener('seeked', done, {once: true});
+                            video.currentTime = wanted;
+                        });
+                    }
+                    await new Promise(resolve =>
+                        requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                    if (video.readyState < 2 || Math.abs(video.currentTime - wanted) > .05)
+                        throw new Error('The staged video frame is not ready.');
+                    return {current_time: video.currentTime, duration: video.duration,
+                            width: video.videoWidth, height: video.videoHeight};
+                }"""
+            )
+            if not seek["width"] or not seek["height"]:
+                raise RuntimeError("The staged clip decoded no video dimensions.")
+            manifest["warning_frame"] = seek
+            save_png("warning-9_4.png", video, "Staged The Warning fixture paused at 9.4 seconds")
+
+            replay.click()
+            page.locator("#uh-seance").wait_for(state="visible", timeout=15000)
+            page.wait_for_function(
+                "document.querySelector('#uh-status').textContent.includes('Recorded fictional séance')",
+                timeout=15000,
+            )
+            first = page.locator("#uh-turns li").first
+            first.wait_for(state="visible", timeout=45000)
+            expected_question = warning_case()["seance"]["turns"][0]["question"]
+            if expected_question not in first.inner_text():
+                raise RuntimeError("The screenshot's recorded reply does not match the fixture.")
+            manifest["recorded_reply_text"] = first.inner_text()
+            save_png(
+                "seance.png",
+                page.locator('section.terminal[aria-label="PARANORMAL.exe, The Unheard"]'),
+                "Recorded fictional replay after its first completed Guardian reply",
+            )
+            cancel = page.locator("#uh-cancel")
+            if cancel.is_visible():
+                cancel.click()
+
+            page.locator("#rm-start").click()
+            page.wait_for_function(
+                """(() => {
+                    const video = document.querySelector('#rm-video');
+                    return video && video.srcObject && video.readyState >= 2
+                        && video.videoWidth > 0 && video.currentTime > .05;
+                })()""",
+                timeout=15000,
+            )
+            page.wait_for_function(
+                "document.querySelectorAll('#rm-log li').length > 0",
+                timeout=20000,
+            )
+            save_png(
+                "room.png",
+                page.locator('section.terminal[aria-label="PARANORMAL.exe, The Room"]'),
+                "Experimental Room UI with Chrome test-pattern video and measured signals",
+            )
+            page.locator("#rm-start").click()
+            if errors:
+                raise RuntimeError("Candidate UI errors during film capture: " + "; ".join(errors))
+        finally:
+            context.close()
+            browser.close()
+
+    if set(captured) != expected:
+        raise RuntimeError(f"Missing fresh film shots: {sorted(expected - set(captured))}")
+    for name in required:
+        with Image.open(destination / name) as image:
+            image.verify()
+    (destination / "capture_manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8",
+    )
+    (OUT / "qa_film_shots.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8",
+    )
+    print("WH_FILM_SHOTS_METADATA:" + json.dumps(
+        manifest, ensure_ascii=False, separators=(",", ":"),
+    ), flush=True)
+    return destination
+
+
 # ------------------------------------------------------------------ 1. the film
 
 FILM = [
@@ -300,10 +527,10 @@ FILM = [
                   "twenty five percent at a five-percent false-alarm threshold. "
                   "LightGBM caught about ten.")]),
 
-    ("shot", ("doors.png", "xochi", "The Room · footage stays in the browser", None),
-     [("xochi", "The Room measures camera and microphone locally. Footage stays "
-                "in your browser. Measured events and your questions go to "
-                "the board's server.")]),
+    ("shot", ("room.png", "xochi", "The Room · Chrome test-pattern fixture", None),
+     [("xochi", "The Room is experimental. Here, Chrome supplies a test pattern. "
+                "Footage stays in the browser; measured events and questions "
+                "go to the server.")]),
 
     ("card",
      ("Open models, optional services",
@@ -324,6 +551,10 @@ FILM = [
 
 
 def make_film():
+    global SHOTS
+    SHOTS = None
+    fresh_shots = capture_film_shots(BASE, WORK / "shots")
+    SHOTS = fresh_shots  # No docs/screens fallback, including after capture failures.
     get_fonts()
     case = warning_case()
     clips, cues, voice_track, t = [], [], [], 0.0
@@ -433,8 +664,11 @@ def finish(name: str, clips: list[Path], voice: np.ndarray, cues):
     mix_and_mux(name, silent, voice, cues)
 
 
-def mix_and_mux(name: str, video: Path, voice: np.ndarray, cues):
-    vdur = duration(video)
+def mix_and_mux(name: str, video: Path, voice: np.ndarray, cues, video_start: float = 0.0):
+    raw_duration = duration(video)
+    if not 0 <= video_start < raw_duration:
+        raise ValueError("Video trim start must lie inside the source recording.")
+    vdur = raw_duration - video_start
     n = int(vdur * SR)
     voice = np.pad(voice, (0, max(0, n - len(voice))))[:n]
     wav = WORK / f"{name}.wav"
@@ -443,8 +677,12 @@ def mix_and_mux(name: str, video: Path, voice: np.ndarray, cues):
     srt(cues, sub)
     out = OUT / f"{name}.mp4"
     subpath = sub.resolve().as_posix().replace(":", r"\:")
-    run("ffmpeg", "-y", "-i", str(video), "-i", str(wav), "-vf", f"subtitles='{subpath}':force_style='{SUB_STYLE}'",
-        "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:v", "libx264", "-crf", "20", "-preset", "veryfast",
+    seek = ["-ss", f"{video_start:.6f}"] if video_start else []
+    run("ffmpeg", "-y", *seek, "-i", str(video), "-i", str(wav),
+        "-map", "0:v:0", "-map", "1:a:0",
+        "-vf", f"subtitles='{subpath}':force_style='{SUB_STYLE}'",
+        "-af", "loudnorm=I=-15:TP=-2:LRA=11", "-ar", "48000",
+        "-c:v", "libx264", "-crf", "20", "-preset", "veryfast",
         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", str(out))
     print(f"{out}: {duration(out):.1f}s", flush=True)
 
@@ -655,6 +893,10 @@ def make_tour():
                 ".cell[data-night='2016-04-19']"
             ).wait_for(state="visible", timeout=15000)
 
+            page.evaluate("document.fonts.ready.then(() => true)")
+            page.locator("header.hero .mode-note").wait_for(state="visible")
+            scroll_to("header.hero", 0)
+            capture_origin = now()
             step("open", lambda: scroll_to("header.hero", 0))
             step("map", lambda: scroll_to("#map-title", 40))
             step("night", open_night)
@@ -696,11 +938,37 @@ def make_tour():
             step("end", lambda: scroll_to("header.hero", 0))
             page.wait_for_timeout(1000)
             video = Path(page.video.path())
+            capture_clock_end = now()
         finally:
             ctx.close()
             browser.close()
 
-    total = duration(video)
+    raw_duration = duration(video)
+    # Playwright may record a small interval before the monotonic clock starts.
+    # Account for that lead using the recorded duration and capture-end clock.
+    recording_lead = max(0.0, raw_duration - capture_clock_end)
+    trim_at = capture_origin + recording_lead
+    if not 0 <= trim_at < raw_duration:
+        raise RuntimeError("The first ready UI frame is outside the recorded timeline.")
+    # Media and every narration/Guardian mark receive the identical origin shift:
+    # media_start = capture_origin + recording_lead
+    # mark_after_trim = (mark + recording_lead) - media_start
+    marks = [(at - capture_origin, key) for at, key in marks]
+    turns = [(at - capture_origin, index) for at, index in turns]
+    if any(at < 0 for at, _ in marks + turns):
+        raise RuntimeError("A narration mark predates the first ready UI frame.")
+    total = raw_duration - trim_at
+    timing = {
+        "raw_duration_seconds": raw_duration, "capture_clock_end_seconds": capture_clock_end,
+        "first_ready_ui_clock_seconds": capture_origin, "recording_lead_seconds": recording_lead,
+        "trim_start_seconds": trim_at, "trimmed_duration_seconds": total,
+        "first_narration_seconds": marks[0][0] if marks else None,
+        "note": "One origin shift is applied to video, narration and subtitles; fine sync still needs review.",
+    }
+    (OUT / "qa_tour_timing.json").write_text(
+        json.dumps(timing, indent=2) + "\n", encoding="utf-8",
+    )
+    print("WH_TOUR_TIMING:" + json.dumps(timing, separators=(",", ":")), flush=True)
     voice = np.zeros(int((total + 2) * SR), np.float32)
     cues = []
 
@@ -726,7 +994,7 @@ def make_tour():
             )
         ]
 
-    mix_and_mux("witching_hour_tour", video, voice, sorted(cues))
+    mix_and_mux("witching_hour_tour", video, voice, sorted(cues), video_start=trim_at)
 
 
 if __name__ == "__main__":
