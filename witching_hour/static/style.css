@@ -302,3 +302,15 @@ footer p { margin: 4px 0; }
 @media (prefers-reduced-motion: reduce) { .haunt p { animation: none; } }
 .words { display: grid; gap: 6px; margin: 10px 0 4px; font-size: 14px; color: #e8e1d8; }
 .words input { background: #12141b; color: #e8e1d8; border: 1px solid #3a3f4d; border-radius: 10px; padding: 9px 12px; font: inherit; }
+
+/* Keep the scoped main-branch fix as well as the global hidden contract. */
+.haunt[hidden], .seance[hidden], .terminal [hidden] { display: none !important; }
+
+/* One clear entry point, readable mode information and visible keyboard focus. */
+.hero-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 22px 0 14px; }
+.hero-actions a { text-decoration: none; display: inline-flex; align-items: center; }
+.mode-note { max-width: 740px; margin: 0 auto 18px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; color: var(--muted); background: var(--panel); font-size: 14px; }
+.mode-note b { color: var(--ghost); }
+button:focus-visible, a:focus-visible, input:focus-visible, [role="button"]:focus-visible { outline: 3px solid var(--ghost); outline-offset: 4px; }
+.case-title, section { scroll-margin-top: 20px; }
+@media (max-width: 520px) { .hero-actions { flex-direction: column; } .hero-actions .big { justify-content: center; width: 100%; } .mode-note { text-align: left; } }
