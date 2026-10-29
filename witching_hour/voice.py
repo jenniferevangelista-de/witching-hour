@@ -10,6 +10,8 @@ import json
 import os
 from pathlib import Path
 
+from .agent import Haunting
+
 # One voice per character of the crew.
 VOICES = {
     "medium": ("cgSgspJ2msm6clMCkdW9", "Jessica"),  # Luna: playful, a little breathless
@@ -60,15 +62,15 @@ def speak(text: str, mode: str, out: Path, api_key: str | None = None, timeout: 
 def voice_stories(data_dir: str | Path, dates: list[str], modes: list[str]) -> dict:
     """Write demo_data/audio/<night>.<mode>.mp3 and a manifest with the exact text and voice."""
     data_dir = Path(data_dir)
+    haunting = Haunting(data_dir)
     manifest_path = data_dir / "audio" / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
     chars = 0
     for d in dates:
         for mode in modes:
-            p = data_dir / "stories" / f"{d}.{mode}.json"
-            if not p.exists():
+            story = haunting.story(d, mode)
+            if story is None:
                 continue
-            story = json.loads(p.read_text(encoding="utf-8"))
             text = script(story)
             key = f"{d}.{mode}"
             out = data_dir / "audio" / f"{key}.mp3"
