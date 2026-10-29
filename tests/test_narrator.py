@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from witching_hour.narrator import check_sentence, clean_text, narrate, night_payload, template_story, validate
 from witching_hour.scanner import Event, NightScan
 
@@ -79,3 +81,29 @@ def test_clean_text_removes_inline_citations_only():
     assert clean_text('At 05:30 the machines woke up [E1]') == "At 05:30 the machines woke up."
     assert clean_text('It hit "17.8 °C" at "05:40" (C1, C2).') == "It hit 17.8 °C at 05:40."
     assert clean_text("The WHO recommends 18 °C (C1). Check the heating (C1).") == "The WHO recommends 18 °C. Check the heating."
+
+
+@pytest.mark.parametrize("mode", ["medium", "skeptic", "family"])
+def test_quiet_night_is_a_scripted_threshold_summary_without_a_model_call(mode):
+    scan = make_scan()
+    scan.events = []
+    # This reading is outside the 90% band, but no event crossed the scanner's
+    # more conservative alert threshold. The summary must not call it in-band.
+    scan.series = {"T5": {"t": ["03:10"], "y": [21.0], "q05": [19.8], "q95": [20.5]}}
+    chat = ScriptedChat([])  # any accidental model call would exhaust replies
+
+    story = narrate(scan, mode, chat=chat, model="must-not-be-attributed")
+
+    assert chat.calls == []
+    assert story.model == "template" and story.attempts == 0
+    assert story.sentences[0].cites == []
+    assert story.to_dict()["verified"] == 0 and story.to_dict()["dropped"] == 0
+    assert "every reading stayed inside" not in story.sentences[0].text.lower()
+    assert "alert" in story.sentences[0].text
+
+
+def test_quiet_template_has_the_same_provenance_as_the_narration_shortcut():
+    scan = make_scan()
+    scan.events = []
+    for mode in ("medium", "skeptic", "family"):
+        assert template_story(scan, mode).to_dict() == narrate(scan, mode, chat=ScriptedChat([])).to_dict()
