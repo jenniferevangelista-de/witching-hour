@@ -39,11 +39,24 @@
     return `${weekday}, ${d} ${MONTHS[m - 1]} ${y}`;
   };
 
-  async function getJSON(url, opts) {
-    const r = await fetch(url, opts);
-    const body = await r.json().catch(() => ({}));
-    if (!r.ok) throw Object.assign(new Error(body.detail || r.statusText), { status: r.status });
-    return body;
+  async function getJSON(url, opts = {}) {
+    const controller = new AbortController();
+    const abort = () => controller.abort();
+    if (opts.signal?.aborted) abort();
+    opts.signal?.addEventListener("abort", abort, { once: true });
+    const timer = setTimeout(abort, 60000);
+    try {
+      const r = await fetch(url, { ...opts, signal: controller.signal });
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) throw Object.assign(new Error(body.detail || r.statusText), { status: r.status });
+      return body;
+    } catch (error) {
+      if (error.name === "AbortError" && !opts.signal?.aborted) throw new Error("The request timed out. Please try again.");
+      throw error;
+    } finally {
+      clearTimeout(timer);
+      opts.signal?.removeEventListener("abort", abort);
+    }
   }
 
   // ------------------------------------------------------------ decorations
@@ -176,16 +189,23 @@
   }
 
   // ------------------------------------------------------------ case file
+  let nightRequest = 0, nightAbort;
   async function openNight(iso, push = true) {
+    const request = ++nightRequest;
+    nightAbort?.abort();
+    nightAbort = new AbortController();
     document.querySelectorAll(".cell.selected").forEach((c) => c.classList.remove("selected"));
     const cell = document.querySelector(`.cell[data-night="${iso}"]`);
     if (cell) cell.classList.add("selected");
     const sec = $("#night");
     sec.innerHTML = '<p class="loading">Lighting the candles...</p>';
     try {
-      state.current = await getJSON(`/api/nights/${iso}`);
+      const night = await getJSON(`/api/nights/${iso}`, { signal: nightAbort.signal });
+      if (request !== nightRequest) return;
+      state.current = night;
     } catch (e) {
-      sec.innerHTML = `<p class="notice">Could not open ${esc(iso)}: ${esc(e.message)}</p>`;
+      if (request !== nightRequest || e.name === "AbortError") return;
+      sec.innerHTML = `<p class="notice" role="status">Could not open ${esc(iso)}: ${esc(e.message)}. Choose the night again to retry.</p>`;
       return;
     }
     if (push) history.replaceState(null, "", `#${iso}`);
@@ -453,7 +473,7 @@
       const t = await getJSON("/api/tonight");
       if (!t.rooms || !t.rooms.length) return;
       const out = t.hours.map((h) => `${esc(h.time)} ${esc(h.temp_c)} °C`).join(" · ");
-      $("#tonight-sub").textContent = `Xochi checked the live weather for ${t.place} (${t.source}, fetched ${t.fetched_at}) and asked the spirit meter how each room will feel, learned from ${t.trained_on}.`;
+      $("#tonight-sub").textContent = `Xochi read the saved weather snapshot for ${t.place} (${t.source}, fetched ${t.fetched_at}) and asked the spirit meter how each room will feel, learned from ${t.trained_on}.`;
       $("#tonight-body").innerHTML = `<p class="notice" style="margin-top:0">Outside tonight: ${out}</p>
         <div class="table-wrap"><table><thead><tr><th>Room</th><th>Coldest expected</th><th>90% range</th><th>Below 18 °C at listed hour</th></tr></thead><tbody>${t.rooms
           .map((r) => `<tr class="${r.p_below_18 >= 0.5 ? "best" : ""}"><td>${esc(r.room)}</td><td class="num">${esc(r.expected)} °C at ${esc(r.coldest_time)}</td><td class="num">${esc(r.low)} to ${esc(r.high)} °C</td><td class="num">${esc((r.p_below_18 * 100).toFixed(1))}%</td></tr>`)
@@ -506,7 +526,7 @@
       const row = (t, s) => `<tr><td>${esc(t)}</td><td class="num">${esc(Math.round(s.grounded_share * 100))}%</td><td class="num">${esc(s.verified)} / ${esc(s.sentences)}</td><td class="num">${esc(s.json_ok)} / ${esc(s.cases)}</td><td class="num">${esc(s.avg_seconds)}</td></tr>`;
       cards.push(`<div class="panel"><div class="by">Tinker · LoRA fine-tune</div><h3>Training an apprentice</h3>
         <div class="table-wrap"><table><thead><tr><th>${esc(tinker.model)}</th><th>Grounded</th><th>Verified / written</th><th>Valid JSON</th><th>Avg s</th></tr></thead><tbody>${row("base", tinker.base)}${row("fine-tuned on the crew", tinker.tuned)}</tbody></table></div>
-        <p class="notice">Trained on ${esc(tinker.train_examples)} verified stories from nights before ${esc(tinker.split)}, scored on ${esc(tinker.base.cases)} stories from later nights it never saw, with the same validator.</p></div>`);
+        <p class="notice">Trained on ${esc(tinker.train_examples)} verified stories from nights before ${esc(tinker.split)}, scored on ${esc(tinker.base.cases)} prompts from later nights, with the same validator. Prompt count is not a count of distinct nights.</p></div>`);
     }
     if (!cards.length) return;
     $("#archive-body").innerHTML = cards.join("");
@@ -554,6 +574,10 @@
     if (start) openNight(start, !!state.byDate[fromHash]);
   }
 
+  $("#start-warning")?.addEventListener("click", () => {
+    $("#unheard").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    $("#uh-demo").click();
+  });
   window.WH = { BOARD, boardSVG, GLASS, placeGlass, esc, getJSON, CREW, reduceMotion, openNight, highlight };
   boot();
 })();
