@@ -350,6 +350,9 @@ def main(directory: Path) -> int:
         json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + "\n",
         encoding="utf-8",
     )
+    print("WH_QA_METADATA:" + json.dumps(
+        report, ensure_ascii=False, separators=(",", ":"), allow_nan=False,
+    ), flush=True)
     print(
         f"WH_QA_REPORT:{destination.name} status={report['status']} "
         f"media={len(report['media'])} preview_log_bytes={used}",
