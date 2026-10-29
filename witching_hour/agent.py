@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import tracing
-from .narrator import Story, check_card, event_card, fmt, narrate, template_story
+from .narrator import Story, check_card, event_card, fmt, narrate, normalize_saved_story, template_story
 from .scanner import NightScan
 
 SYSTEM = """You are Witching Hour, an investigator for one house's night-time sensor logs (midnight to 6 AM).
@@ -26,7 +26,8 @@ You can call these tools:
 - expected_reading(date: "YYYY-MM-DD", time: "HH:MM", sensor: str) -> what TabPFN expected vs what was observed
 - tonight() -> live weather for the house's town (Google via SerpApi) and TabPFN's forecast for each room tonight
 - official_warnings() -> what Dr. Bigotes read on the official weather warnings page, in a real browser
-- tell_story(date: "YYYY-MM-DD", mode: "medium", "skeptic" or "family") -> a verified story about the night
+- tell_story(date: "YYYY-MM-DD", mode: "medium", "skeptic" or "family") -> a story and its source about the night
+  A story with model="template" is a scripted summary, not generated model output.
   ("family" is a calm morning note for the family of someone who lives alone, with cold-room checks)
 
 Reply with exactly one JSON object and nothing else.
@@ -64,7 +65,32 @@ class Haunting:
 
     def story(self, date: str, mode: str) -> dict | None:
         p = self.dir / "stories" / f"{date}.{mode}.json"
-        return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+        if not p.exists():
+            return None
+        saved = json.loads(p.read_text(encoding="utf-8"))
+        scan = self.night(date)
+        return normalize_saved_story(scan, mode, saved) if scan is not None else saved
+
+    def audio(self, date: str, mode: str) -> Path | None:
+        """Only expose recordings whose manifest matches the presented story."""
+        path = self.dir / "audio" / f"{date}.{mode}.mp3"
+        manifest_path = self.dir / "audio" / "manifest.json"
+        if not path.is_file() or not manifest_path.is_file():
+            return None
+        story = self.story(date, mode)
+        if story is None:
+            return None
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        if not isinstance(manifest, dict):
+            return None
+        entry = manifest.get(f"{date}.{mode}")
+        if not isinstance(entry, dict):
+            return None
+        from .voice import script
+        return path if entry.get("text") == script(story) else None
 
 
 def _resolve_sensor(scan: NightScan, name: str) -> str | None:
@@ -139,13 +165,15 @@ class Tools:
     def tell_story(self, date: str, mode: str = "medium") -> dict:
         mode = mode if mode in ("medium", "skeptic", "family") else "medium"
         saved = self.h.story(date, mode)
-        if saved:
-            return {"title": saved["title"], "sentences": [s["text"] for s in saved["sentences"]]}
-        scan = self.h.night(date)
-        if scan is None:
-            return {"error": f"no scan for {date}"}
-        story: Story = narrate(scan, mode, chat=self.chat) if self.chat else template_story(scan, mode)
-        return {"title": story.title, "sentences": [s.text for s in story.sentences]}
+        if saved is None:
+            scan = self.h.night(date)
+            if scan is None:
+                return {"error": f"no scan for {date}"}
+            story: Story = narrate(scan, mode, chat=self.chat) if self.chat else template_story(scan, mode)
+            saved = story.to_dict()
+        return {"title": saved["title"], "sentences": [s["text"] for s in saved["sentences"]],
+                "model": saved.get("model", "unknown"), "attempts": saved.get("attempts", 0),
+                "verified": saved.get("verified", 0)}
 
     def call(self, name: str, args: dict) -> dict:
         fn = {"haunted_nights": self.haunted_nights, "scan_night": self.scan_night,
