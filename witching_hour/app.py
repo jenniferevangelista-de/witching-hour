@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from . import auth
 from .agent import Haunting, investigate
-from .narrator import DEFAULT_MODEL, OllamaChat
+from .narrator import DEFAULT_MODEL, OllamaChat, quiet_night
 
 STATIC = Path(__file__).parent / "static"
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -74,7 +74,16 @@ def night(night: str):
     if scan is None:
         raise HTTPException(404, "no scan for that night")
     out = scan.to_dict()
-    out["stories"] = {m: h.story(night, m) for m in ("medium", "skeptic", "family") if h.story(night, m)}
+    out["stories"] = {}
+    for mode in ("medium", "skeptic", "family"):
+        story = h.story(night, mode)
+        if story:
+            # Earlier runs attributed quiet scan summaries to the selected model,
+            # even though no model was called. Normalize the presentation only;
+            # leave the recorded artifacts intact.
+            if not scan.events and (mode != "family" or not scan.checks):
+                story = quiet_night(scan, mode).to_dict()
+            out["stories"][mode] = story
     for m, st in out["stories"].items():
         if (data_dir() / "audio" / f"{night}.{m}.mp3").exists():
             st["audio"] = f"/audio/{night}.{m}.mp3"
