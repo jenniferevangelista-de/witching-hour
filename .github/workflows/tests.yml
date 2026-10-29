@@ -1,5 +1,4 @@
 name: tests
-
 on:
   push:
     branches: [main]
@@ -9,14 +8,49 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      WH_LLM: none
+      WH_LIVE: "0"
+      QA_ARTIFACT_DIR: artifacts/qa
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -e ".[dev]"
-      - run: pytest -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check browser JavaScript syntax
+        run: |
+          node --check witching_hour/static/app.js
+          node --check witching_hour/static/paranormal.js
+      - name: Install isolated test dependencies
+        run: pip install -e ".[dev]" playwright
+      - name: Install Chromium and synthetic-media tools
+        run: |
+          python -m playwright install --with-deps chromium
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Unit and browser regressions
+        run: |
+          mkdir -p artifacts/qa
+          pytest -q -s --junitxml=artifacts/qa/pytest.xml
+      - name: Keep QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: witching-hour-qa-${{ github.run_id }}
+          path: artifacts/qa
+          if-no-files-found: warn
+          retention-days: 7
