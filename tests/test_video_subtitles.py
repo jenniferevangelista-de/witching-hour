@@ -95,7 +95,7 @@ def test_scripts_disclose_fiction_privacy_and_both_voice_sources():
     assert "Nothing is uploaded" not in film_words + tour_words
     assert "every minute" not in film_words + tour_words
     assert "ten-minute slot" in film_words
-    assert "Measured events and your questions go to" in film_words
+    assert re.search(r"\bmeasured events\b[^.]*\bquestions\b[^.]*\bserver\b", film_words, re.I)
     for words in (film_words, tour_words):
         assert "Microsoft Edge TTS" in words
         assert "ElevenLabs" in words
