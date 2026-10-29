@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from . import auth
 from .agent import Haunting, investigate
-from .narrator import DEFAULT_MODEL, OllamaChat, quiet_night
+from .narrator import DEFAULT_MODEL, OllamaChat
 
 STATIC = Path(__file__).parent / "static"
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -78,14 +78,9 @@ def night(night: str):
     for mode in ("medium", "skeptic", "family"):
         story = h.story(night, mode)
         if story:
-            # Earlier runs attributed quiet scan summaries to the selected model,
-            # even though no model was called. Normalize the presentation only;
-            # leave the recorded artifacts intact.
-            if not scan.events and (mode != "family" or not scan.checks):
-                story = quiet_night(scan, mode).to_dict()
             out["stories"][mode] = story
     for m, st in out["stories"].items():
-        if (data_dir() / "audio" / f"{night}.{m}.mp3").exists():
+        if h.audio(night, m) is not None:
             st["audio"] = f"/audio/{night}.{m}.mp3"
     from .ouija import template_message
 
@@ -99,8 +94,11 @@ AUDIO = re.compile(r"^\d{4}-\d{2}-\d{2}\.(medium|skeptic|family)\.mp3$")
 
 @app.get("/audio/{name}", include_in_schema=False)
 def audio(name: str):
-    p = data_dir() / "audio" / name
-    if not AUDIO.match(name) or not p.exists():
+    if not AUDIO.fullmatch(name):
+        raise HTTPException(404, "no audio")
+    night, mode, _ = name.split(".")
+    p = haunting().audio(night, mode)
+    if p is None:
         raise HTTPException(404, "no audio")
     return FileResponse(p, media_type="audio/mpeg")
 
@@ -207,7 +205,7 @@ def new_session(body: NewSession):
     s = spirits.summon(body.investigation, body.evidence, chat=chat, archetype=body.archetype, context=body.context)
     store().save(s)
     return {"session_id": s.session_id, "spirit": {**spirits.asdict(s.spirit), "title": s.spirit.title},
-            "evidence": s.evidence, "model": describe(chat)}
+            "evidence": s.evidence, "model": s.spirit.by, "configured_model": describe(chat)}
 
 
 @app.get("/api/sessions/{sid}")
