@@ -76,6 +76,12 @@ def page(browser, web_server, request):
     page.set_default_timeout(15000)
     page.goto(web_server, wait_until="domcontentloaded")
     page.locator("#uh-seance").wait_for(state="attached")
+    if request.node.name == "test_oversize_file_rejected_before_arraybuffer":
+        page.evaluate("() => document.fonts.ready.then(() => null)")
+        capture(page, "hero-desktop.png", ".hero")
+        page.set_viewport_size({"width": 390, "height": 900})
+        capture(page, "hero-mobile.png", ".hero")
+        page.set_viewport_size({"width": 1200, "height": 900})
     yield page
     try:
         page.screenshot(path=str(QA / (request.node.name + ".png")), full_page=False)
@@ -123,17 +129,19 @@ def summon(page):
     return result["session_id"]
 
 def capture(page, name, selector):
-    page.locator(selector).scroll_into_view_if_needed()
-    page.screenshot(path=str(QA / name), full_page=False)
-    if name in {"room-desktop.png", "room-mobile.png"}:
+    page.locator(selector).evaluate(
+        "(element) => element.scrollIntoView({block: 'start', inline: 'nearest', behavior: 'instant'})"
+    )
+    page.screenshot(path=str(QA / name), full_page=False, animations="disabled")
+    if name in {"hero-desktop.png", "hero-mobile.png", "room-desktop.png", "room-mobile.png"}:
         # Only this synthetic localhost app is emitted for remote visual review.
-        # Each image is capped at 125 kB; the pair cannot exceed 250 kB.
+        # Each image is capped at 62.5 kB; four images cannot exceed 250 kB.
         picture = b""
         for quality in (65, 50, 35, 20):
-            picture = page.screenshot(type="jpeg", quality=quality, full_page=False)
-            if len(picture) <= 125000:
+            picture = page.screenshot(type="jpeg", quality=quality, full_page=False, animations="disabled")
+            if len(picture) <= 62500:
                 break
-        if len(picture) > 125000:
+        if len(picture) > 62500:
             pytest.fail("QA image exceeded the safe log size; see PNG artifact")
         label = name.replace(".png", ".jpg")
         (QA / label).write_bytes(picture)
@@ -301,9 +309,9 @@ def test_camera_flash_is_not_motion_and_stop_releases_devices(page):
     expect(page.locator("#rm-log li")).to_have_count(1)
     expect(page.locator("#rm-log")).not_to_contain_text("movement")
     assert page.locator("#rm-haunt").is_hidden()
-    capture(page, "room-desktop.png", "#room")
-    page.set_viewport_size({"width": 390, "height": 844})
-    capture(page, "room-mobile.png", "#room")
+    capture(page, "room-desktop.png", "#room + section")
+    page.set_viewport_size({"width": 390, "height": 900})
+    capture(page, "room-mobile.png", "#room + section")
     page.locator("#rm-start").click()
     expect(page.locator("#rm-status")).to_contain_text("Camera and microphone stopped")
     assert page.evaluate("window.__qaTracks.every(t => t.readyState === 'ended')")
