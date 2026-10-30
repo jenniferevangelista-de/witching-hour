@@ -38,7 +38,29 @@
     return [row, g];
   }
 
-  async function frameFeatures(video, maxSec, onProgress) {
+  function seekFrame(video, time, active) {
+    if (!active()) return Promise.resolve(false);
+    const sameTime = Math.abs(video.currentTime - time) < 0.0001;
+    if (sameTime && video.readyState >= 2) return Promise.resolve(true);
+    return new Promise((resolve, reject) => {
+      const event = sameTime ? "loadeddata" : "seeked";
+      const finish = (error) => {
+        clearTimeout(timer);
+        video.removeEventListener(event, done);
+        video.removeEventListener("error", failed);
+        if (!active()) resolve(false);
+        else if (error) reject(error);
+        else resolve(true);
+      };
+      const done = () => finish(), failed = () => finish(new Error("Could not read this video. Try an MP4 or WebM recording."));
+      const timer = setTimeout(() => finish(new Error("Reading this video timed out. Try a shorter recording.")), 12000);
+      video.addEventListener(event, done, { once: true });
+      video.addEventListener("error", failed, { once: true });
+      if (!sameTime) video.currentTime = time;
+    });
+  }
+
+  async function frameFeatures(video, maxSec, onProgress, active = () => true) {
     const c = document.createElement("canvas");
     c.width = W; c.height = H;
     const ctx = c.getContext("2d", { willReadFrequently: true });
@@ -46,16 +68,18 @@
     const rows = [];
     let prev = null;
     for (let t = 0; t < dur; t += STEP) {
+      if (!active()) return null;
       if (rows.length >= 8 && rows.slice(1).every((r) => r.motion === 0)) {
         // the frames are not being painted (a background tab): stop seeking, keep the time base for the sound
         const last = rows[rows.length - 1];
         rows.push({ ...last, t: Math.round(t * 100) / 100 });
         continue;
       }
-      await new Promise((res) => { video.addEventListener("seeked", res, { once: true }); video.currentTime = t; });
+      if (!await seekFrame(video, t, active)) return null;
       if (video.requestVideoFrameCallback) {
         await Promise.race([new Promise((res) => video.requestVideoFrameCallback(() => res())), new Promise((res) => setTimeout(res, 250))]);
       }
+      if (!active()) return null;
       ctx.drawImage(video, 0, 0, W, H);
       const [row, g] = frameStats(ctx, prev);
       row.t = Math.round(t * 100) / 100;
@@ -168,20 +192,26 @@
   // opts.slow is the finale: one letter at a time. WH.stage (seance.js) wraps the scene around the board.
   async function spell(boardEl, seq, outEl, opts = {}) {
     const glass = $(".glass", boardEl), slow = !!opts.slow, st = WH.stage;
+    const active = opts.active || (() => true);
+    if (!active()) return false;
     outEl.textContent = "";
     boardEl.classList.toggle("slow", slow);
     WH.placeGlass(glass, "REST");
     await sleep(slow ? 900 : 400);
+    if (!active()) return false;
     for (const ch of seq) {
+      if (!active()) return false;
       if (ch === "SPACE") { WH.placeGlass(glass, "REST"); outEl.append(" "); await sleep(slow ? 1100 : 450); continue; }
       WH.placeGlass(glass, ch);
       st && st.glass(boardEl, ch, slow);
       await sleep(slow ? 1500 : 600);
+      if (!active()) return false;
       outEl.insertAdjacentHTML("beforeend", `<span class="lt">${esc(ch)}</span>`);
       st && st.letter(boardEl, ch, slow);
       await sleep(slow ? 450 : 160);
     }
     boardEl.classList.remove("slow");
+    return active();
   }
 
   // ------------------------------------------------------------ séance UI (one per case kind)
@@ -198,10 +228,60 @@
     </div>`;
   }
 
-  const sessions = {};
+  const sessions = {}, busy = {}, boardEpoch = { uh: 0, rm: 0 }, boardRequests = {}, boardAudio = {};
+  const boardCurrent = (prefix, epoch) => boardEpoch[prefix] === epoch;
+
+  function closeSession(session) {
+    if (session && session.session_id) WH.getJSON(`/api/sessions/${session.session_id}/close`, { method: "POST" }).catch(() => {});
+  }
+
+  function resetBoard(prefix) {
+    boardEpoch[prefix]++;
+    boardRequests[prefix]?.abort();
+    delete boardRequests[prefix];
+    boardAudio[prefix]?.pause();
+    delete boardAudio[prefix];
+    closeSession(sessions[prefix]);
+    delete sessions[prefix];
+    busy[prefix] = false;
+    WH.stage?.close(prefix);
+    const root = $(`#${prefix}-seance`);
+    root.hidden = true;
+    root.classList.remove("live", "idle", "replaying");
+    root.setAttribute("aria-busy", "false");
+    for (const part of ["spirit", "spelled", "spoken", "turns", "suggest"]) $(`#${prefix}-${part}`).textContent = "";
+    $(".by", root).textContent = "";
+    const form = $(`#${prefix}-ask`);
+    form.hidden = false;
+    $("input", form).value = "";
+    $("button", form).disabled = false;
+    $(`#${prefix}-suggest`).classList.remove("busy");
+    $(`#${prefix}-suggest`).hidden = false;
+    WH.placeGlass($(".glass", $(`#${prefix}-board`)), "REST");
+    if (prefix === "uh") document.body.classList.remove("summoned");
+    return boardEpoch[prefix];
+  }
 
   async function summon(prefix, investigation, evidence, context = "") {
-    const r = await WH.getJSON("/api/sessions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investigation, evidence, context: context.slice(0, 200) }) });
+    if (busy[prefix] || (prefix === "uh" && !unheard.ready)) return null;
+    const epoch = resetBoard(prefix), controller = new AbortController();
+    const active = () => boardCurrent(prefix, epoch);
+    boardRequests[prefix] = controller;
+    busy[prefix] = true;
+    if (prefix === "uh") refreshRecordingControls();
+    let r;
+    try {
+      r = await WH.getJSON("/api/sessions", { method: "POST", headers: { "Content-Type": "application/json" }, signal: controller.signal, body: JSON.stringify({ investigation: String(investigation).slice(0, 80), evidence, context: context.slice(0, 200) }) });
+    } catch (error) {
+      if (active()) {
+        if (prefix === "uh") $("#uh-status").textContent = "Could not open a new session for this recording. " + error.message;
+        else $(`#${prefix}-spoken`).textContent = error.message;
+      }
+      return null;
+    } finally {
+      if (active()) { busy[prefix] = false; delete boardRequests[prefix]; if (prefix === "uh") refreshRecordingControls(); }
+    }
+    if (!active()) { closeSession(r); return null; }
     sessions[prefix] = r;
     const sp = r.spirit;
     $(`#${prefix}-spirit`).innerHTML = `<div class="arch">${esc(sp.title)}</div><h4>${esc(sp.name)}</h4><p>${esc(sp.backstory)}</p><p class="goal">Its goal: ${esc(sp.goal)}</p>`;
@@ -211,56 +291,75 @@
     $(`#${prefix}-suggest`).innerHTML = qs.map((q) => `<button type="button" class="chip">${esc(q)}</button>`).join("");
     $(`#${prefix}-suggest`).querySelectorAll("button").forEach((b) => b.addEventListener("click", () =>
       ask(prefix, b.textContent, prefix === "rm" ? afterRoomAnswer : undefined)));
-    WH.stage && WH.stage.live(prefix);
+    WH.stage && WH.stage.live(prefix, { active });
     return r;
   }
 
-  const busy = {};
   async function ask(prefix, question, afterSpell) {
     const s = sessions[prefix];
     if (!s || busy[prefix]) return;   // one question at a time: the chips stay clickable while the glass moves
+    const epoch = boardEpoch[prefix], active = () => boardCurrent(prefix, epoch) && sessions[prefix] === s;
+    const controller = new AbortController();
     if (s.ended) {
       $(`#${prefix}-spoken`).textContent = "The séance has ended. Summon the spirit again to keep talking.";
       document.body.classList.remove("summoned");
       return;
     }
     busy[prefix] = true;
+    boardRequests[prefix] = controller;
+    if (prefix === "uh") refreshRecordingControls();
+    $(`#${prefix}-seance`).setAttribute("aria-busy", "true");
     $(`#${prefix}-suggest`).classList.add("busy");
     const form = $(`#${prefix}-ask`);
     form.querySelector("button").disabled = true;
     $(`#${prefix}-spoken`).textContent = "The glass trembles...";
-    const asked = WH.stage && WH.stage.ask(prefix, question);
+    const asked = WH.stage && WH.stage.ask(prefix, question, { active });
     try {
-      const r = await WH.getJSON(`/api/sessions/${s.session_id}/ask`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question }) });
+      const r = await WH.getJSON(`/api/sessions/${s.session_id}/ask`, { method: "POST", headers: { "Content-Type": "application/json" }, signal: controller.signal, body: JSON.stringify({ question }) });
+      if (!active()) return;
       await asked;
+      if (!active()) return;
       const msg = r.response.message;
-      await showTurn(prefix, r, undefined, { climax: prefix === "uh" && msg === "I AM HERE", finale: prefix === "uh" && msg === "GOODBYE" });
+      await showTurn(prefix, r, undefined, { active, recorded: false, climax: prefix === "uh" && msg === "I AM HERE", finale: prefix === "uh" && msg === "GOODBYE" });
+      if (!active()) return;
       if (prefix === "uh" && msg === "GOODBYE") s.ended = true;
       afterSpell && afterSpell(r);
     } catch (e) {
-      $(`#${prefix}-spoken`).textContent = e.message;
+      if (active()) $(`#${prefix}-spoken`).textContent = e.message;
     } finally {
-      busy[prefix] = false;
-      $(`#${prefix}-suggest`).classList.remove("busy");
-      form.querySelector("button").disabled = false;
+      if (active()) {
+        busy[prefix] = false;
+        delete boardRequests[prefix];
+        $(`#${prefix}-suggest`).classList.remove("busy");
+        form.querySelector("button").disabled = false;
+        $(`#${prefix}-seance`).setAttribute("aria-busy", "false");
+        if (prefix === "uh") refreshRecordingControls();
+      }
     }
   }
 
   // opts.climax: the board spells slowly with the Guardian's voice under it. opts.finale: the session ends.
   async function showTurn(prefix, r, audioUrl, opts = {}) {
     const st = WH.stage;
+    const epoch = boardEpoch[prefix], active = opts.active || (() => boardCurrent(prefix, epoch));
+    opts = { ...opts, active };
+    if (!active()) return false;
     $(`#${prefix}-spoken`).textContent = "";
     const audio = audioUrl && !st ? new Audio(audioUrl) : null;
+    if (audio) { boardAudio[prefix]?.pause(); boardAudio[prefix] = audio; }
     st && await st.begin(prefix, r, { ...opts, audioUrl });
-    await spell($(`#${prefix}-board`), r.response.animation_sequence, $(`#${prefix}-spelled`), { slow: !!opts.climax });
+    if (!active()) return false;
+    if (!await spell($(`#${prefix}-board`), r.response.animation_sequence, $(`#${prefix}-spelled`), { slow: !!opts.climax, active })) return false;
     $(`#${prefix}-spoken`).textContent = r.response.spoken ? `Luna reads the glass: "${r.response.spoken}"` : "";
     if (audio) { try { await audio.play(); } catch (_) { /* autoplay blocked */ } }
     st && await st.read(prefix, r, opts);
+    if (!active()) { audio?.pause(); return false; }
     const ids = r.grounding.related_evidence_ids;
     $(`#${prefix}-turns`).insertAdjacentHTML("beforeend", `<li><b>${esc(r.question)}</b> → <span class="msg">${esc(r.response.message)}</span>${r.response.spoken ? ` <i>"${esc(r.response.spoken)}"</i>` : ""} ${ids.map((i) => `<button class="cite" data-ev="${esc(i)}">${esc(i)}</button>`).join("")} <span class="ci">${esc(r.response.by)}</span></li>`);
     ids.forEach((i) => WH.highlight(i, true));
-    setTimeout(() => ids.forEach((i) => WH.highlight(i, false)), 2500);
+    setTimeout(() => { if (active()) ids.forEach((i) => WH.highlight(i, false)); }, 2500);
     st && await st.end(prefix, r, opts);
+    return active();
   }
 
   // skipping ahead: add the turn to the list without the show
@@ -271,7 +370,56 @@
   }
 
   // ------------------------------------------------------------ The Unheard
-  let unheard = { evidence: [], series: null, caseData: null, file: null };
+  let unheard = { evidence: [], series: null, caseData: null, file: null, title: "", ready: false, kind: null };
+  let recordingVersion = 0, recordingRequest = null, recordingURL = null;
+  const recordingCurrent = (version) => recordingVersion === version;
+
+  function refreshRecordingControls() {
+    const state = $("#uh-status").dataset.state;
+    const loading = state === "loading", blocked = loading || busy.uh;
+    $("#uh-demo").disabled = loading;
+    $("#uh-open").hidden = !unheard.ready;
+    $("#uh-open").disabled = !unheard.ready || blocked;
+    $("#uh-replay").hidden = !unheard.ready || unheard.kind !== "demo" || !unheard.caseData?.seance;
+    $("#uh-replay").disabled = blocked;
+    $("#uh-dossier").disabled = !unheard.ready;
+    for (const id of ["summon-panel", "summon-fixed"]) {
+      const button = document.getElementById(id);
+      if (button) button.disabled = blocked || state === "error";
+    }
+  }
+
+  function beginRecording(kind) {
+    const version = ++recordingVersion;
+    recordingRequest?.abort();
+    recordingRequest = new AbortController();
+    resetBoard("uh");
+    const video = $("#uh-video");
+    video.pause(); video.removeAttribute("src"); video.load();
+    if (recordingURL) URL.revokeObjectURL(recordingURL);
+    recordingURL = null;
+    unheard = { evidence: [], series: null, caseData: null, file: null, title: "", ready: false, kind };
+    $("#uh-evidence").textContent = "";
+    $("#uh-story").textContent = "";
+    $("#uh-words").value = "";
+    const canvas = $("#uh-timeline");
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    $("#uh-status").dataset.state = "loading";
+    $("#uh-status").dataset.source = kind;
+    $("#uh-status").dataset.recordingVersion = String(version);
+    $("#uh-status").textContent = "Opening the new recording. The previous session has been cleared.";
+    refreshRecordingControls();
+    document.dispatchEvent(new CustomEvent("wh:recordingchange", { detail: { version } }));
+    return version;
+  }
+
+  function recordingFailed(version, error) {
+    if (!recordingCurrent(version)) return;
+    unheard.caseData = null; unheard.ready = false;
+    $("#uh-status").dataset.state = "error";
+    $("#uh-status").textContent = error.message + " Choose a recording to start a new case.";
+    refreshRecordingControls();
+  }
 
   function drawTimeline(series, evidence, duration) {
     const c = $("#uh-timeline"), ctx = c.getContext("2d");
@@ -308,16 +456,27 @@
 
   const sameEvidence = (a, b) => JSON.stringify(a.map((e) => [e.type, e.start])) === JSON.stringify(b.map((e) => [e.type, e.start]));
 
-  async function investigate(src, buf, title, measured) {
+  async function investigate(src, buf, title, measured, version = recordingVersion) {
+    const active = () => recordingCurrent(version);
+    if (!active()) return null;
     const v = $("#uh-video");
     $("#uh-status").textContent = "PARANORMAL.exe is reading the recording, frame by frame, in your browser...";
     v.src = src;
-    await new Promise((r, fail) => {
-      v.addEventListener("loadedmetadata", r, { once: true });
-      v.addEventListener("error", () => fail(new Error("This browser cannot open that video file. Try an MP4 or WebM recording.")), { once: true });
+    await new Promise((resolve, reject) => {
+      const finish = (error) => {
+        clearTimeout(timer); v.removeEventListener("loadedmetadata", loaded); v.removeEventListener("error", failed);
+        if (!active()) resolve(); else if (error) reject(error); else resolve();
+      };
+      const loaded = () => finish(), failed = () => finish(new Error("This browser cannot open that video file. Try an MP4 or WebM recording."));
+      const timer = setTimeout(() => finish(new Error("Opening this recording timed out.")), 12000);
+      v.addEventListener("loadedmetadata", loaded, { once: true });
+      v.addEventListener("error", failed, { once: true });
     });
-    const rows = await frameFeatures(v, 90, (p) => { $("#uh-status").textContent = `Reading frames... ${Math.round(p * 100)}%`; });
+    if (!active()) return null;
+    const rows = await frameFeatures(v, 90, (p) => { if (active()) $("#uh-status").textContent = `Reading frames... ${Math.round(p * 100)}%`; }, active);
+    if (!active() || !rows) return null;
     const levels = await audioLevels(buf, 90);
+    if (!active()) return null;
     // a tab in the background does not paint video frames: every frame comes back the same
     const blind = rows.length > 8 && rows.slice(1).every((r) => r.motion === 0);
     let evidence = detect(rows, levels);
@@ -329,33 +488,43 @@
     } else if (blind) {
       note = "keep this tab in front while it reads the recording (a background tab does not paint video frames). Only the sound could be measured: " + note;
     }
-    unheard = { ...unheard, evidence, series, title };
+    unheard = { ...unheard, evidence, series, title, ready: true };
+    $("#uh-status").dataset.state = "ready";
     $("#uh-status").textContent = `${title}: ${note}`;
     v.currentTime = 0;
     drawTimeline(series, evidence, series.t.length * STEP);
     renderEvidence(evidence);
-    $("#uh-open").hidden = false;
+    refreshRecordingControls();
     return evidence;
   }
 
   async function openDemo() {
-    $("#uh-status").textContent = "Opening the case file...";
-    const c = await WH.getJSON("/api/demo/cases");
-    const demo = (c.cases || []).find((k) => k.id === "the-warning");
-    if (!demo) { $("#uh-status").textContent = "The demo recording is not here yet."; return; }
-    unheard.caseData = demo;
-    $("#uh-story").innerHTML = `<p>${esc(demo.story)}</p>`;
-    if (demo.seance && demo.seance.context) $("#uh-words").value = demo.seance.context;
-    const buf = await fetch(demo.video).then((r) => r.arrayBuffer());
+    const version = beginRecording("demo"), signal = recordingRequest.signal;
     try {
-      await investigate(demo.video, buf, "The Warning (a staged recording)", demo);
-    } catch (e) { $("#uh-status").textContent = e.message; return; }
-    $("#uh-replay").hidden = !demo.seance;
+      const c = await WH.getJSON("/api/demo/cases", { signal });
+      if (!recordingCurrent(version)) return;
+      const demo = (c.cases || []).find((k) => k.id === "the-warning");
+      if (!demo) throw new Error("The demo recording is not here yet.");
+      const response = await fetch(demo.video, { signal });
+      if (!response.ok) throw new Error("Could not open the demo recording.");
+      const buf = await response.arrayBuffer();
+      if (!recordingCurrent(version)) return;
+      unheard.caseData = demo;
+      $("#uh-story").innerHTML = `<p>${esc(demo.story)}</p>`;
+      if (demo.seance && demo.seance.context) $("#uh-words").value = demo.seance.context;
+      await investigate(demo.video, buf, "The Warning (a staged recording)", demo, version);
+    } catch (error) { recordingFailed(version, error); }
   }
 
   async function replaySeance() {
     const demo = unheard.caseData;
-    if (!demo || !demo.seance) return;
+    if (!unheard.ready || unheard.kind !== "demo" || !demo || !demo.seance || busy.uh) return;
+    const version = recordingVersion, epoch = resetBoard("uh");
+    const active = () => recordingCurrent(version) && boardCurrent("uh", epoch);
+    busy.uh = true;
+    refreshRecordingControls();
+    $("#uh-seance").setAttribute("aria-busy", "true");
+    $("#uh-ask").hidden = true; $("#uh-suggest").hidden = true;
     if (demo.evidence && !sameEvidence(unheard.evidence || [], demo.evidence)) {
       // the recorded séance cites the pipeline's evidence ids: show that list so every citation points somewhere real
       unheard.evidence = demo.evidence;
@@ -368,19 +537,28 @@
     $("#uh-seance .by").textContent = `${demo.seance.model} (recorded séance)`;
     $("#uh-turns").innerHTML = "";
     const turns = demo.seance.turns, climaxAt = turns.findIndex((t) => t.response.message === "I AM HERE"), st = WH.stage;
-    st && st.open("uh");
-    for (const [i, turn] of turns.entries()) {
+    st && st.open("uh", { active });
+    try { for (const [i, turn] of turns.entries()) {
+      if (!active()) return;
       const climax = i === climaxAt, finale = i === turns.length - 1 && turn.response.message === "GOODBYE";
       if (st && st.skipping("uh") && i < climaxAt) { quickTurn("uh", turn); continue; }
       if (!finale) {
         $("#uh-spoken").textContent = `Luna asks: "${turn.question}"`;
-        if (st) await st.ask("uh", turn.question); else await sleep(1600);
+        if (st) await st.ask("uh", turn.question, { active }); else await sleep(1600);
+        if (!active()) return;
       }
-      await showTurn("uh", turn, (demo.seance.audio || {})[i], { climax, finale });
+      await showTurn("uh", turn, (demo.seance.audio || {})[i], { active, recorded: true, climax, finale });
+      if (!active()) return;
       if (st && st.cancelled("uh")) break;
       await sleep(climax ? 600 : st ? 500 : 2200);
+    } } finally {
+      if (active()) {
+        busy.uh = false;
+        $("#uh-seance").setAttribute("aria-busy", "false");
+        st && st.close("uh");
+        refreshRecordingControls();
+      }
     }
-    st && st.close("uh");
   }
 
   function dossier() {
@@ -502,18 +680,33 @@
   function boot() {
     $("#uh-seance-slot").innerHTML = seanceUI("uh");
     $("#rm-seance-slot").innerHTML = seanceUI("rm");
+    $("#uh-status").dataset.state = "empty";
+    $("#uh-status").dataset.recordingVersion = "0";
+    refreshRecordingControls();
     $("#uh-demo").addEventListener("click", openDemo);
     $("#uh-file").addEventListener("change", async (ev) => {
       const f = ev.target.files[0];
       if (!f) return;
-      unheard.caseData = null;
-      $("#uh-replay").hidden = true;
+      ev.target.value = "";
+      const version = beginRecording("upload");
       $("#uh-story").innerHTML = "<p>Your recording. It stays in this browser: only the list of moments below is ever sent to the board.</p>";
       try {
-        await investigate(URL.createObjectURL(f), await f.arrayBuffer(), f.name);
-      } catch (e) { $("#uh-status").textContent = e.message; }
+        if (!f.size || f.size > 24 * 1024 * 1024) throw new Error("Choose a recording up to 24 MiB.");
+        const buffer = await f.arrayBuffer();
+        if (!recordingCurrent(version)) return;
+        recordingURL = URL.createObjectURL(f);
+        await investigate(recordingURL, buffer, f.name, null, version);
+      } catch (error) { recordingFailed(version, error); }
     });
-    $("#uh-open").addEventListener("click", async () => { await summon("uh", unheard.title || "recording", unheard.evidence, $("#uh-words").value.trim()); const box = $("#uh-seance"); box.scrollIntoView({ behavior: WH.reduceMotion ? "auto" : "smooth", block: "center" }); setTimeout(() => { if (Math.abs(box.getBoundingClientRect().top) > innerHeight) box.scrollIntoView({ behavior: "auto", block: "center" }); }, 1200); });
+    $("#uh-open").addEventListener("click", async () => {
+      if (!unheard.ready || busy.uh) return;
+      const version = recordingVersion;
+      const session = await summon("uh", unheard.title || "recording", unheard.evidence, $("#uh-words").value.trim());
+      if (!session || !recordingCurrent(version) || sessions.uh !== session) return;
+      const box = $("#uh-seance");
+      box.scrollIntoView({ behavior: WH.reduceMotion ? "auto" : "smooth", block: "center" });
+      setTimeout(() => { if (recordingCurrent(version) && sessions.uh === session && Math.abs(box.getBoundingClientRect().top) > innerHeight) box.scrollIntoView({ behavior: "auto", block: "center" }); }, 1200);
+    });
     $("#uh-replay").addEventListener("click", replaySeance);
     $("#uh-dossier").addEventListener("click", dossier);
     $("#uh-ask").addEventListener("submit", (e) => { e.preventDefault(); const i = $("input", e.target); if (i.value.trim()) { ask("uh", i.value.trim()); i.value = ""; } });

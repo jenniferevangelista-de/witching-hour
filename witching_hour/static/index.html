@@ -91,7 +91,7 @@
     <div class="panel table-wrap" id="bakeoff"></div>
   </section>
 
-  <div class="case-title" id="unheard"><span class="n">Case 2</span><h2>🎞️ The Unheard</h2><p>You were about to leave. Something made you stay, and you never knew why. If a camera was running that night, bring the recording: PARANORMAL.exe reads it frame by frame <b>inside your browser</b> (the video never leaves this page), Dr. Bigotes explains what he can, and Luna opens the board for whatever is left.</p></div>
+  <div class="case-title" id="unheard"><span class="n">Case 2</span><h2>🎞️ The Unheard</h2><p class="demo-intro" style="margin-bottom:12px">For today's demo, we're investigating a fictional case of paranormal activity sent in by a client in Japan. <b>What kind of spirit will we encounter?</b></p><p>If a camera was running that night, bring the recording: PARANORMAL.exe reads it frame by frame <b>inside your browser</b> (the video never leaves this page), Dr. Bigotes explains what he can, and Luna opens the board for whatever is left.</p></div>
   <section class="terminal" aria-label="PARANORMAL.exe, The Unheard">
     <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">PARANORMAL.exe · THE UNHEARD · some messages were never meant to be heard</span></div>
     <div class="term-body">
@@ -108,13 +108,13 @@
           <div class="key"><span><i style="background:#ffbf3c"></i>light</span><span><i style="background:#8dffcf"></i>motion</span><span><i style="background:#a77bff"></i>sound</span><span><i style="background:rgba(255,255,255,.25)"></i>evidence</span></div>
           <h3 class="locker">🗝️ Evidence locker <span class="ci">(measured, with Dr. Bigotes's notes)</span></h3>
           <div class="events" id="uh-evidence"></div>
-          <div class="panel receipts-slot" hidden></div>
         </div>
         <div>
           <div class="with-guide luna"><img src="/static/characters/luna.svg" alt="Luna, the Medium"><div><h3 style="margin:0">Luna opens the board</h3><p class="notice" style="margin-top:4px">I summon the spirit the evidence suggests: a Guardian, a Lost One, a Trickster, a Watcher, a Hostile Presence or a Silent One. Its answers are fiction, and each one must point at a real moment of the recording.</p></div></div>
           <label class="words">What happened that night? <span class="ci">(your words, optional: the spirit hears them as a memory, never as evidence)</span>
             <input id="uh-words" maxlength="200" placeholder="I was about to go out, and something made me stay."></label>
           <div class="term-actions"><button id="uh-open" class="big" hidden>🔮 Summon the spirit</button><button id="uh-replay" class="big alt" hidden>⏺ Replay the recorded séance</button><button id="uh-dossier" class="big alt">📜 Xochi's dossier</button></div>
+          <div class="panel receipts-slot" hidden></div>
           <div id="uh-seance-slot"></div>
         </div>
       </div>
@@ -155,8 +155,8 @@
   </footer>
 </main>
 <script src="/static/app.js?v=20261030w"></script>
-<script src="/static/paranormal.js?v=20261030w"></script>
-<script src="/static/seance.js?v=20261030w"></script>
+<script src="/static/paranormal.js?v=20261030-session-isolation"></script>
+<script src="/static/seance.js?v=20261030-session-isolation"></script>
 <script src="/static/receipts.js?v=20261030w"></script>
 <script src="/static/nav.js?v=20261030w"></script>
 </body>

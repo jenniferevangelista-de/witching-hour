@@ -193,35 +193,43 @@
     WH.active = (WH.active || 0) + 1;   // the page asks this before it leaves: anything still talking means a fresh start
     try { return await voicedLine(text, src, show, opts); } finally { WH.active -= 1; }
   }
-  async function voicedLine(text, src, show, { hold = null } = {}) {
+  async function voicedLine(text, src, show, { hold = null, active = () => true } = {}) {
     const me = ++typing;
+    const current = () => me === typing && active();
+    if (!current()) return false;
     if (src) stopVoice();
     let audio = null, dur = 0;
     if (src && sfx.on) {
       const a = new Audio(src);
       a.preload = "auto";
       dur = await metaOf(a);
-      if (me !== typing) return false;
+      if (!current()) { a.pause(); return false; }
       if (dur > 0) audio = a;
     }
     const per = reduce() ? 0 : dur ? Math.min(80, Math.max(20, (dur * 1000) / Math.max(text.length, 1))) : 42;
+    if (!current()) return false;
     if (audio) { voiceEl = audio; audio.play().catch(() => { /* autoplay blocked */ }); }
     if (!per) show(text);
     else {
       for (let i = 1; i <= text.length; i++) {
-        if (me !== typing) return false;
+        if (!current()) { if (audio) audio.pause(); return false; }
         show(text.slice(0, i));
         await new Promise((r) => setTimeout(r, per));
       }
     }
     if (audio) await endedOf(audio, dur);
-    if (me !== typing) return false;
+    if (!current()) { if (audio) audio.pause(); return false; }
     await wait(hold != null ? hold : audio ? 550 : Math.max(1400, 34 * text.length));
-    return true;
+    return current();
   }
 
   // ---- the scene around each board
   const S = {};
+  const sceneGuard = (prefix, active) => {
+    const st = S[prefix], epoch = st && st.epoch;
+    return () => !!st && !st.cancelled && st.epoch === epoch &&
+      (!st.active || st.active()) && (!active || active());
+  };
 
   function build(prefix) {
     const root = $(`#${prefix}-seance`), board = $(`#${prefix}-board`);
@@ -274,7 +282,7 @@
       if (dossier) { dossier.classList.remove("alt"); card.append(dossier); }
       ctl.after(card);
     }
-    const st = S[prefix] = { root, stage, speech, ctl, count: 0, skip: false, cancelled: false, quipped: new Set(), letters: 0, audio: null, turnAudio: null };
+    const st = S[prefix] = { root, stage, speech, ctl, epoch: 0, active: null, count: 0, skip: false, cancelled: false, quipped: new Set(), letters: 0, audio: null, turnAudio: null };
     const label = () => { $(".snd", ctl).textContent = sfx.on ? "🔊 Sound on" : "🔇 Sound off"; };
     label();
     $(".snd", ctl).addEventListener("click", () => { sfx.set(!sfx.on); label(); });
@@ -283,9 +291,10 @@
   }
 
   /* One character says one line, in a bubble above the character (and in the strip on small screens). */
-  async function say(prefix, who, text, { tag = "", clip = null, url = null, silent = false, hold = null } = {}) {
+  async function say(prefix, who, text, { tag = "", clip = null, url = null, silent = false, hold = null, active } = {}) {
     const st = S[prefix];
-    if (!st) return;
+    const current = sceneGuard(prefix, active);
+    if (!current()) return false;
     const seat = $(`.seat.${who}`, st.stage);
     $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
     $$(".seat", st.stage).forEach((s) => s.classList.toggle("speaking", s === seat));
@@ -301,16 +310,18 @@
     $(".tag", strip).textContent = tag;
     strip.classList.add("on");
     const src = silent ? null : url || clipUrl(clip || text);
-    await voiced(text, src, (t) => { p.textContent = t; $(".said", strip).textContent = t; }, { hold });
+    const completed = await voiced(text, src, (t) => { if (current()) { p.textContent = t; $(".said", strip).textContent = t; } }, { hold, active: current });
+    return completed && current();
   }
 
   const shake = (el) => { if (reduce()) return; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); setTimeout(() => el.classList.remove("shake"), 600); };
 
   function trail(boardEl, ms) {
     if (reduce()) return;
+    const current = sceneGuard(prefixOf(boardEl));
     const g = $(".glass", boardEl), t0 = performance.now();
     const id = setInterval(() => {
-      if (performance.now() - t0 > ms) { clearInterval(id); return; }
+      if (!current() || performance.now() - t0 > ms) { clearInterval(id); return; }
       const gr = g.getBoundingClientRect(), br = boardEl.getBoundingClientRect();
       const d = document.createElement("i");
       d.className = "spark";
@@ -341,6 +352,8 @@
   // ---- the climax: the board slowly spells I AM HERE
   async function prelude(prefix, opts) {
     const st = S[prefix];
+    const current = sceneGuard(prefix, opts.active);
+    if (!current()) return false;
     document.body.classList.add("climax");
     st.stage.classList.add("climax");
     st.audio = opts.audioUrl || null;
@@ -349,23 +362,26 @@
     sfx.musicLevel(0.04);
     sfx.knock(); shake(st.stage);
     await wait(900);
+    if (!current()) return false;
     sfx.knock(); shake(st.stage);
     await wait(700);
-    await say(prefix, "xochi", "Wait. The air just changed.", { tag: "Xochi keeps watch" });
-    await say(prefix, "bigotes", "It is only a draft. Probably.", { tag: "Dr. Bigotes" });
+    if (!current()) return false;
+    if (!await say(prefix, "xochi", "Wait. The air just changed.", { tag: "Xochi keeps watch", active: current })) return false;
+    if (!await say(prefix, "bigotes", "It is only a draft. Probably.", { tag: "Dr. Bigotes", active: current })) return false;
     sfx.heart(true);
     st.stage.classList.add("hush");
     $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
     st.speech.classList.add("hush");
     await wait(700);
+    return current();
   }
 
   // ---- the finale: lights out, the crew runs, the page moves on to The Room
-  async function finale(prefix) {
+  async function finale(prefix, opts = {}) {
     const st = S[prefix];
-    if (st.finaleRunning) return;
+    const current = sceneGuard(prefix, opts.active);
+    if (!current() || st.finaleRunning) return false;
     st.finaleRunning = true;
-    st.cancelled = false;
     sfx.heart(false); sfx.drone(false); sfx.music(false);
     sfx.slam(); flash(); shake(st.stage);
     const dark = document.createElement("div");
@@ -374,6 +390,7 @@
     dark.addEventListener("animationend", () => dark.remove());
     $$(".seat", st.stage).forEach((s) => s.classList.add("scared"));
     await wait(1100);
+    if (!current()) return false;
     sfx.whoosh();
     $$(".seat", st.stage).forEach((s) => { s.classList.remove("scared"); s.classList.add("run"); });
     const burst = document.createElement("div");   // comic lettering over the stage while they run
@@ -390,20 +407,24 @@
     })();
     const lines = [["luna", "Out! Everybody out!"], ["bigotes", "Fine! I have nothing left to say! Run, run, RUUUUN!"], ["xochi", "Stay close to me!"]];
     // while the crew runs, each one shouts from where they stand
-    const running = (async () => { for (const [w, t] of lines) await say(prefix, w, t, { tag: "", hold: 150 }); })();
+    const running = (async () => { for (const [w, t] of lines) { if (!current() || !await say(prefix, w, t, { tag: "", hold: 150, active: current })) return false; } return true; })();
     await Promise.all([running, wait(2200)]);
+    if (!current()) return false;
     st.stage.classList.remove("hush");
     card.hidden = false;
-    setTimeout(() => card.classList.add("show"), 30);
+    setTimeout(() => { if (current()) card.classList.add("show"); }, 30);
     document.body.classList.add("act-on");
     const choice = await new Promise((res) => {
-      $(".tryit", card).onclick = () => res("try");
-      $(".next", card).onclick = () => res("next");
-      $(".stay", card).onclick = () => res("stay");
+      st.resolveFinale = res;
+      $(".tryit", card).onclick = () => { if (current()) res("try"); };
+      $(".next", card).onclick = () => { if (current()) res("next"); };
+      $(".stay", card).onclick = () => { if (current()) res("stay"); };
     });
+    if (!current()) return false;
+    st.resolveFinale = null;
     card.classList.remove("show");
     document.body.classList.remove("act-on");
-    setTimeout(() => { card.hidden = true; }, 500);
+    setTimeout(() => { if (current()) card.hidden = true; }, 500);
     st.finaleRunning = false;
     if (choice === "next") {
       WH.stage.close(prefix);
@@ -427,10 +448,12 @@
   }
 
   WH.stage = {
-    open(prefix) {
+    open(prefix, opts = {}) {
       build(prefix);
       const st = S[prefix];
       if (!st) return;
+      if (opts.active && !opts.active()) return;
+      st.epoch++; st.active = opts.active || null;
       st.skip = false; st.cancelled = false; st.count = 0; st.quipped = new Set();
       $$(".seat", st.stage).forEach((s) => s.classList.remove("run", "scared"));
       st.root.classList.remove("live");
@@ -445,20 +468,35 @@
     close(prefix) {
       const st = S[prefix];
       if (!st) return;
+      st.epoch++; st.cancelled = true; st.active = null;
+      typing++; stopVoice();
+      if (st.climaxVoice) st.climaxVoice.pause();
+      st.climaxVoice = null; st.audio = null; st.turnAudio = null;
+      if (st.resolveFinale) { st.resolveFinale("cancel"); st.resolveFinale = null; }
+      st.finaleRunning = false;
+      const card = $(prefix === "uh" ? "#act-card" : "#end-card");
+      if (card) { card.classList.remove("show"); card.hidden = true; }
+      document.body.classList.remove("act-on");
+      $$(".flash, .lights-out").forEach((el) => el.remove());
+      $$(".runtext, .spark", st.stage).forEach((el) => el.remove());
       $(".skip", st.ctl).hidden = true;
-      st.root.classList.remove("replaying");
-      document.body.classList.remove("seance-on", "climax");
+      st.root.classList.remove("replaying", "live");
+      document.body.classList.remove("seance-on", "climax", "summoned");
       st.stage.classList.remove("climax", "hush");
-      st.speech.classList.remove("hush");
-      $$(".seat", st.stage).forEach((s) => s.classList.remove("speaking"));
+      st.speech.classList.remove("hush", "on");
+      $$(".seat", st.stage).forEach((s) => s.classList.remove("speaking", "lean", "run", "scared"));
       $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
+      $$(".sbub p, .sbub .tag", st.stage).forEach((el) => { el.textContent = ""; });
+      $$(".name, .tag, .said", st.speech).forEach((el) => { el.textContent = ""; });
       const fab = $("#uh-replay"); if (fab && prefix === "uh") fab.classList.remove("off");
       sfx.heart(false); sfx.drone(false); sfx.music(false);
     },
-    live(prefix) {   // a spirit has been summoned: the visitor can ask
+    live(prefix, opts = {}) {   // a spirit has been summoned: the visitor can ask
       build(prefix);
       const st = S[prefix];
       if (!st) return;
+      if (opts.active && !opts.active()) return;
+      st.epoch++; st.active = opts.active || null; st.cancelled = false;
       st.root.classList.add("live");
       if (prefix === "uh") document.body.classList.add("summoned");
       st.count = 0; st.quipped = new Set();
@@ -466,30 +504,35 @@
     skipping(prefix) { return !!(S[prefix] && S[prefix].skip); },
     cancelled(prefix) { return !!(S[prefix] && S[prefix].cancelled); },
 
-    async ask(prefix, question) {
+    async ask(prefix, question, opts = {}) {
       build(prefix);
-      if (!S[prefix]) return;
+      const current = sceneGuard(prefix, opts.active);
+      if (!current()) return false;
       document.body.classList.add("seance-on");
       sfx.prime();
-      await say(prefix, "luna", question, { tag: "Luna asks the board" });
+      return say(prefix, "luna", question, { tag: "Luna asks the board", active: current });
     },
-    async begin(prefix, r, opts) {
+    async begin(prefix, r, opts = {}) {
       build(prefix);
       const st = S[prefix];
-      if (!st) return;
+      const current = sceneGuard(prefix, opts.active);
+      if (!current()) return false;
       if (opts.climax && !opts.audioUrl) opts = { ...opts, audioUrl: clipUrl(r.response.spoken) };   // live game: the recorded Guardian line
       st.turnAudio = opts.climax ? null : opts.audioUrl || null;
       $$(".seat", st.stage).forEach((s) => s.classList.add("lean"));
-      if (opts.climax) await prelude(prefix, opts);
+      if (opts.climax) { if (!await prelude(prefix, { ...opts, active: current })) return false; }
       else if (opts.finale) { st.stage.classList.remove("climax"); document.body.classList.remove("climax"); }
       else sfx.knock();
+      return current();
     },
     glass(boardEl, ch, slow) {
+      if (!sceneGuard(prefixOf(boardEl))()) return;
       trail(boardEl, slow ? 1400 : 650);
       light(boardEl, ch);
       sfx.tick();
     },
     letter(boardEl, ch, slow) {
+      if (!sceneGuard(prefixOf(boardEl))()) return;
       sfx.letter();
       if (!slow) return;
       const st = S[prefixOf(boardEl)];
@@ -505,53 +548,60 @@
         a.play().catch(() => { /* autoplay blocked */ });
       }
     },
-    async read(prefix, r, opts) {
+    async read(prefix, r, opts = {}) {
       const st = S[prefix];
-      if (!st) return;
+      const current = sceneGuard(prefix, opts.active);
+      if (!current()) return false;
       st.speech.classList.remove("hush");
       st.stage.classList.remove("hush");
-      if (opts.finale) { await finale(prefix); return; }
+      if (opts.finale) return finale(prefix, { ...opts, active: current });
       if (opts.climax && st.climaxVoice) {   // let the Guardian finish before Luna reads it
         const a = st.climaxVoice;
         st.climaxVoice = null;
         await endedOf(a, isFinite(a.duration) ? a.duration : 6);
+        if (!current()) return false;
       }
       const ids = (r.grounding && r.grounding.related_evidence_ids) || [];
-      const by = ($(`#${prefix}-seance .by`) || {}).textContent || "";
-      const source = /template|scripted/i.test(by) ? "scripted reading" : /gemma/i.test(by) ? "written by Gemma 4" : by.trim().slice(0, 40);
+      const by = String(r.response.by || "unknown source");
+      const source = /template|scripted/i.test(by) ? "scripted reading" : by.trim().slice(0, 60);
       const spoken = r.response.spoken;
       // the recorded voice already played under the board in the climax; the reading is only shown, slowly
       if (spoken) {
-        await say(prefix, "luna", spoken, { tag: `Luna reads the glass · ${source}`, clip: spoken, url: st.turnAudio, silent: !!opts.climax, hold: opts.climax ? 2200 : null });
+        if (!await say(prefix, "luna", spoken, { tag: `Luna reads the glass · ${source}`, clip: spoken, url: st.turnAudio, silent: !!opts.climax, hold: opts.climax ? 2200 : null, active: current })) return false;
       }
       const all = WH.evidenceFor(prefix);
       const e = ids.map((i) => all.find((x) => x.id === i)).find((x) => x && !st.quipped.has(x.id));
-      if (opts.climax) {
-        await say(prefix, "bigotes", "Two real sounds, both cited. And I have no kettle for this.", { tag: "Dr. Bigotes" });
+      const citedSounds = ids.map((id) => all.find((event) => event.id === id)).filter((event) => event && event.type === "audio");
+      if (opts.climax && opts.recorded && citedSounds.length === 2) {
+        if (!await say(prefix, "bigotes", "Two real sounds, both cited. And I have no kettle for this.", { tag: "Dr. Bigotes", active: current })) return false;
       } else if (e) {
         st.quipped.add(e.id);
         const note = WH.bigotes(e, all);
-        await say(prefix, "bigotes", note, { tag: `Dr. Bigotes checks ${e.id} · ${e.start.toFixed(2)} s`, clip: note });
+        if (!await say(prefix, "bigotes", note, { tag: `Dr. Bigotes checks ${e.id} · ${e.start.toFixed(2)} s`, clip: note, active: current })) return false;
       }
       st.count += 1;
       const xochi = ["I kept watch. The glass moved by itself.", "Her words are gentle. Her warning is not.", "I will write it down: every answer cites a real moment."];
-      if (!opts.climax && st.count % 3 === 1) await say(prefix, "xochi", xochi[((st.count - 1) / 3 | 0) % xochi.length], { tag: "Xochi keeps watch" });
+      if (!opts.climax && st.count % 3 === 1) { if (!await say(prefix, "xochi", xochi[((st.count - 1) / 3 | 0) % xochi.length], { tag: "Xochi keeps watch", active: current })) return false; }
+      return current();
     },
-    roomIntro(prefix) {
+    roomIntro(prefix, opts = {}) {
       build(prefix);
       const st = S[prefix];
-      if (!st) return;
+      const current = sceneGuard(prefix, opts.active);
+      if (!current()) return false;
       st.scared = false;
       document.body.classList.add("seance-on");
       sfx.prime();
       st.root.scrollIntoView({ behavior: reduce() ? "auto" : "smooth", block: "start" });
-      return say(prefix, "luna", "The room is yours now. Ask the board, and watch the glass.", { tag: "Luna" });
+      return say(prefix, "luna", "The room is yours now. Ask the board, and watch the glass.", { tag: "Luna", active: current });
     },
-    async roomScare(prefix) {   // the last act: the room moves when the glass stops
+    async roomScare(prefix, opts = {}) {   // the last act: the room moves when the glass stops
       const st = S[prefix];
-      if (!st || st.scared) return;
+      const current = sceneGuard(prefix, opts.active);
+      if (!current() || st.scared) return false;
       st.scared = true;
       await wait(2800);
+      if (!current()) return false;
       sfx.music(false); sfx.slam(); flash(); shake(st.stage);
       if (WH.haunt) WH.haunt();
       const dark = document.createElement("div");
@@ -560,16 +610,18 @@
       dark.addEventListener("animationend", () => dark.remove());
       $$(".seat", st.stage).forEach((s) => s.classList.add("scared"));
       await wait(2200);
+      if (!current()) return false;
       $$(".seat", st.stage).forEach((s) => s.classList.remove("scared"));
-      await say(prefix, "luna", "That was not me!", { tag: "Luna" });
-      await say(prefix, "bigotes", "Probably the kettle. Probably.", { tag: "Dr. Bigotes" });
-      await say(prefix, "xochi", "It moved when the glass stopped. I will write it down.", { tag: "Xochi keeps watch" });
-      await say(prefix, "xochi", "The case is closed. Thank you for staying until the end.", { tag: "Xochi" });
+      if (!await say(prefix, "luna", "That was not me!", { tag: "Luna", active: current })) return false;
+      if (!await say(prefix, "bigotes", "Probably the kettle. Probably.", { tag: "Dr. Bigotes", active: current })) return false;
+      if (!await say(prefix, "xochi", "It moved when the glass stopped. I will write it down.", { tag: "Xochi keeps watch", active: current })) return false;
+      if (!await say(prefix, "xochi", "The case is closed. Thank you for staying until the end.", { tag: "Xochi", active: current })) return false;
+      if (!current()) return false;
       endCard();
     },
-    async end(prefix) {
+    async end(prefix, r, opts = {}) {
       const st = S[prefix];
-      if (!st) return;
+      if (!sceneGuard(prefix, opts.active)()) return false;
       $$(".seat", st.stage).forEach((s) => s.classList.remove("lean", "speaking"));
       $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
     },
@@ -613,23 +665,35 @@
     const both = [fixed, panel];
     let waiting = false;
     const click = async () => {
-      sfx.prime();
       if (waiting) return;
-      if (!open.hidden) { open.click(); return; }   // the case is read: summon, and the page scrolls down to the séance
+      const status = $("#uh-status");
+      const state = status && status.dataset.state;
+      if (state === "loading" || state === "error" || state === "ready" && open.disabled) return;
+      sfx.prime();
+      if (state === "ready" && !open.hidden) { open.click(); return; }
+      // Only an untouched page may offer the demo. Quiet or failed uploads stay separate.
+      if (state !== "empty") return;
       waiting = true;
       both.forEach((b) => b.classList.add("wait"));
-      const status = $("#uh-status");
+      const demoButton = $("#uh-demo");
+      if (!demoButton || demoButton.disabled) {
+        waiting = false; both.forEach((b) => b.classList.remove("wait")); return;
+      }
+      demoButton.click();
+      const version = status.dataset.recordingVersion;
+      const current = () => status.dataset.recordingVersion === version;
       const tick = setInterval(() => {
-        const m = status && /Reading frames\.\.\. \d+%/.exec(status.textContent);
-        both.forEach((b) => { b.textContent = "⏳ " + (m ? m[0] : "Reading the recording..."); });
+        if (!current()) return;
+        const m = /Reading frames\.\.\. \d+%/.exec(status.textContent);
+        both.forEach((b) => { b.textContent = "... " + (m ? m[0] : "Reading the recording..."); });
       }, 300);
-      // nothing opened yet: open the demo case, then summon as soon as the evidence is in
-      if (!WH.evidenceFor("uh").length && !(status && /reading|opening/i.test(status.textContent))) { const d = $("#uh-demo"); d && d.click(); }
-      for (let i = 0; i < 240 && open.hidden; i++) await new Promise((r) => setTimeout(r, 250));
+      for (let i = 0; i < 240 && current() && status.dataset.state === "loading"; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
       clearInterval(tick);
       both.forEach((b) => { b.classList.remove("wait"); b.textContent = label; });
       waiting = false;
-      if (!open.hidden) open.click();
+      if (current() && status.dataset.state === "ready" && !open.hidden && !open.disabled) open.click();
     };
     both.forEach((b) => b.addEventListener("click", click));
   }
@@ -666,21 +730,34 @@
     const btn = document.createElement("button");
     btn.type = "button"; btn.className = "hear"; btn.textContent = "▶ Hear Luna";
     box.querySelector("div").append(btn);
-    let busyNow = false;
-    const speak = async () => {
-      if (busyNow) return;
+    const status = $("#uh-status"), open = $("#uh-open");
+    let busyNow = false, panelEpoch = 0, panelTimer = null;
+    const speak = async (version = status.dataset.recordingVersion, stageEpoch = S.uh && S.uh.epoch) => {
+      if (busyNow || !open || open.disabled || status.dataset.state !== "ready" ||
+          version !== status.dataset.recordingVersion || stageEpoch !== (S.uh && S.uh.epoch)) return;
+      const epoch = ++panelEpoch;
+      const active = () => panelEpoch === epoch && version === status.dataset.recordingVersion &&
+        stageEpoch === (S.uh && S.uh.epoch) && status.dataset.state === "ready" && !open.disabled;
       busyNow = true;
       sfx.prime();
       box.classList.add("talking");
-      await voiced(LUNA_PANEL, clipUrl(LUNA_PANEL), () => {}, { hold: 300 });
-      box.classList.remove("talking");
-      busyNow = false;
+      try { await voiced(LUNA_PANEL, clipUrl(LUNA_PANEL), () => {}, { hold: 300, active }); }
+      finally { if (panelEpoch === epoch) { box.classList.remove("talking"); busyNow = false; } }
     };
-    btn.addEventListener("click", speak);
-    const open = $("#uh-open");
+    btn.addEventListener("click", () => speak());
+    document.addEventListener("wh:recordingchange", () => {
+      clearTimeout(panelTimer); panelTimer = null; panelEpoch++; busyNow = false;
+      box.classList.remove("talking");
+    });
     if (open) {
       let done = false;
-      const mo = new MutationObserver(() => { if (!open.hidden && !done) { done = true; if (sfx.on) setTimeout(speak, 600); } });
+      const mo = new MutationObserver(() => {
+        if (!open.hidden && !done && status.dataset.state === "ready") {
+          done = true;
+          const version = status.dataset.recordingVersion, stageEpoch = S.uh && S.uh.epoch;
+          if (sfx.on) panelTimer = setTimeout(() => { panelTimer = null; speak(version, stageEpoch); }, 600);
+        }
+      });
       mo.observe(open, { attributes: true, attributeFilter: ["hidden"] });
     }
     void text;
