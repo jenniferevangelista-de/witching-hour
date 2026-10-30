@@ -28,7 +28,7 @@
 
   // ---- sound, made in the browser (no files): knocks, heartbeat, a low drone, a door slam
   const sfx = (() => {
-    let ac = null, master = null, droneNodes = null, beat = null;
+    let ac = null, master = null, droneNodes = null, beat = null, mus = null;
     let enabled = true;
     try { enabled = localStorage.getItem("wh_sound") !== "off"; } catch (_) { /* private mode */ }
     const ctx = () => {
@@ -70,7 +70,7 @@
       set(v) {
         enabled = v;
         try { localStorage.setItem("wh_sound", v ? "on" : "off"); } catch (_) { /* ignore */ }
-        if (!v) { api.drone(false); api.heart(false); stopVoice(); }
+        if (!v) { api.drone(false); api.heart(false); api.music(false); stopVoice(); }
       },
       prime() { ctx(); },
       tick() { tone("triangle", 1400, 900, 0.06, 0.04); },
@@ -83,6 +83,59 @@
         clearInterval(beat); beat = null;
         if (on) { api.beat(); beat = setInterval(api.beat, 1100); }
       },
+      // a slow suspense score, made in the browser: a minor pad that changes chord, a music box with an echo, and now and then a wrong note
+      music(on) {
+        if (!on) {
+          if (mus) {
+            const { g, c, timer, os } = mus;
+            clearInterval(timer);
+            g.gain.cancelScheduledValues(c.currentTime);
+            g.gain.setTargetAtTime(0.0001, c.currentTime, 0.7);
+            os.forEach((o) => { try { o.stop(c.currentTime + 3.5); } catch (_) { /* already stopped */ } });
+            mus = null;
+          }
+          return;
+        }
+        const c = enabled && ctx();
+        if (!c || mus) return;
+        const g = c.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(1.0, c.currentTime, 1.6); g.connect(master);
+        const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 520; lp.Q.value = 2;
+        const padG = c.createGain(); padG.gain.value = 0.34;
+        lp.connect(padG); padG.connect(g);
+        const lfo = c.createOscillator(), lfoG = c.createGain(); lfo.frequency.value = 0.07; lfoG.gain.value = 260;
+        lfo.connect(lfoG); lfoG.connect(lp.frequency); lfo.start();
+        const CH = [[110, 130.8, 164.8], [87.3, 110, 130.8], [98, 123.5, 146.8], [82.4, 103.8, 123.5]];
+        const os = [lfo];
+        const pads = [0, 1, 2].map((i) => {
+          const o = c.createOscillator(); o.type = i === 2 ? "sine" : "triangle"; o.frequency.value = CH[0][i]; o.detune.value = (i - 1) * 7;
+          o.connect(lp); o.start(); os.push(o); return o;
+        });
+        const echo = c.createDelay(1.5); echo.delayTime.value = 0.46;
+        const fb = c.createGain(); fb.gain.value = 0.46;
+        const elp = c.createBiquadFilter(); elp.type = "lowpass"; elp.frequency.value = 2400;
+        echo.connect(elp); elp.connect(fb); fb.connect(echo); elp.connect(g);
+        const NOTES = [392, 440, 493.9, 523.3, 587.3, 659.3, 698.5], WRONG = [466.2, 622.3];
+        let n = 0, last = 3;
+        const bell = (f) => {
+          const t = c.currentTime + 0.05, b = c.createGain();
+          env(b, t, 0.012, 2.4, 0.2);
+          [[f, 1], [f * 2, 0.25], [f * 3.01, 0.08]].forEach(([hz, a]) => {
+            const o = c.createOscillator(), og = c.createGain(); o.type = "sine"; o.frequency.value = hz; og.gain.value = a;
+            o.connect(og); og.connect(b); o.start(t); o.stop(t + 2.6);
+          });
+          b.connect(g); b.connect(echo);
+        };
+        const timer = setInterval(() => {
+          n += 1;
+          if (n % 9 === 1) { const ch = CH[((n / 9) | 0) % CH.length]; pads.forEach((o, i) => o.frequency.setTargetAtTime(ch[i], c.currentTime, 1.6)); }
+          if (Math.random() < 0.5) {
+            last = Math.max(0, Math.min(NOTES.length - 1, last + [-2, -1, -1, 1, 1, 2][(Math.random() * 6) | 0]));
+            bell(Math.random() < 0.07 ? WRONG[(Math.random() * 2) | 0] : NOTES[last]);
+          }
+        }, 950);
+        mus = { g, c, timer, os };
+      },
+      musicLevel(v) { if (mus) mus.g.gain.setTargetAtTime(v, mus.c.currentTime, 0.5); },
       drone(on) {
         if (!on) {
           if (droneNodes) {
@@ -287,6 +340,7 @@
     st.audio = opts.audioUrl || null;
     st.letters = 0;
     sfx.drone(true);
+    sfx.musicLevel(0.45);
     sfx.knock(); shake(st.stage);
     await wait(900);
     sfx.knock(); shake(st.stage);
@@ -306,7 +360,7 @@
     if (st.finaleRunning) return;
     st.finaleRunning = true;
     st.cancelled = false;
-    sfx.heart(false); sfx.drone(false);
+    sfx.heart(false); sfx.drone(false); sfx.music(false);
     sfx.slam(); flash(); shake(st.stage);
     const dark = document.createElement("div");
     dark.className = "lights-out";
@@ -393,7 +447,7 @@
       $$(".seat", st.stage).forEach((s) => s.classList.remove("speaking"));
       $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
       const fab = $("#uh-replay"); if (fab && prefix === "uh") fab.classList.remove("off");
-      sfx.heart(false); sfx.drone(false);
+      sfx.heart(false); sfx.drone(false); sfx.music(false);
     },
     live(prefix) {   // a spirit has been summoned: the visitor can ask
       build(prefix);
@@ -486,7 +540,7 @@
       if (!st || st.scared) return;
       st.scared = true;
       await wait(2800);
-      sfx.slam(); flash(); shake(st.stage);
+      sfx.music(false); sfx.slam(); flash(); shake(st.stage);
       if (WH.haunt) WH.haunt();
       const dark = document.createElement("div");
       dark.className = "lights-out";
@@ -590,6 +644,12 @@
     new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
     scan();
   }
+
+  // the suspense score starts with the first click that opens a case or a séance
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("#uh-demo, #uh-replay, #summon-fixed, #summon-panel, #rm-demo, #start-here, #rm-seance-open, #uh-file");
+    if (b) { sfx.prime(); sfx.music(true); }
+  });
 
   // ---- the idle scene is visible as soon as there is something to play
   function reveal() {

@@ -128,7 +128,7 @@ def fieldwork():
     return _read_json("fieldwork.json", {})
 
 
-EXTRAS = {"season_report", "atlas_memory", "tiger_store", "mastra_runs", "tinker"}
+EXTRAS = {"season_report", "atlas_memory", "tiger_store", "mastra_runs", "tinker", "receipts"}
 
 
 @app.get("/api/extra/{name}")

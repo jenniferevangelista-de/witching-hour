@@ -229,3 +229,13 @@ body.summoned .summon-fixed, body.seance-on .summon-fixed, body.act-on .summon-f
 .act .tryit, .act .next { margin: 4px; }
 .act.end h2 { font-size: clamp(40px, 8vw, 84px); }
 .end-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+
+/* receipts: the numbers that prove the evidence */
+.receipts-slot { margin-top: 16px; border-color: var(--turq); }
+.receipts-slot h3 { margin: 0 0 10px; font-size: 18px; }
+.receipts-slot h3 small { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: 6px; }
+.rc { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.rc li { background: var(--panel-2); border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; display: grid; gap: 2px; }
+.rc b { font: 700 28px "Fredoka", sans-serif; color: var(--turq); line-height: 1.1; }
+.rc span { font-weight: 600; font-size: 14px; }
+.rc small { color: var(--muted); font-size: 12.5px; line-height: 1.35; }

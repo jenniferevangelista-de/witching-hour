@@ -1,0 +1,72 @@
+{
+ "counted_at": "2026-10-30",
+ "tests": 68,
+ "workflows": 14,
+ "voice_lines": 50,
+ "audio_files": 74,
+ "nights": 123,
+ "stories": 162,
+ "warning": {
+  "moments": 5,
+  "cited": [
+   "ev-001",
+   "ev-002",
+   "ev-004",
+   "ev-005"
+  ],
+  "all_cited_exist": true,
+  "turns": 7
+ },
+ "planted": [
+  {
+   "backend": "tabpfn-v2",
+   "recall_fpr5": 0.25,
+   "auc": 0.644,
+   "cases": 240
+  },
+  {
+   "backend": "lightgbm-quantile",
+   "recall_fpr5": 0.096,
+   "auc": 0.634,
+   "cases": 240
+  },
+  {
+   "backend": "seasonal-same-hour",
+   "recall_fpr5": 0.133,
+   "auc": 0.573,
+   "cases": 240
+  }
+ ],
+ "bakeoff": [
+  {
+   "model": "google/gemma-3-27b-it",
+   "grounded": 0.958,
+   "verified": 46,
+   "sentences": 48
+  },
+  {
+   "model": "meta-llama/llama-3.3-70b-instruct",
+   "grounded": 0.96,
+   "verified": 48,
+   "sentences": 50
+  },
+  {
+   "model": "qwen/qwen-2.5-72b-instruct",
+   "grounded": 0.974,
+   "verified": 37,
+   "sentences": 38
+  },
+  {
+   "model": "mistralai/mistral-small-3.1-24b-instruct",
+   "grounded": 1.0,
+   "verified": 13,
+   "sentences": 13
+  },
+  {
+   "model": "gemma4:e4b",
+   "grounded": 1.0,
+   "verified": 45,
+   "sentences": 45
+  }
+ ]
+}
