@@ -29,8 +29,8 @@
   // ---- sound, made in the browser (no files): knocks, heartbeat, a low drone, a door slam
   const sfx = (() => {
     let ac = null, master = null, droneNodes = null, beat = null, mus = null;
-    let enabled = true;
-    try { enabled = localStorage.getItem("wh_sound") !== "off"; } catch (_) { /* private mode */ }
+    let enabled = true, musicOn = true;
+    try { enabled = localStorage.getItem("wh_sound") !== "off"; musicOn = localStorage.getItem("wh_music") !== "off"; } catch (_) { /* private mode */ }
     const ctx = () => {
       try {
         if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = 0.5; master.connect(ac.destination); }
@@ -84,6 +84,12 @@
         if (on) { api.beat(); beat = setInterval(api.beat, 1100); }
       },
       // a slow suspense score, made in the browser: a minor pad that changes chord, a music box with an echo, and now and then a wrong note
+      get musicOn() { return musicOn; },
+      setMusic(v) {   // the score has its own switch: the voices and effects stay
+        musicOn = v;
+        try { localStorage.setItem("wh_music", v ? "on" : "off"); } catch (_) { /* ignore */ }
+        if (!v) api.music(false);
+      },
       music(on) {
         if (!on) {
           if (mus) {
@@ -96,9 +102,9 @@
           }
           return;
         }
-        const c = enabled && ctx();
+        const c = enabled && musicOn && ctx();
         if (!c || mus) return;
-        const g = c.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(1.0, c.currentTime, 1.6); g.connect(master);
+        const g = c.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(0.5, c.currentTime, 1.6); g.connect(master);
         const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 520; lp.Q.value = 2;
         const padG = c.createGain(); padG.gain.value = 0.34;
         lp.connect(padG); padG.connect(g);
@@ -340,7 +346,7 @@
     st.audio = opts.audioUrl || null;
     st.letters = 0;
     sfx.drone(true);
-    sfx.musicLevel(0.45);
+    sfx.musicLevel(0.2);
     sfx.knock(); shake(st.stage);
     await wait(900);
     sfx.knock(); shake(st.stage);
@@ -644,6 +650,16 @@
     new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
     scan();
   }
+
+  // the music switch: a small pill that stays on screen
+  (() => {
+    const b = document.createElement("button");
+    b.type = "button"; b.id = "music-switch"; b.className = "music-switch";
+    const label = () => { b.textContent = sfx.musicOn ? "🎵 Music: on" : "🔇 Music: off"; b.setAttribute("aria-pressed", String(sfx.musicOn)); };
+    label();
+    b.addEventListener("click", () => { sfx.setMusic(!sfx.musicOn); label(); if (sfx.musicOn && (document.body.classList.contains("seance-on") || document.body.classList.contains("summoned") || S.uh && S.uh.root.classList.contains("live"))) { sfx.prime(); sfx.music(true); } });
+    document.body.append(b);
+  })();
 
   // the suspense score starts with the first click that opens a case or a séance
   document.addEventListener("click", (e) => {
