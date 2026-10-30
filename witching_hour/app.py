@@ -85,7 +85,14 @@ def night(night: str):
     return out
 
 
-AUDIO = re.compile(r"^\d{4}-\d{2}-\d{2}\.(medium|skeptic|family)\.mp3$")
+AUDIO = re.compile(r"^(\d{4}-\d{2}-\d{2}\.(medium|skeptic|family)|seance-[0-9a-f]{10})\.mp3$")
+
+
+@app.get("/api/seance/voices")
+def seance_voices():
+    """The séance's fixed lines that were voiced ahead of time: {normalised text: {file, who, voice, text}}."""
+    p = data_dir() / "audio" / "seance_manifest.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
 
 @app.get("/audio/{name}", include_in_schema=False)

@@ -1,9 +1,10 @@
 /* The séance as a scene.
    The crew sits around the board. The spirit speaks only through the glass (three words at most).
    Luna, the medium, reads the glass out loud: that sentence is written by the model from the cited evidence.
-   Dr. Bigotes checks it against the evidence. Xochi keeps watch.
-   In the recorded séance the board slowly spells I AM HERE under the Guardian's voice, the crew runs out
-   and the page moves on to The Room.
+   Dr. Bigotes checks it against the evidence. Xochi keeps watch. Each one talks in a speech bubble, with a voice
+   recorded ahead of time (demo/make_seance_voices.py).
+   In the recorded séance the board slowly spells I AM HERE under the Guardian's voice, the crew runs out and
+   the page moves on to The Room.
    paranormal.js calls WH.stage when it exists; without this file the old behaviour is unchanged. */
 (() => {
   "use strict";
@@ -18,6 +19,12 @@
     bigotes: { name: "Dr. Bigotes", img: "/static/characters/bigotes.svg" },
     xochi: { name: "Xochi", img: "/static/characters/xochi.svg" },
   };
+  const MODE = { luna: "medium", bigotes: "skeptic", xochi: "family" };   // the Home cards use the story modes as classes
+  const INTRO = {
+    luna: "Shhh... the house is breathing. I am Luna, the medium. I feel every presence in my crystal ball.",
+    bigotes: "Hmph. I am Doctor Bigotes. I have never met a ghost that was not a kettle, a draft or a thermostat.",
+    xochi: "I am Xochi. I keep watch all night, and at dawn I bring the family a note about what I saw.",
+  };
 
   // ---- sound, made in the browser (no files): knocks, heartbeat, a low drone, a door slam
   const sfx = (() => {
@@ -26,7 +33,7 @@
     try { enabled = localStorage.getItem("wh_sound") !== "off"; } catch (_) { /* private mode */ }
     const ctx = () => {
       try {
-        if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = 0.55; master.connect(ac.destination); }
+        if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = 0.5; master.connect(ac.destination); }
         if (ac.state === "suspended") ac.resume();
         return ac;
       } catch (_) { return null; }
@@ -63,13 +70,13 @@
       set(v) {
         enabled = v;
         try { localStorage.setItem("wh_sound", v ? "on" : "off"); } catch (_) { /* ignore */ }
-        if (!v) { api.drone(false); api.heart(false); }
+        if (!v) { api.drone(false); api.heart(false); stopVoice(); }
       },
       prime() { ctx(); },
-      tick() { tone("triangle", 1400, 900, 0.06, 0.05); },
-      letter() { tone("sine", 660, 520, 0.28, 0.07); },
+      tick() { tone("triangle", 1400, 900, 0.06, 0.04); },
+      letter() { tone("sine", 660, 520, 0.28, 0.05); },
       knock() { tone("sine", 120, 55, 0.12, 0.5); tone("sine", 110, 50, 0.12, 0.45, 0.17); },
-      beat() { tone("sine", 62, 38, 0.2, 0.5); tone("sine", 58, 36, 0.22, 0.4, 0.22); },
+      beat() { tone("sine", 62, 38, 0.2, 0.45); tone("sine", 58, 36, 0.22, 0.35, 0.22); },
       slam() { noise(0.5, 1800, 120, 0.7); tone("sine", 90, 30, 0.55, 0.8); },
       whoosh() { noise(0.9, 300, 3000, 0.25); },
       heart(on) {
@@ -89,7 +96,7 @@
         }
         const c = enabled && ctx();
         if (!c || droneNodes) return;
-        const g = c.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(0.07, c.currentTime, 0.8);
+        const g = c.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(0.06, c.currentTime, 0.8);
         const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 260;
         const os = [55, 82.4, 110.6].map((f, i) => {
           const o = c.createOscillator(); o.type = i === 2 ? "sine" : "sawtooth"; o.frequency.value = f; o.detune.value = i * 6;
@@ -102,9 +109,56 @@
     return api;
   })();
 
+  // ---- the crew's voices: lines recorded ahead of time, looked up by their text
+  const norm = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  let VOICES = {};
+  fetch("/api/seance/voices").then((r) => (r.ok ? r.json() : {})).then((v) => { VOICES = v || {}; }).catch(() => { /* text only */ });
+  const clipUrl = (text) => { const e = VOICES[norm(text)]; return e ? `/audio/${e.file}` : null; };
+  let voiceEl = null;
+  function stopVoice() { if (voiceEl) { try { voiceEl.pause(); } catch (_) { /* ignore */ } voiceEl = null; } }
+  const metaOf = (a) => new Promise((res) => {
+    const t = setTimeout(() => res(0), 1800);
+    a.addEventListener("loadedmetadata", () => { clearTimeout(t); res(isFinite(a.duration) ? a.duration : 0); }, { once: true });
+    a.addEventListener("error", () => { clearTimeout(t); res(0); }, { once: true });
+  });
+  const endedOf = (a, dur) => new Promise((r) => {
+    if (a.ended) return r();
+    a.addEventListener("ended", r, { once: true });
+    a.addEventListener("error", r, { once: true });
+    setTimeout(r, Math.max(500, (dur - a.currentTime) * 1000 + 700));
+  });
+  let typing = 0;
+
+  /* Say one line: type it while the recorded voice plays (if there is one), then hold it long enough to read. */
+  async function voiced(text, src, show, { hold = null } = {}) {
+    const me = ++typing;
+    stopVoice();
+    let audio = null, dur = 0;
+    if (src && sfx.on) {
+      const a = new Audio(src);
+      a.preload = "auto";
+      dur = await metaOf(a);
+      if (me !== typing) return false;
+      if (dur > 0) audio = a;
+    }
+    const per = reduce() ? 0 : dur ? Math.min(80, Math.max(20, (dur * 1000) / Math.max(text.length, 1))) : 42;
+    if (audio) { voiceEl = audio; audio.play().catch(() => { /* autoplay blocked */ }); }
+    if (!per) show(text);
+    else {
+      for (let i = 1; i <= text.length; i++) {
+        if (me !== typing) return false;
+        show(text.slice(0, i));
+        await new Promise((r) => setTimeout(r, per));
+      }
+    }
+    if (audio) await endedOf(audio, dur);
+    if (me !== typing) return false;
+    await wait(hold != null ? hold : audio ? 550 : Math.max(1400, 34 * text.length));
+    return true;
+  }
+
   // ---- the scene around each board
   const S = {};
-  let typing = 0;
 
   function build(prefix) {
     const root = $(`#${prefix}-seance`), board = $(`#${prefix}-board`);
@@ -114,31 +168,50 @@
     // the séance needs the full width: take it out of the two-column layout
     const slot = $(`#${prefix}-seance-slot`), layout = slot && slot.closest(".layout");
     if (layout) layout.after(slot);
-    const seat = (who, role) => `<figure class="seat ${who}" data-who="${who}"><img src="${CREW[who].img}" alt="${CREW[who].name}"><figcaption>${CREW[who].name}<span>${role}</span></figcaption></figure>`;
+    const fiction = $(".fiction", root);
+    if (fiction) fiction.hidden = true;   // the page already says once that the spirits are fiction
+    const seat = (who, role) => `<figure class="seat ${who}" data-who="${who}"><div class="sbub"><small class="tag"></small><p></p></div><img src="${CREW[who].img}" alt="${CREW[who].name}"><figcaption>${CREW[who].name}<span>${role}</span></figcaption></figure>`;
     const how = document.createElement("p");
     how.className = "scene-how";
     how.innerHTML = "<b>How a séance works.</b> The spirit speaks only through the glass, three words at most. <b>Luna</b> reads the glass out loud (the sentence is written by the model from the evidence). <b>Dr. Bigotes</b> checks it against what was really measured. <b>Xochi</b> keeps watch.";
-    const scene = document.createElement("div");
-    scene.className = "scene";
-    scene.id = `${prefix}-scene`;
-    scene.innerHTML = `<div class="candle c1" aria-hidden="true"><i></i></div><div class="candle c2" aria-hidden="true"><i></i></div>
+    const stage = document.createElement("div");
+    stage.className = "stage";
+    stage.id = `${prefix}-stage`;
+    stage.innerHTML = `<div class="corner l"></div><div class="corner r"></div>
+      <div class="candle c1" aria-hidden="true"><i></i></div><div class="candle c2" aria-hidden="true"><i></i></div>
       ${seat("bigotes", "checks the evidence")}
       <div class="mid">${seat("luna", "reads the glass")}<div class="slot"></div></div>
       ${seat("xochi", "keeps watch")}`;
     board.before(how);
-    how.after(scene);
-    $(".slot", scene).append(board);
-    const speech = document.createElement("div");
+    how.after(stage);
+    $(".slot", stage).append(board);
+    const glass = $(".glass", board);
+    if (glass) WH.placeGlass(glass, "REST");   // the glass rests on the board until it is called
+    // the buttons that start the show live inside the scene
+    if (prefix === "uh") {
+      const replay = $("#uh-replay"), open = $("#uh-open");
+      if (replay) { replay.classList.add("fab"); $(".corner.l", stage).append(replay); }
+      if (open) $(".corner.r", stage).append(open);
+    }
+    const spelled = $(`#${prefix}-spelled`);
+    if (spelled) stage.after(spelled);
+    const speech = document.createElement("div");   // the same lines as plain text, for small screens
     speech.className = "speech";
     speech.innerHTML = '<img class="who" alt=""><div><b class="name"></b><span class="tag"></span><p class="said"></p></div>';
-    const spelled = $(`#${prefix}-spelled`);
-    if (spelled) scene.after(spelled);
-    (spelled || scene).after(speech);
+    (spelled || stage).after(speech);
     const ctl = document.createElement("div");
     ctl.className = "scene-ctl";
     ctl.innerHTML = `<button type="button" class="snd"></button><button type="button" class="skip" hidden>⏭ Skip to the ending</button><button type="button" class="go" hidden>Go to The Room →</button>`;
     speech.after(ctl);
-    const st = S[prefix] = { root, scene, speech, ctl, count: 0, skip: false, cancelled: false, quipped: new Set(), letters: 0, audio: null };
+    if (prefix === "uh") {
+      const dossier = $("#uh-dossier");
+      const card = document.createElement("div");
+      card.className = "dossier-cta";
+      card.innerHTML = `<img src="${CREW.xochi.img}" alt="Xochi"><div><b>Xochi writes it all down</b><span>A one-page report: what the camera measured, what Dr. Bigotes thinks, and what the board said.</span></div>`;
+      if (dossier) { dossier.classList.remove("alt"); card.append(dossier); }
+      ctl.after(card);
+    }
+    const st = S[prefix] = { root, stage, speech, ctl, count: 0, skip: false, cancelled: false, quipped: new Set(), letters: 0, audio: null, turnAudio: null };
     const label = () => { $(".snd", ctl).textContent = sfx.on ? "🔊 Sound on" : "🔇 Sound off"; };
     label();
     $(".snd", ctl).addEventListener("click", () => { sfx.set(!sfx.on); label(); });
@@ -146,31 +219,28 @@
     $(".go", ctl).addEventListener("click", () => window.WHNav && window.WHNav.go("room"));
   }
 
-  async function say(prefix, who, text, { tag = "", hold = 700, speed = 20 } = {}) {
+  /* One character says one line, in a bubble above the character (and in the strip on small screens). */
+  async function say(prefix, who, text, { tag = "", clip = null, url = null, silent = false, hold = null } = {}) {
     const st = S[prefix];
     if (!st) return;
-    const el = st.speech, me = ++typing;
-    el.dataset.who = who;
-    $(".who", el).src = CREW[who].img;
-    $(".who", el).alt = CREW[who].name;
-    $(".name", el).textContent = CREW[who].name;
-    $(".tag", el).textContent = tag;
-    el.classList.add("on");
-    $$(".seat", st.scene).forEach((s) => s.classList.toggle("speaking", s.dataset.who === who));
-    const p = $(".said", el);
-    if (reduce()) p.textContent = text;
-    else {
-      p.textContent = "";
-      for (let i = 1; i <= text.length; i++) {
-        if (me !== typing) return;
-        p.textContent = text.slice(0, i);
-        await new Promise((r) => setTimeout(r, speed));
-      }
-    }
-    await wait(hold);
+    const seat = $(`.seat.${who}`, st.stage);
+    $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
+    $$(".seat", st.stage).forEach((s) => s.classList.toggle("speaking", s === seat));
+    const bubble = $(".sbub", seat), p = $("p", bubble);
+    $(".tag", bubble).textContent = tag;
+    p.textContent = "";
+    bubble.classList.add("on");
+    const strip = st.speech;
+    strip.dataset.who = who;
+    $(".who", strip).src = CREW[who].img;
+    $(".who", strip).alt = CREW[who].name;
+    $(".name", strip).textContent = CREW[who].name;
+    $(".tag", strip).textContent = tag;
+    strip.classList.add("on");
+    const src = silent ? null : url || clipUrl(clip || text);
+    await voiced(text, src, (t) => { p.textContent = t; $(".said", strip).textContent = t; }, { hold });
   }
 
-  const firstSentence = (t) => { const s = String(t).split(/(?<=[.?!])\s+/)[0]; return s.length > 130 ? s.slice(0, 127) + "..." : s; };
   const shake = (el) => { if (reduce()) return; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); setTimeout(() => el.classList.remove("shake"), 600); };
 
   function trail(boardEl, ms) {
@@ -203,25 +273,27 @@
     f.addEventListener("animationend", () => f.remove());
   }
 
-  function prefixOf(boardEl) { return (boardEl.id || "").replace("-board", ""); }
+  const prefixOf = (boardEl) => (boardEl.id || "").replace("-board", "");
 
   // ---- the climax: the board slowly spells I AM HERE
   async function prelude(prefix, opts) {
     const st = S[prefix];
     document.body.classList.add("climax");
-    st.scene.classList.add("climax");
+    st.stage.classList.add("climax");
     st.audio = opts.audioUrl || null;
     st.letters = 0;
     sfx.drone(true);
-    sfx.knock(); shake(st.scene);
+    sfx.knock(); shake(st.stage);
+    await wait(900);
+    sfx.knock(); shake(st.stage);
     await wait(700);
-    sfx.knock(); shake(st.scene);
-    await wait(500);
-    await say(prefix, "xochi", "Wait. The air just changed.", { tag: "Xochi keeps watch", hold: 500 });
-    await say(prefix, "bigotes", "It is only a draft. Probably.", { tag: "Dr. Bigotes", hold: 500 });
+    await say(prefix, "xochi", "Wait. The air just changed.", { tag: "Xochi keeps watch" });
+    await say(prefix, "bigotes", "It is only a draft. Probably.", { tag: "Dr. Bigotes" });
     sfx.heart(true);
+    st.stage.classList.add("hush");
+    $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
     st.speech.classList.add("hush");
-    await wait(500);
+    await wait(700);
   }
 
   // ---- the finale: lights out, the crew runs, the page moves on to The Room
@@ -229,15 +301,15 @@
     const st = S[prefix];
     st.cancelled = false;
     sfx.heart(false); sfx.drone(false);
-    sfx.slam(); flash(); shake(st.scene);
+    sfx.slam(); flash(); shake(st.stage);
     const dark = document.createElement("div");
     dark.className = "lights-out";
     document.body.append(dark);
     dark.addEventListener("animationend", () => dark.remove());
-    $$(".seat", st.scene).forEach((s) => s.classList.add("scared"));
-    await wait(900);
+    $$(".seat", st.stage).forEach((s) => s.classList.add("scared"));
+    await wait(1100);
     sfx.whoosh();
-    $$(".seat", st.scene).forEach((s) => { s.classList.remove("scared"); s.classList.add("run"); });
+    $$(".seat", st.stage).forEach((s) => { s.classList.remove("scared"); s.classList.add("run"); });
     const card = $("#act-card") || (() => {
       const c = document.createElement("div");
       c.id = "act-card"; c.className = "act"; c.hidden = true;
@@ -245,24 +317,22 @@
       document.body.append(c);
       return c;
     })();
-    const lines = [["luna", "Out! Everybody out!"], ["bigotes", "That was NOT the kettle!"], ["xochi", "Stay close to me!"]];
-    const speaking = (async () => { for (const [w, t] of lines) await say(prefix, w, t, { tag: "", hold: 150, speed: 10 }); })();
     $(".stay", card).onclick = () => { st.cancelled = true; };
-    await wait(1700);
-    await speaking;
-    if (reduce()) {
-      $(".go", st.ctl).hidden = false;
-      return;
-    }
+    const lines = [["luna", "Out! Everybody out!"], ["bigotes", "That was NOT the kettle!"], ["xochi", "Stay close to me!"]];
+    // while the crew runs, each one shouts from where they stand
+    const running = (async () => { for (const [w, t] of lines) await say(prefix, w, t, { tag: "", hold: 150 }); })();
+    await Promise.all([running, wait(2200)]);
+    st.stage.classList.remove("hush");
+    if (reduce()) { $(".go", st.ctl).hidden = false; return; }
     card.hidden = false;
     card.classList.add("show");
     document.body.classList.add("act-on");
-    await wait(2600);
+    await wait(3200);
     card.classList.remove("show");
     document.body.classList.remove("act-on");
     setTimeout(() => { card.hidden = true; }, 500);
     if (st.cancelled) {
-      $$(".seat", st.scene).forEach((s) => s.classList.remove("run"));
+      $$(".seat", st.stage).forEach((s) => s.classList.remove("run"));
       $(".go", st.ctl).hidden = false;
       return;
     }
@@ -276,9 +346,12 @@
       const st = S[prefix];
       if (!st) return;
       st.skip = false; st.cancelled = false; st.count = 0; st.quipped = new Set();
-      $$(".seat", st.scene).forEach((s) => s.classList.remove("run", "scared"));
+      $$(".seat", st.stage).forEach((s) => s.classList.remove("run", "scared"));
+      st.root.classList.remove("live");
+      st.root.classList.add("replaying");
       $(".go", st.ctl).hidden = true;
       $(".skip", st.ctl).hidden = false;
+      const fab = $("#uh-replay"); if (fab && prefix === "uh") fab.classList.add("off");
       document.body.classList.add("seance-on");
       sfx.prime();
       st.root.scrollIntoView({ behavior: reduce() ? "auto" : "smooth", block: "start" });
@@ -286,12 +359,22 @@
     close(prefix) {
       const st = S[prefix];
       if (!st) return;
-      st.speech.classList.remove("hush");
       $(".skip", st.ctl).hidden = true;
+      st.root.classList.remove("replaying");
       document.body.classList.remove("seance-on", "climax");
-      st.scene.classList.remove("climax");
-      $$(".seat", st.scene).forEach((s) => s.classList.remove("speaking"));
+      st.stage.classList.remove("climax", "hush");
+      st.speech.classList.remove("hush");
+      $$(".seat", st.stage).forEach((s) => s.classList.remove("speaking"));
+      $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
+      const fab = $("#uh-replay"); if (fab && prefix === "uh") fab.classList.remove("off");
       sfx.heart(false); sfx.drone(false);
+    },
+    live(prefix) {   // a spirit has been summoned: the visitor can ask
+      build(prefix);
+      const st = S[prefix];
+      if (!st) return;
+      st.root.classList.add("live");
+      st.count = 0; st.quipped = new Set();
     },
     skipping(prefix) { return !!(S[prefix] && S[prefix].skip); },
     cancelled(prefix) { return !!(S[prefix] && S[prefix].cancelled); },
@@ -301,15 +384,16 @@
       if (!S[prefix]) return;
       document.body.classList.add("seance-on");
       sfx.prime();
-      await say(prefix, "luna", `“${question}”`, { tag: "Luna asks the board", hold: 300 });
+      await say(prefix, "luna", question, { tag: "Luna asks the board" });
     },
     async begin(prefix, r, opts) {
       build(prefix);
       const st = S[prefix];
       if (!st) return;
-      $$(".seat", st.scene).forEach((s) => s.classList.add("lean"));
+      st.turnAudio = opts.climax ? null : opts.audioUrl || null;
+      $$(".seat", st.stage).forEach((s) => s.classList.add("lean"));
       if (opts.climax) await prelude(prefix, opts);
-      else if (opts.finale) { st.scene.classList.remove("climax"); document.body.classList.remove("climax"); }
+      else if (opts.finale) { st.stage.classList.remove("climax"); document.body.classList.remove("climax"); }
       else sfx.knock();
     },
     glass(boardEl, ch, slow) {
@@ -324,9 +408,11 @@
       if (!st) return;
       shake(boardEl);
       st.letters += 1;
-      if (st.letters === 4 && st.audio) {
+      if (st.letters === 4 && st.audio && sfx.on) {
+        stopVoice();
         const a = new Audio(st.audio);
         a.volume = 0.95;
+        voiceEl = a;
         a.play().catch(() => { /* autoplay blocked */ });
       }
     },
@@ -334,30 +420,92 @@
       const st = S[prefix];
       if (!st) return;
       st.speech.classList.remove("hush");
+      st.stage.classList.remove("hush");
       if (opts.finale) { await finale(prefix); return; }
       const ids = (r.grounding && r.grounding.related_evidence_ids) || [];
       const by = ($(`#${prefix}-seance .by`) || {}).textContent || "";
       const source = /template|scripted/i.test(by) ? "scripted reading" : /gemma/i.test(by) ? "written by Gemma 4" : by.trim().slice(0, 40);
-      if (r.response.spoken) await say(prefix, "luna", `“${r.response.spoken}”`, { tag: `Luna reads the glass · ${source}`, hold: opts.climax ? 1400 : 700, speed: opts.climax ? 40 : 20 });
+      const spoken = r.response.spoken;
+      // the recorded voice already played under the board in the climax; the reading is only shown, slowly
+      if (spoken) {
+        await say(prefix, "luna", spoken, { tag: `Luna reads the glass · ${source}`, clip: spoken, url: st.turnAudio, silent: !!opts.climax, hold: opts.climax ? 2200 : null });
+      }
       const all = WH.evidenceFor(prefix);
       const e = ids.map((i) => all.find((x) => x.id === i)).find((x) => x && !st.quipped.has(x.id));
       if (opts.climax) {
-        await say(prefix, "bigotes", "Two real sounds, both cited. And I have no kettle for this.", { tag: "Dr. Bigotes", hold: 900 });
+        await say(prefix, "bigotes", "Two real sounds, both cited. And I have no kettle for this.", { tag: "Dr. Bigotes" });
       } else if (e) {
         st.quipped.add(e.id);
-        await say(prefix, "bigotes", firstSentence(WH.bigotes(e, all)), { tag: `checks ${e.id} · ${e.start.toFixed(2)} s`, hold: 500 });
+        const note = WH.bigotes(e, all);
+        await say(prefix, "bigotes", note, { tag: `Dr. Bigotes checks ${e.id} · ${e.start.toFixed(2)} s`, clip: note });
       }
       st.count += 1;
       const xochi = ["I kept watch. The glass moved by itself.", "Her words are gentle. Her warning is not.", "I will write it down: every answer cites a real moment."];
-      if (!opts.climax && st.count % 3 === 1) await say(prefix, "xochi", xochi[(st.count - 1) / 3 % xochi.length | 0], { tag: "Xochi keeps watch", hold: 400 });
+      if (!opts.climax && st.count % 3 === 1) await say(prefix, "xochi", xochi[((st.count - 1) / 3 | 0) % xochi.length], { tag: "Xochi keeps watch" });
     },
     async end(prefix) {
       const st = S[prefix];
       if (!st) return;
-      $$(".seat", st.scene).forEach((s) => s.classList.remove("lean", "speaking"));
+      $$(".seat", st.stage).forEach((s) => s.classList.remove("lean", "speaking"));
+      $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
     },
   };
 
+  // ---- the idle scene is visible as soon as there is something to play
+  function reveal() {
+    const root = $("#uh-seance"), btns = ["#uh-replay", "#uh-open"].map((q) => $(q)).filter(Boolean);
+    if (!root || !btns.length) return;
+    const sync = () => { if (btns.some((b) => !b.hidden)) { root.hidden = false; root.classList.add("idle"); } };
+    const mo = new MutationObserver(sync);
+    btns.forEach((b) => mo.observe(b, { attributes: true, attributeFilter: ["hidden"] }));
+    sync();
+  }
+
+  // ---- the crew introduces themselves, on request
+  async function intro(who) {
+    const card = $(`#crew .card.${MODE[who]}`);
+    if (!card) return;
+    $$("#crew .card").forEach((c) => c.classList.toggle("talking", c === card));
+    let p = $(".intro", card);
+    if (!p) { p = document.createElement("p"); p.className = "intro"; ($("q", card) || card.lastElementChild).after(p); }
+    p.textContent = "";
+    sfx.prime();
+    await voiced(INTRO[who], clipUrl(INTRO[who]), (t) => { p.textContent = t; }, { hold: 500 });
+    card.classList.remove("talking");
+  }
+  async function meetAll() {
+    for (const who of ["luna", "bigotes", "xochi"]) {
+      await intro(who);
+      await wait(250);
+    }
+  }
+  function crewButtons() {
+    const crew = $("#crew");
+    if (!crew || crew.dataset.meet) return;
+    if (!$$(".card", crew).length) return;
+    crew.dataset.meet = "1";
+    $$(".card", crew).forEach((card) => {
+      const who = ["luna", "bigotes", "xochi"].find((w) => card.classList.contains(MODE[w]));
+      if (!who) return;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "hear"; b.textContent = "▶ Hear me";
+      b.addEventListener("click", () => intro(who));
+      card.append(b);
+    });
+    const row = document.createElement("div");
+    row.className = "crew-ctl";
+    row.innerHTML = '<button type="button" class="big alt meet">🎙️ Meet the crew, with voices</button>';
+    crew.after(row);
+    $(".meet", row).addEventListener("click", meetAll);
+  }
+
   // build once now, so the crew is in place the moment the séance opens
   ["uh", "rm"].forEach(build);
+  reveal();
+  crewButtons();
+  const crewBox = $("#crew");
+  if (crewBox) {
+    const obs = new MutationObserver(() => { crewButtons(); if (crewBox.dataset.meet) obs.disconnect(); });
+    obs.observe(crewBox, { childList: true });
+  }
 })();

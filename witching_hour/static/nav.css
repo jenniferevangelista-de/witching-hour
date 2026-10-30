@@ -75,3 +75,12 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { outline: none; }
 @keyframes drift { from { transform: translate3d(-3%, 1%, 0) scale(1); } to { transform: translate3d(4%, -2%, 0) scale(1.08); } }
 .door:hover { box-shadow: 0 0 0 1px var(--cempa), 0 10px 30px rgba(255, 159, 28, .22); }
 @media (prefers-reduced-motion: reduce) { .hero h1, .fog { animation: none; } }
+
+/* the House case file: a wider story card, so the text is not a tall narrow column */
+#night .layout { grid-template-columns: 1.55fr 1fr; }
+#night .scene { grid-template-columns: 112px 1fr; }
+#night .who img { width: 108px; height: auto; }
+#night .bubble { padding: 16px 20px; }
+#night .bubble p { font-size: 16.5px; line-height: 1.6; }
+#night .bubble.medium p { font-size: 17px; }
+@media (max-width: 900px) { #night .layout { grid-template-columns: 1fr; } }

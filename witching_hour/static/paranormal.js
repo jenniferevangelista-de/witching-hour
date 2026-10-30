@@ -211,6 +211,7 @@
     $(`#${prefix}-suggest`).innerHTML = qs.map((q) => `<button type="button" class="chip">${esc(q)}</button>`).join("");
     $(`#${prefix}-suggest`).querySelectorAll("button").forEach((b) => b.addEventListener("click", () =>
       ask(prefix, b.textContent, prefix === "rm" ? () => { room.watchUntil = performance.now() + 6000; } : undefined)));
+    WH.stage && WH.stage.live(prefix);
     return r;
   }
 

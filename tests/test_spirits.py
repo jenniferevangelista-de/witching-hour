@@ -116,3 +116,27 @@ def test_the_players_memory_reaches_the_spirit_but_is_never_evidence():
     again = spirits.Session.from_dict(s.to_dict())
     assert again.context == s.context
     assert {e["id"] for e in again.evidence} == {"ev-001", "ev-002", "ev-003"}
+
+
+def test_template_spirit_follows_the_question_and_does_not_repeat():
+    s = spirits.summon("warning", EVIDENCE)
+    asked = ["Is someone here?", "Who are you?", "Why did you knock?", "What would have happened if I had gone out?",
+             "Will you come back?", "hello", "anything", "again?"]
+    messages = [spirits.ask(s, q)["response"]["message"] for q in asked]
+    assert messages[0] == "YES" and messages[1] == s.spirit.name.upper()
+    assert messages[2] == "I KNOCKED" and messages[3] == "STAY INSIDE" and messages[4] == "I AM HERE"
+    assert all(a != b for a, b in zip(messages, messages[1:])), messages
+
+
+def test_every_template_line_passes_the_board_rules():
+    rows = [(m, sp) for _, m, sp, _ in spirits.GUARDIAN_ROWS] + list(spirits.GUARDIAN_DEFAULTS) + list(spirits.WATCHER_DEFAULTS)
+    for message, spoken in rows:
+        ok, why = spirits.check_answer({"message": message, "spoken": spoken, "evidence_ids": ["ev-001"]}, EVIDENCE)
+        assert ok is not None, (message, why)
+        assert len(spoken.split()) <= 18
+
+
+def test_where_points_at_the_evidence_that_has_a_place():
+    s = spirits.summon("warning", EVIDENCE)
+    r = spirits.ask(s, "Where?")
+    assert r["response"]["message"] == "DOOR" and r["grounding"]["related_evidence_ids"] == ["ev-003"]

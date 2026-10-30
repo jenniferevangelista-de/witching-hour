@@ -178,21 +178,75 @@ def template_spirit(evidence: list[dict]) -> Spirit:
                   [e["id"] for e in sorted(evidence, key=lambda e: -e["confidence"])[:3]], "template")
 
 
+# What the template Guardian says when no model is attached. Each row: words in the question, the board
+# message (at most three words), the spoken line, and the kind of evidence it points at. The rows are plain
+# data so the spoken lines can be recorded once with a voice (demo/make_seance_voices.py).
+GUARDIAN_ROWS = [
+    (("trying to", "tell me", "to say", "warn", "message"), "STAY HOME", "Not tonight. Please, not tonight.", None),
+    (("knock", "noise", "sound", "bang"), "I KNOCKED", "I knocked so you would stop. Please do not go out.", ("audio",)),
+    (("light", "flicker", "lamp", "dark", "bulb"), "I DIMMED IT", "I dimmed the light so you would look back.", ("light_change",)),
+    (("what would", "if i had", "if i went", "go out", "outside"), "STAY INSIDE", "Please do not go. The night is not kind.", None),
+    (("come back", "return", "again", "will you", "leave me"), "I AM HERE", "I will never leave you. Please just stay safe inside the walls.", None),
+    (("shadow", "figure", "who is there", "what moved", "motion"), "WATCHING OVER YOU", "I stood close. The shadow was only me.", ("motion",)),
+    (("how long", "when", "years", "since"), "A LONG TIME", "Longer than you have lived in these walls.", None),
+    (("help", "safe", "afraid", "scared", "alone"), "NOT ALONE", "You are not alone. I am right here.", None),
+    (("why",), "TO PROTECT YOU", "Something waited outside. I could not let you meet it alone.", None),
+]
+GUARDIAN_YES = "I was here the whole time."
+GUARDIAN_WHO = "I have watched this house a long time. I only want you safe."
+GUARDIAN_WHERE = "Look where it moved."
+GUARDIAN_DEFAULTS = [
+    ("LISTEN CLOSELY", "Just listen. I am only worried about you."),
+    ("STAY CLOSE", "Stay near the light. I am watching."),
+    ("NOT TONIGHT", "Whatever you decide, I will be here."),
+]
+WATCHER_DEFAULTS = [
+    ("LOOK AGAIN", "You missed something."),
+    ("LISTEN", "It is quieter than it should be."),
+    ("WAIT", "Not yet. Watch the door."),
+]
+
+
+def _evidence_for(ev: list[dict], kinds, n: int) -> dict:
+    pool = [e for e in ev if kinds and e["type"] in kinds] or ev
+    return pool[n % len(pool)]
+
+
 def template_answer(session: Session, question: str) -> dict:
     ev = sorted(session.evidence, key=lambda e: -e["confidence"])
-    q = question.lower()
+    q = " " + re.sub(r"[^a-z0-9' ]", " ", question.lower()) + " "
+    n = len(session.history)
+    last = session.history[-1]["message"] if session.history else ""
+
+    def say(message, spoken, kinds=None):
+        return {"message": message, "spoken": spoken, "evidence_ids": [_evidence_for(ev, kinds, n)["id"]]}
+
     if not ev:
         return {"message": "NO", "spoken": "", "evidence_ids": []}
-    if any(w in q for w in ("bye", "leave", "goodbye")):
+    if any(w in q for w in (" bye", "goodbye", "good bye")):
         return {"message": "GOODBYE", "spoken": "", "evidence_ids": []}
-    if any(w in q for w in ("is someone", "anyone", "are you", "is somebody")):
-        return {"message": "YES", "spoken": "I was here the whole time.", "evidence_ids": [ev[0]["id"]]}
-    if "where" in q:
-        place = (ev[0].get("where") or "HERE").upper()
-        return {"message": place[:24], "spoken": "Look where it moved.", "evidence_ids": [ev[0]["id"]]}
-    if session.spirit.archetype == "guardian":
-        return {"message": "STAY HOME", "spoken": "Not tonight. Please, not tonight.", "evidence_ids": [ev[0]["id"]]}
-    return {"message": "LOOK AGAIN", "spoken": "You missed something.", "evidence_ids": [ev[0]["id"]]}
+    if any(w in q for w in ("is someone", "anyone", "is somebody", "is anybody")):
+        return say("YES", GUARDIAN_YES) if last != "YES" else say("YES", "Still here. I never left.")
+    guardian = session.spirit.archetype == "guardian"
+    if guardian and any(w in q for w in ("who are you", "your name", "who is this")):
+        return say(re.sub(r"[^A-Z0-9 ]", "", session.spirit.name.upper())[:24] or "FRIEND", GUARDIAN_WHO)
+    if " where" in q:
+        w = next((e for e in ev if e.get("where")), None)
+        if w is None:
+            return say("HERE", GUARDIAN_WHERE)
+        place = str(w["where"]).upper()
+        message = f"ON THE {place}" if place in ("LEFT", "RIGHT", "CENTER") else place
+        return {"message": message[:24], "spoken": GUARDIAN_WHERE, "evidence_ids": [w["id"]]}
+    if guardian:
+        for words, message, spoken, kinds in GUARDIAN_ROWS:
+            if message != last and any(w in q for w in words):
+                return say(message, spoken, kinds)
+        options = [d for d in GUARDIAN_DEFAULTS if d[0] != last] or GUARDIAN_DEFAULTS
+        message, spoken = options[n % len(options)]
+        return say(message, spoken)
+    options = [d for d in WATCHER_DEFAULTS if d[0] != last] or WATCHER_DEFAULTS
+    message, spoken = options[n % len(options)]
+    return say(message, spoken)
 
 
 # ---------------------------------------------------------------- the engine

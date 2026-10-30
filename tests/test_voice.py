@@ -28,3 +28,22 @@ def test_voice_stories_writes_files_and_skips_unchanged(tmp_path, monkeypatch):
     assert manifest["2016-02-10.family"]["voice"] == "Matilda"
     voice.voice_stories(tmp_path, ["2016-02-10"], ["family"])
     assert len(calls) == 1  # same text, file exists: no second request
+
+
+def test_seance_lines_are_voiced_and_served():
+    import json
+    from pathlib import Path
+
+    from fastapi.testclient import TestClient
+
+    from witching_hour import app as app_module, spirits
+
+    root = Path(__file__).resolve().parents[1]
+    manifest = json.loads((root / "demo_data" / "audio" / "seance_manifest.json").read_text(encoding="utf-8"))
+    for _, _, spoken, _ in spirits.GUARDIAN_ROWS:
+        entry = manifest[" ".join(__import__("re").sub(r"[^a-z0-9]+", " ", spoken.lower()).split())]
+        assert (root / "demo_data" / "audio" / entry["file"]).exists()
+    c = TestClient(app_module.app)
+    assert c.get("/api/seance/voices").json() == manifest
+    first = next(iter(manifest.values()))["file"]
+    assert c.get(f"/audio/{first}").status_code == 200
