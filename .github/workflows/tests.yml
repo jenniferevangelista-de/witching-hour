@@ -2,7 +2,7 @@ name: tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, codex/witching-hour-upload-session-20261030]
   pull_request:
   workflow_dispatch:
 
@@ -12,11 +12,37 @@ permissions:
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      WH_LLM: none
+      WH_LIVE: "0"
+      BACKBOARD_API_KEY: ""
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -e ".[dev]"
-      - run: pytest -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check session scripts
+        run: |
+          node --check witching_hour/static/paranormal.js
+          node --check witching_hour/static/seance.js
+      - run: pip install -e ".[dev]" playwright
+      - name: Install browser fixture tools
+        run: |
+          python -m playwright install --with-deps chromium
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+      - run: pytest -q --junitxml=artifacts/session-isolation.xml
+      - name: Keep regression report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-session-isolation-${{ github.run_id }}
+          path: artifacts
+          retention-days: 7
