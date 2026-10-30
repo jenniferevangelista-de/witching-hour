@@ -566,12 +566,17 @@
     const turns = [...$("#uh-turns").querySelectorAll("li")].map((li) => li.textContent.trim());
     const spirit = s ? s.spirit : demo && demo.seance ? demo.seance.spirit : null;
     const ev = unheard.evidence;
+    const source = s
+      ? `This session reports: ${esc(s.model || "unspecified provider")}. Each reply's source is shown beside it.`
+      : turns.length && demo && demo.seance
+        ? `This is a recorded séance from ${esc(demo.seance.model || "an unspecified provider")}, replayed without a new model call.`
+        : "No séance replies have been recorded for this case.";
     const html = `<!doctype html><meta charset="utf-8"><title>Case dossier: ${esc(unheard.title || "a recording")}</title>
 <style>body{font:15px/1.6 Georgia,serif;max-width:760px;margin:40px auto;padding:0 16px;color:#1b1430}h1{font-family:Impact,sans-serif;letter-spacing:1px}h2{border-bottom:2px solid #1b1430}.f{background:#fbf3e4;border:2px dashed #e83f8b;padding:10px 14px}</style>
 <h1>WITCHING HOUR · CASE DOSSIER</h1><p><b>${esc(unheard.title || "A recording")}</b>, investigated with PARANORMAL.exe. Written down by Xochi, the Night Watch.</p>
 <h2>1. What the recording really contains</h2><ol>${ev.map((e) => `<li>${esc(e.start.toFixed(2))}s: ${esc(e.type.replace("_", " "))}, ${esc(e.description)} (relative signal intensity ${Math.round(e.confidence * 100)}%)</li>`).join("") || "<li>Nothing stood out from the rest of the recording.</li>"}</ol>
 <h2>2. What Dr. Bigotes thinks</h2><ul>${ev.map((e) => `<li>${esc(e.id)}: ${esc(bigotes(e, ev))}</li>`).join("")}</ul>
-<h2>3. What the board said (fiction)</h2><div class="f">${spirit ? `<p><b>${esc(spirit.name)}</b>, ${esc(spirit.title)}. ${esc(spirit.backstory)}</p>` : ""}<ol>${turns.map((t) => `<li>${esc(t)}</li>`).join("") || "<li>No séance yet.</li>"}</ol><p>The spirit and its words were made up by an open model from the evidence in section 1. They are not a real message.</p></div>
+<h2>3. What the board said (fiction)</h2><div class="f">${spirit ? `<p><b>${esc(spirit.name)}</b>, ${esc(spirit.title)}. ${esc(spirit.backstory)}</p>` : ""}<ol>${turns.map((t) => `<li>${esc(t)}</li>`).join("") || "<li>No séance yet.</li>"}</ol><p class="reply-source">${source}</p><p>The spirit and its words are fiction based on the evidence in section 1. They are not a real message.</p></div>
 <h2>4. Xochi's note</h2><p>I carried the message across, the way xolos do. Whether you believe it is up to you. What the camera really caught is in section 1, and that part is true.</p>`;
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
