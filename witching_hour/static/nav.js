@@ -29,6 +29,9 @@
     return "home";
   };
 
+  // ---- slow fog behind everything
+  ["", "two"].forEach((c) => { const f = document.createElement("div"); f.className = `fog ${c}`.trim(); f.setAttribute("aria-hidden", "true"); document.body.insertBefore(f, main); });
+
   // ---- top bar
   const bar = document.createElement("nav");
   bar.className = "topbar";
@@ -166,6 +169,8 @@
     show("unheard");
     setTimeout(() => document.getElementById("uh-demo")?.click(), 150);
   });
+
+  window.WHNav = { go(k) { if (VIEWS[k]) { if (location.hash !== `#${k}`) history.pushState(null, "", `#${k}`); show(k); } } };
 
   addEventListener("popstate", route);
   addEventListener("hashchange", route);

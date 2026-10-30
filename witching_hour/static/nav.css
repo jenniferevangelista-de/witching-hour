@@ -63,3 +63,15 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { outline: none; }
 .subtabs button:hover { border-color: var(--cempa); }
 .subtabs button.on { background: #2a1d55; border-color: var(--cempa); color: var(--cempa); }
 .subtabs button:focus-visible { outline: 3px solid var(--cempa); outline-offset: 2px; }
+
+/* mood: a neon title that flickers now and then, slow fog, doors that glow */
+.hero h1 { animation: neon 7s steps(1) infinite; }
+@keyframes neon { 0%, 88%, 100% { opacity: 1; } 89% { opacity: .55; } 90% { opacity: 1; } 91% { opacity: .35; } 92% { opacity: .9; } 94% { opacity: .5; } 95% { opacity: 1; } }
+.fog { position: fixed; inset: -20% -10%; z-index: 0; pointer-events: none; opacity: .5;
+  background: radial-gradient(40% 30% at 20% 70%, rgba(141, 255, 207, .07), transparent 70%), radial-gradient(45% 35% at 75% 40%, rgba(167, 123, 255, .1), transparent 70%);
+  animation: drift 46s ease-in-out infinite alternate; }
+.fog.two { opacity: .35; animation-duration: 63s; animation-direction: alternate-reverse;
+  background: radial-gradient(35% 28% at 60% 80%, rgba(255, 159, 28, .06), transparent 70%), radial-gradient(40% 30% at 10% 20%, rgba(232, 63, 139, .07), transparent 70%); }
+@keyframes drift { from { transform: translate3d(-3%, 1%, 0) scale(1); } to { transform: translate3d(4%, -2%, 0) scale(1.08); } }
+.door:hover { box-shadow: 0 0 0 1px var(--cempa), 0 10px 30px rgba(255, 159, 28, .22); }
+@media (prefers-reduced-motion: reduce) { .hero h1, .fog { animation: none; } }

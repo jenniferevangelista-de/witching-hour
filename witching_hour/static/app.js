@@ -232,13 +232,15 @@
     return pos;
   })();
 
+  let boardN = 0;   // each board gets its own gradient id: a shared id breaks when another board is hidden
   function boardSVG() {
+    const gid = `wood${++boardN}`;
     const letters = Object.entries(BOARD).filter(([k]) => k.length === 1).map(([k, p]) =>
       `<text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" transform="rotate(${(p.rot || 0).toFixed(1)} ${p.x.toFixed(1)} ${p.y.toFixed(1)})" text-anchor="middle" dominant-baseline="middle" class="bl">${k}</text>`).join("");
     return `<svg class="wood" viewBox="0 0 600 380" role="img" aria-label="Spirit board with letters, numbers, yes, no and goodbye">
-      <defs><radialGradient id="wood" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#f1d9a7"/><stop offset="1" stop-color="#c8955a"/></radialGradient></defs>
+      <defs><radialGradient id="${gid}" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#f1d9a7"/><stop offset="1" stop-color="#c8955a"/></radialGradient></defs>
       <style>.bl{font:700 26px Georgia,serif;fill:#3a2414}.bw{font:700 30px Georgia,serif;fill:#3a2414}.orn{fill:none;stroke:#3a2414;stroke-width:2}</style>
-      <rect x="6" y="6" width="588" height="368" rx="26" fill="url(#wood)" stroke="#3a2414" stroke-width="6"/>
+      <rect x="6" y="6" width="588" height="368" rx="26" fill="url(#${gid})" stroke="#3a2414" stroke-width="6"/>
       <rect x="18" y="18" width="564" height="344" rx="18" class="orn" opacity=".5"/>
       <g transform="translate(78 54)"><circle r="20" fill="#ffd36e" stroke="#3a2414" stroke-width="3"/><text y="44" text-anchor="middle" class="bw">YES</text></g>
       <g transform="translate(522 54)"><path d="M10,-18 a20,20 0 1 0 0,36 a15,15 0 1 1 0,-36 Z" fill="#fbf3e4" stroke="#3a2414" stroke-width="3"/><text y="44" text-anchor="middle" class="bw">NO</text></g>

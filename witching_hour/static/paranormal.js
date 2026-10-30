@@ -165,18 +165,23 @@
   function boardBlock(id) {
     return `<div class="board" id="${id}">${WH.boardSVG()}${WH.GLASS}</div>`;
   }
-  async function spell(boardEl, seq, outEl) {
-    const glass = $(".glass", boardEl);
+  // opts.slow is the finale: one letter at a time. WH.stage (seance.js) wraps the scene around the board.
+  async function spell(boardEl, seq, outEl, opts = {}) {
+    const glass = $(".glass", boardEl), slow = !!opts.slow, st = WH.stage;
     outEl.textContent = "";
+    boardEl.classList.toggle("slow", slow);
     WH.placeGlass(glass, "REST");
-    await sleep(500);
+    await sleep(slow ? 900 : 400);
     for (const ch of seq) {
-      if (ch === "SPACE") { WH.placeGlass(glass, "REST"); outEl.textContent += " "; await sleep(650); continue; }
+      if (ch === "SPACE") { WH.placeGlass(glass, "REST"); outEl.append(" "); await sleep(slow ? 1100 : 450); continue; }
       WH.placeGlass(glass, ch);
-      await sleep(850);
-      outEl.textContent += ch.length > 1 ? ch : ch;
-      await sleep(220);
+      st && st.glass(boardEl, ch, slow);
+      await sleep(slow ? 1500 : 600);
+      outEl.insertAdjacentHTML("beforeend", `<span class="lt">${esc(ch)}</span>`);
+      st && st.letter(boardEl, ch, slow);
+      await sleep(slow ? 450 : 160);
     }
+    boardEl.classList.remove("slow");
   }
 
   // ------------------------------------------------------------ séance UI (one per case kind)
@@ -215,8 +220,10 @@
     const form = $(`#${prefix}-ask`);
     form.querySelector("button").disabled = true;
     $(`#${prefix}-spoken`).textContent = "The glass trembles...";
+    const asked = WH.stage && WH.stage.ask(prefix, question);
     try {
       const r = await WH.getJSON(`/api/sessions/${s.session_id}/ask`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question }) });
+      await asked;
       await showTurn(prefix, r);
       afterSpell && afterSpell(r);
     } catch (e) {
@@ -226,16 +233,28 @@
     }
   }
 
-  async function showTurn(prefix, r, audioUrl) {
+  // opts.climax: the board spells slowly with the Guardian's voice under it. opts.finale: the session ends.
+  async function showTurn(prefix, r, audioUrl, opts = {}) {
+    const st = WH.stage;
     $(`#${prefix}-spoken`).textContent = "";
-    const audio = audioUrl ? new Audio(audioUrl) : null;
-    await spell($(`#${prefix}-board`), r.response.animation_sequence, $(`#${prefix}-spelled`));
-    $(`#${prefix}-spoken`).textContent = r.response.spoken ? `"${r.response.spoken}"` : "";
+    const audio = audioUrl && !st ? new Audio(audioUrl) : null;
+    st && await st.begin(prefix, r, { ...opts, audioUrl });
+    await spell($(`#${prefix}-board`), r.response.animation_sequence, $(`#${prefix}-spelled`), { slow: !!opts.climax });
+    $(`#${prefix}-spoken`).textContent = r.response.spoken ? `Luna reads the glass: "${r.response.spoken}"` : "";
     if (audio) { try { await audio.play(); } catch (_) { /* autoplay blocked */ } }
+    st && await st.read(prefix, r, opts);
     const ids = r.grounding.related_evidence_ids;
     $(`#${prefix}-turns`).insertAdjacentHTML("beforeend", `<li><b>${esc(r.question)}</b> → <span class="msg">${esc(r.response.message)}</span>${r.response.spoken ? ` <i>"${esc(r.response.spoken)}"</i>` : ""} ${ids.map((i) => `<button class="cite" data-ev="${esc(i)}">${esc(i)}</button>`).join("")} <span class="ci">${esc(r.response.by)}</span></li>`);
     ids.forEach((i) => WH.highlight(i, true));
     setTimeout(() => ids.forEach((i) => WH.highlight(i, false)), 2500);
+    st && await st.end(prefix, r, opts);
+  }
+
+  // skipping ahead: add the turn to the list without the show
+  function quickTurn(prefix, r) {
+    const ids = r.grounding.related_evidence_ids;
+    $(`#${prefix}-spelled`).textContent = r.response.message;
+    $(`#${prefix}-turns`).insertAdjacentHTML("beforeend", `<li><b>${esc(r.question)}</b> → <span class="msg">${esc(r.response.message)}</span>${r.response.spoken ? ` <i>"${esc(r.response.spoken)}"</i>` : ""} ${ids.map((i) => `<button class="cite" data-ev="${esc(i)}">${esc(i)}</button>`).join("")} <span class="ci">${esc(r.response.by)}</span></li>`);
   }
 
   // ------------------------------------------------------------ The Unheard
@@ -335,12 +354,20 @@
     $("#uh-spirit").innerHTML = `<div class="arch">${esc(sp.title)}</div><h4>${esc(sp.name)}</h4><p>${esc(sp.backstory)}</p><p class="goal">Its goal: ${esc(sp.goal)}</p>`;
     $("#uh-seance .by").textContent = `${demo.seance.model} (recorded séance)`;
     $("#uh-turns").innerHTML = "";
-    for (const [i, turn] of demo.seance.turns.entries()) {
-      $("#uh-spoken").textContent = `Luna asks: "${turn.question}"`;
-      await sleep(1600);
-      await showTurn("uh", turn, (demo.seance.audio || {})[i]);
-      await sleep(2200);
+    const turns = demo.seance.turns, climaxAt = turns.findIndex((t) => t.response.message === "I AM HERE"), st = WH.stage;
+    st && st.open("uh");
+    for (const [i, turn] of turns.entries()) {
+      const climax = i === climaxAt, finale = i === turns.length - 1 && turn.response.message === "GOODBYE";
+      if (st && st.skipping("uh") && i < climaxAt) { quickTurn("uh", turn); continue; }
+      if (!finale) {
+        $("#uh-spoken").textContent = `Luna asks: "${turn.question}"`;
+        if (st) await st.ask("uh", turn.question); else await sleep(1600);
+      }
+      await showTurn("uh", turn, (demo.seance.audio || {})[i], { climax, finale });
+      if (st && st.cancelled("uh")) break;
+      await sleep(climax ? 600 : st ? 500 : 2200);
     }
+    st && st.close("uh");
   }
 
   function dossier() {
@@ -466,5 +493,7 @@
       i.value = "";
     });
   }
+  WH.bigotes = bigotes;
+  WH.evidenceFor = (prefix) => (prefix === "rm" ? room.evidence : unheard.evidence) || [];
   boot();
 })();
