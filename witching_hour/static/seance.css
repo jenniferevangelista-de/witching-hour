@@ -244,3 +244,6 @@ body.summoned .summon-fixed, body.seance-on .summon-fixed, body.act-on .summon-f
 .music-switch[aria-pressed="false"] { color: var(--muted); }
 body.act-on .music-switch { display: none; }
 @media (max-width: 640px) { .music-switch { bottom: 70px; } }
+.with-guide.luna .hear { margin-top: 6px; background: transparent; color: var(--turq); border: 1px solid var(--turq); border-radius: 999px; padding: 4px 12px; font: 600 12px "Fredoka", sans-serif; cursor: pointer; }
+.with-guide.luna.talking img { animation: sway 1.4s ease-in-out infinite; filter: drop-shadow(0 0 12px rgba(141, 255, 207, .7)); }
+.with-guide.luna.talking .notice { color: var(--bone); }

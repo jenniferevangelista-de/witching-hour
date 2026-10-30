@@ -104,7 +104,7 @@
         }
         const c = enabled && musicOn && ctx();
         if (!c || mus) return;
-        const g = c.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(0.5, c.currentTime, 1.6); g.connect(master);
+        const g = c.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(0.1, c.currentTime, 2.5); g.connect(master);
         const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 520; lp.Q.value = 2;
         const padG = c.createGain(); padG.gain.value = 0.34;
         lp.connect(padG); padG.connect(g);
@@ -195,7 +195,7 @@
   }
   async function voicedLine(text, src, show, { hold = null } = {}) {
     const me = ++typing;
-    stopVoice();
+    if (src) stopVoice();
     let audio = null, dur = 0;
     if (src && sfx.on) {
       const a = new Audio(src);
@@ -346,7 +346,7 @@
     st.audio = opts.audioUrl || null;
     st.letters = 0;
     sfx.drone(true);
-    sfx.musicLevel(0.2);
+    sfx.musicLevel(0.04);
     sfx.knock(); shake(st.stage);
     await wait(900);
     sfx.knock(); shake(st.stage);
@@ -501,6 +501,7 @@
         const a = new Audio(st.audio);
         a.volume = 0.95;
         voiceEl = a;
+        st.climaxVoice = a;
         a.play().catch(() => { /* autoplay blocked */ });
       }
     },
@@ -510,6 +511,11 @@
       st.speech.classList.remove("hush");
       st.stage.classList.remove("hush");
       if (opts.finale) { await finale(prefix); return; }
+      if (opts.climax && st.climaxVoice) {   // let the Guardian finish before Luna reads it
+        const a = st.climaxVoice;
+        st.climaxVoice = null;
+        await endedOf(a, isFinite(a.duration) ? a.duration : 6);
+      }
       const ids = (r.grounding && r.grounding.related_evidence_ids) || [];
       const by = ($(`#${prefix}-seance .by`) || {}).textContent || "";
       const source = /template|scripted/i.test(by) ? "scripted reading" : /gemma/i.test(by) ? "written by Gemma 4" : by.trim().slice(0, 40);
@@ -603,8 +609,7 @@
     const label = "🔮 Summon the spirit";
     const mk = (id, cls) => { const b = document.createElement("button"); b.type = "button"; b.id = id; b.className = cls; b.textContent = label; return b; };
     const fixed = mk("summon-fixed", "big summon-fixed"), panel = mk("summon-panel", "big summon-panel");
-    document.body.append(fixed);
-    open.after(panel);
+    open.after(panel);   // the floating twin is not added to the page: it hid the proof banner
     const both = [fixed, panel];
     let waiting = false;
     const click = async () => {
@@ -649,6 +654,36 @@
     const scan = () => $$(".events > .event").forEach(watch);
     new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
     scan();
+  }
+
+  // Luna reads her own panel aloud when the case is ready (and on request)
+  const LUNA_PANEL = "I summon the spirit the evidence suggests: a Guardian, a Lost One, a Trickster, a Watcher, a Hostile Presence or a Silent One. Its answers are fiction, and each one must point at a real moment of the recording.";
+  function lunaPanel() {
+    const box = $("#unheard .with-guide.luna, .terminal .with-guide.luna");
+    if (!box || box.dataset.said) return;
+    box.dataset.said = "1";
+    const text = $("p.notice", box);
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "hear"; btn.textContent = "▶ Hear Luna";
+    box.querySelector("div").append(btn);
+    let busyNow = false;
+    const speak = async () => {
+      if (busyNow) return;
+      busyNow = true;
+      sfx.prime();
+      box.classList.add("talking");
+      await voiced(LUNA_PANEL, clipUrl(LUNA_PANEL), () => {}, { hold: 300 });
+      box.classList.remove("talking");
+      busyNow = false;
+    };
+    btn.addEventListener("click", speak);
+    const open = $("#uh-open");
+    if (open) {
+      let done = false;
+      const mo = new MutationObserver(() => { if (!open.hidden && !done) { done = true; if (sfx.on) setTimeout(speak, 600); } });
+      mo.observe(open, { attributes: true, attributeFilter: ["hidden"] });
+    }
+    void text;
   }
 
   // the music switch: a small pill that stays on screen
@@ -719,6 +754,7 @@
   ["uh", "rm"].forEach(build);
   roomButton();
   summonFixed();
+  lunaPanel();
   ghostReveal();
   reveal();
   crewButtons();

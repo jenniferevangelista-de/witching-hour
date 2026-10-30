@@ -40,6 +40,7 @@ LUNA = [
     "What would have happened if I had gone out?", "Will you come back?", "What were you trying to say?",
     "Where?", "Why?", "Goodbye", "Out! Everybody out!",
     "The room is yours now. Ask the board, and watch the glass.", "That was not me!",
+    "I summon the spirit the evidence suggests: a Guardian, a Lost One, a Trickster, a Watcher, a Hostile Presence or a Silent One. Its answers are fiction, and each one must point at a real moment of the recording.",
 ]
 BIGOTES = [
     "Hmph. I am Doctor Bigotes. I have never met a ghost that was not a kettle, a draft or a thermostat.",
