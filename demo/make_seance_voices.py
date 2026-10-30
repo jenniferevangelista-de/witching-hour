@@ -51,7 +51,7 @@ BIGOTES = [
     "Movement on the right: a person, a pet, a coat in a draft, or the camera adjusting. I would check who was home.",
     "It is only a draft. Probably.",
     "Two real sounds, both cited. And I have no kettle for this.",
-    "That was NOT the kettle!", "Probably the kettle. Probably.",
+    "Fine! I have nothing left to say! Run, run, RUUUUN!", "Probably the kettle. Probably.",
 ]
 XOCHI = [
     "I am Xochi. I keep watch all night, and at dawn I bring the family a note about what I saw.",

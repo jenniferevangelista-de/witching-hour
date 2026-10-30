@@ -42,6 +42,14 @@
   }).join("");
   document.body.insertBefore(bar, main);
 
+  // ---- "how it was tested" stays in view on every page after the first
+  const proof = document.createElement("a");
+  proof.className = "proofbar";
+  proof.href = "#lab";
+  proof.dataset.go = "lab";
+  proof.innerHTML = '<b>🧪 How this was tested</b><span>Fake ghosts planted in real nights, TabPFN against two baselines at a 5% false alarm rate</span><span>68 automated tests on every push</span><span>Every spirit answer must cite a measured moment, or it is rejected</span><u>See the proof →</u>';
+  document.body.insertBefore(proof, main);
+
   // ---- home: a clear way in, the three doors before the crew
   const hero = document.querySelector("header.hero");
   if (hero) {
@@ -143,6 +151,7 @@
       (prev ? `<a class="big alt" href="#${prev}" data-go="${prev}">← ${VIEWS[prev].label}</a>` : "<span></span>") +
       (next ? `<a class="big" href="#${next}" data-go="${next}">${VIEWS[next].label} →</a>` : "<span></span>");
     pager.hidden = k === "home";
+    proof.hidden = k === "home" || k === "lab";
 
     // the timeline canvas measures its width when drawn, so redraw once it is visible again
     requestAnimationFrame(() => dispatchEvent(new Event("resize")));

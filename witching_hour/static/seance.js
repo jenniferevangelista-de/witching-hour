@@ -191,15 +191,7 @@
     if (prefix === "uh") {
       const replay = $("#uh-replay"), open = $("#uh-open");
       if (replay) { replay.classList.add("fab"); $(".corner.l", stage).append(replay); }
-      if (open) {   // the real button stays next to "What happened that night?"; the scene gets a twin
-        const twin = document.createElement("button");
-        twin.type = "button"; twin.className = "big twin";
-        const sync = () => { twin.hidden = open.hidden; twin.textContent = open.textContent; };
-        sync();
-        twin.addEventListener("click", () => open.click());
-        $(".corner.r", stage).append(twin);
-        new MutationObserver(sync).observe(open, { attributes: true, attributeFilter: ["hidden"], childList: true, characterData: true, subtree: true });
-      }
+      void open;   // the real button is hidden: the fixed one at the top does its job
     }
     const spelled = $(`#${prefix}-spelled`);
     if (spelled) stage.after(spelled);
@@ -307,6 +299,8 @@
   // ---- the finale: lights out, the crew runs, the page moves on to The Room
   async function finale(prefix) {
     const st = S[prefix];
+    if (st.finaleRunning) return;
+    st.finaleRunning = true;
     st.cancelled = false;
     sfx.heart(false); sfx.drone(false);
     sfx.slam(); flash(); shake(st.stage);
@@ -318,34 +312,54 @@
     await wait(1100);
     sfx.whoosh();
     $$(".seat", st.stage).forEach((s) => { s.classList.remove("scared"); s.classList.add("run"); });
+    const burst = document.createElement("div");   // comic lettering over the stage while they run
+    burst.className = "runtext"; burst.setAttribute("aria-hidden", "true");
+    burst.innerHTML = "<span>RUN!</span><span>RUN!</span><span>RUUUUN!!</span>";
+    st.stage.append(burst);
+    setTimeout(() => burst.remove(), 3600);
     const card = $("#act-card") || (() => {
       const c = document.createElement("div");
       c.id = "act-card"; c.className = "act"; c.hidden = true;
-      c.innerHTML = '<div><p class="kicker">Case 3</p><h2>The Room</h2><p>The room you are sitting in right now.</p><button type="button" class="stay">Stay in the séance</button></div>';
+      c.innerHTML = '<div><p class="kicker">The séance is over</p><h2>Now it is your turn</h2><p>The glass can only say what the camera really measured. Bring your own recording and see what yours was trying to tell you.</p><div class="end-actions"><button type="button" class="big tryit">Try it yourself</button><button type="button" class="big alt next">Continue to The Room →</button></div><button type="button" class="stay">Stay in the séance</button></div>';
       document.body.append(c);
       return c;
     })();
-    $(".stay", card).onclick = () => { st.cancelled = true; };
-    const lines = [["luna", "Out! Everybody out!"], ["bigotes", "That was NOT the kettle!"], ["xochi", "Stay close to me!"]];
+    const lines = [["luna", "Out! Everybody out!"], ["bigotes", "Fine! I have nothing left to say! Run, run, RUUUUN!"], ["xochi", "Stay close to me!"]];
     // while the crew runs, each one shouts from where they stand
     const running = (async () => { for (const [w, t] of lines) await say(prefix, w, t, { tag: "", hold: 150 }); })();
     await Promise.all([running, wait(2200)]);
     st.stage.classList.remove("hush");
-    if (reduce()) { $(".go", st.ctl).hidden = false; return; }
     card.hidden = false;
-    card.classList.add("show");
+    setTimeout(() => card.classList.add("show"), 30);
     document.body.classList.add("act-on");
-    await wait(3200);
+    const choice = await new Promise((res) => {
+      $(".tryit", card).onclick = () => res("try");
+      $(".next", card).onclick = () => res("next");
+      $(".stay", card).onclick = () => res("stay");
+    });
     card.classList.remove("show");
     document.body.classList.remove("act-on");
     setTimeout(() => { card.hidden = true; }, 500);
-    if (st.cancelled) {
-      $$(".seat", st.stage).forEach((s) => s.classList.remove("run"));
-      $(".go", st.ctl).hidden = false;
+    st.finaleRunning = false;
+    if (choice === "next") {
+      WH.stage.close(prefix);
+      if (window.WHNav) window.WHNav.go("room");
       return;
     }
-    if (window.WHNav) window.WHNav.go("room");
-    $(".go", st.ctl).hidden = false;
+    $$(".seat", st.stage).forEach((x) => x.classList.remove("run", "scared"));
+    WH.stage.close(prefix);
+    document.body.classList.remove("summoned");
+    st.root.classList.remove("live");
+    if (choice === "try") {
+      const target = $("#uh-file") && $("#uh-file").closest("label") || $("#uh-demo");
+      if (target) {
+        target.scrollIntoView({ behavior: reduce() ? "auto" : "smooth", block: "center" });
+        target.classList.add("nudge");
+        setTimeout(() => target.classList.remove("nudge"), 4000);
+      }
+    } else {
+      $(".go", st.ctl).hidden = false;
+    }
   }
 
   WH.stage = {
@@ -382,6 +396,7 @@
       const st = S[prefix];
       if (!st) return;
       st.root.classList.add("live");
+      if (prefix === "uh") document.body.classList.add("summoned");
       st.count = 0; st.quipped = new Set();
     },
     skipping(prefix) { return !!(S[prefix] && S[prefix].skip); },
@@ -517,6 +532,57 @@
     start.after(b);
   }
 
+  // ---- Summon the spirit: fixed at the top of The Unheard from the first second
+  function summonFixed() {
+    const open = $("#uh-open");
+    if (!open || $("#summon-fixed")) return;
+    const b = document.createElement("button");
+    b.type = "button"; b.id = "summon-fixed"; b.className = "big summon-fixed";
+    const label = "🔮 Summon the spirit";
+    b.textContent = label;
+    document.body.append(b);
+    let waiting = false;
+    b.addEventListener("click", async () => {
+      sfx.prime();
+      if (waiting) return;
+      if (!open.hidden) { open.click(); return; }
+      waiting = true;
+      b.classList.add("wait");
+      const status = $("#uh-status");
+      const tick = setInterval(() => { b.textContent = "⏳ " + ((status && status.textContent) || "Reading the recording...").replace(/^.*?(Reading frames\.\.\. \d+%).*$/, "$1").slice(0, 34); }, 300);
+      // nothing opened yet: open the demo case, then summon as soon as the evidence is in
+      if (!WH.evidenceFor("uh").length && !($("#uh-status") && /reading|opening/i.test($("#uh-status").textContent))) { const d = $("#uh-demo"); d && d.click(); }
+      for (let i = 0; i < 240 && open.hidden; i++) await new Promise((r) => setTimeout(r, 250));
+      clearInterval(tick);
+      b.classList.remove("wait");
+      b.textContent = label;
+      waiting = false;
+      if (!open.hidden) open.click();
+    });
+  }
+
+  // ---- the evidence cards come out of the dark as you scroll down to them, each with a small ghost
+  function ghostReveal() {
+    if (!("IntersectionObserver" in window) || reduce()) return;
+    let batch = 0, reset = null;
+    const io = new IntersectionObserver((list) => {
+      list.forEach((en) => {
+        if (!en.isIntersecting) return;
+        const el = en.target;
+        io.unobserve(el);
+        el.style.setProperty("--d", `${batch * 380}ms`);
+        batch += 1;
+        el.classList.add("in");
+        clearTimeout(reset);
+        reset = setTimeout(() => { batch = 0; }, 700);
+      });
+    }, { threshold: 0.25 });
+    const watch = (el) => { if (el.classList.contains("event") && !el.dataset.g) { el.dataset.g = "1"; el.classList.add("pre"); io.observe(el); } };
+    const scan = () => $$(".events > .event").forEach(watch);
+    new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+    scan();
+  }
+
   // ---- the idle scene is visible as soon as there is something to play
   function reveal() {
     const root = $("#uh-seance"), btns = ["#uh-replay", "#uh-open"].map((q) => $(q)).filter(Boolean);
@@ -568,6 +634,8 @@
   // build once now, so the crew is in place the moment the séance opens
   ["uh", "rm"].forEach(build);
   roomButton();
+  summonFixed();
+  ghostReveal();
   reveal();
   crewButtons();
   const crewBox = $("#crew");

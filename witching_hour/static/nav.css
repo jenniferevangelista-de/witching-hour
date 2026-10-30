@@ -84,3 +84,13 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { outline: none; }
 #night .bubble p { font-size: 16.5px; line-height: 1.6; }
 #night .bubble.medium p { font-size: 17px; }
 @media (max-width: 900px) { #night .layout { grid-template-columns: 1fr; } }
+
+/* "How this was tested" stays visible on every page after the first */
+.proofbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 10px 16px; text-decoration: none; color: var(--bone); font-size: 14px;
+  background: linear-gradient(90deg, rgba(23, 77, 72, .75), rgba(42, 29, 85, .85)); border-bottom: 2px solid var(--turq); position: relative; z-index: 20; }
+.proofbar[hidden] { display: none; }
+.proofbar b { color: var(--turq); font: 700 15px "Fredoka", sans-serif; }
+.proofbar span::before { content: "✓ "; color: var(--turq); font-weight: 700; }
+.proofbar u { margin-left: auto; color: var(--cempa); font-weight: 700; text-decoration: none; white-space: nowrap; }
+.proofbar:hover u { text-decoration: underline; }
+@media (max-width: 720px) { .proofbar { font-size: 13px; padding: 8px 12px; } .proofbar u { margin-left: 0; } }

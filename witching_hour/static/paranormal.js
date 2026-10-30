@@ -215,9 +215,17 @@
     return r;
   }
 
+  const busy = {};
   async function ask(prefix, question, afterSpell) {
     const s = sessions[prefix];
-    if (!s) return;
+    if (!s || busy[prefix]) return;   // one question at a time: the chips stay clickable while the glass moves
+    if (s.ended) {
+      $(`#${prefix}-spoken`).textContent = "The séance has ended. Summon the spirit again to keep talking.";
+      document.body.classList.remove("summoned");
+      return;
+    }
+    busy[prefix] = true;
+    $(`#${prefix}-suggest`).classList.add("busy");
     const form = $(`#${prefix}-ask`);
     form.querySelector("button").disabled = true;
     $(`#${prefix}-spoken`).textContent = "The glass trembles...";
@@ -227,10 +235,13 @@
       await asked;
       const msg = r.response.message;
       await showTurn(prefix, r, undefined, { climax: prefix === "uh" && msg === "I AM HERE", finale: prefix === "uh" && msg === "GOODBYE" });
+      if (prefix === "uh" && msg === "GOODBYE") s.ended = true;
       afterSpell && afterSpell(r);
     } catch (e) {
       $(`#${prefix}-spoken`).textContent = e.message;
     } finally {
+      busy[prefix] = false;
+      $(`#${prefix}-suggest`).classList.remove("busy");
       form.querySelector("button").disabled = false;
     }
   }

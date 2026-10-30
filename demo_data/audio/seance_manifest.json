@@ -286,5 +286,17 @@
   "who": "xochi",
   "voice": "Matilda",
   "text": "The case is closed. Thank you for staying until the end."
+ },
+ "fine i have nothing left to say run": {
+  "file": "seance-fd6870ce4a.mp3",
+  "who": "bigotes",
+  "voice": "George",
+  "text": "Fine. I have nothing left to say. RUN!"
+ },
+ "fine i have nothing left to say run run ruuuun": {
+  "file": "seance-5412f65321.mp3",
+  "who": "bigotes",
+  "voice": "George",
+  "text": "Fine! I have nothing left to say! Run, run, RUUUUN!"
  }
 }
