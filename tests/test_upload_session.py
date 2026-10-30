@@ -107,6 +107,7 @@ class SessionFixture:
         self.sessions = {}
         self.hold_next_ask = False
         self.pending = []
+        self.model = "fixture-current"
 
     def handle(self, route):
         request = route.request
@@ -115,10 +116,10 @@ class SessionFixture:
             payload = deepcopy(request.post_data_json)
             self.created.append(payload)
             sid = f"fixture-session-{len(self.created)}"
-            response = {"session_id": sid, "model": "fixture-current",
+            response = {"session_id": sid, "model": self.model,
                 "spirit": {"name": f"Current Spirit {len(self.created)}", "title": "The Watcher",
                     "archetype": "watcher", "backstory": "CURRENT_ONLY_BACKSTORY",
-                    "goal": "respond to this recording", "by": "fixture-current"}}
+                    "goal": "respond to this recording", "by": self.model}}
             self.sessions[sid] = {"response": response, "evidence": payload["evidence"]}
             route.fulfill(status=200, content_type="application/json", body=json.dumps(response))
             return
@@ -136,7 +137,7 @@ class SessionFixture:
             body = {"question": payload["question"], "spirit": self.sessions[sid]["response"]["spirit"],
                 "response": {"message": "YES" if event_ids else "NO", "spoken": "CURRENT_ONLY_ANSWER",
                     "animation_sequence": ["YES" if event_ids else "NO"], "fictional": True,
-                    "by": "fixture-current"}, "grounding": {"related_evidence_ids": event_ids[:1]}}
+                    "by": "template" if self.model.startswith("template spirits") else self.model}, "grounding": {"related_evidence_ids": event_ids[:1]}}
             if self.hold_next_ask:
                 self.hold_next_ask = False
                 body["response"]["spoken"] = "STALE_OLD_RESPONSE_MUST_NOT_APPEAR"
@@ -229,6 +230,11 @@ def test_upload_synchronously_clears_demo_and_blocks_summon_during_measurement(i
     page, sessions = isolation_page
     open_demo(page)
     finish_demo_replay(page)
+    with page.expect_download() as exported:
+        page.locator("#uh-dossier").click()
+    dossier = Path(exported.value.path()).read_text(encoding="utf-8")
+    assert "recorded séance from fixture-demo, replayed without a new model call" in dossier
+    assert "made up by an open model" not in dossier
     page.locator("#uh-words").fill("DEMO_ONLY_MEMORY")
     page.evaluate("window.__qaHoldUpload = true")
     page.locator("#uh-file").set_input_files(str(isolation_clip))
@@ -246,8 +252,10 @@ def test_upload_synchronously_clears_demo_and_blocks_summon_during_measurement(i
     expect(page.locator("#summon-panel")).to_be_enabled()
 
 
-def test_personal_upload_creates_fresh_session_with_only_current_evidence(isolation_page, isolation_clip):
+@pytest.mark.parametrize("reply_source", ["fixture-current", "template spirits (no model attached)"])
+def test_personal_upload_creates_fresh_session_with_only_current_evidence(isolation_page, isolation_clip, reply_source):
     page, sessions = isolation_page
+    sessions.model = reply_source
     open_demo(page)
     finish_demo_replay(page)
     upload_current(page, isolation_clip)
@@ -264,6 +272,14 @@ def test_personal_upload_creates_fresh_session_with_only_current_evidence(isolat
     citations = page.locator("#uh-turns .cite").evaluate_all("nodes => nodes.map(node => node.dataset.ev)")
     assert set(citations).issubset({event["id"] for event in current})
     expect(page.locator("#uh-seance")).not_to_contain_text("DEMO_ONLY")
+    with page.expect_download() as exported:
+        page.locator("#uh-dossier").click()
+    dossier = Path(exported.value.path()).read_text(encoding="utf-8")
+    assert f"This session reports: {reply_source}." in dossier
+    assert "Each reply's source is shown beside it." in dossier
+    assert "made up by an open model" not in dossier
+    assert "recorded séance from" not in dossier
+    assert "DEMO_ONLY" not in dossier
 
 
 def test_late_answer_from_previous_session_cannot_repaint_new_upload(isolation_page, isolation_clip):
