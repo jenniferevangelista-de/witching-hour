@@ -1,0 +1,65 @@
+/* Navigation: top bar, home entry point, steps, pager. Loaded after style.css. */
+.view-off { display: none !important; }
+.view-in { animation: viewin .35s ease both; }
+@keyframes viewin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .view-in { animation: none; } }
+
+.topbar {
+  position: sticky; top: 0; z-index: 30; display: flex; gap: 6px; justify-content: center;
+  padding: 8px 10px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  background: rgba(18, 12, 38, .92); backdrop-filter: blur(8px); border-bottom: 2px solid var(--line);
+}
+.topbar a {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px;
+  color: var(--bone); text-decoration: none; font: 600 14px "Fredoka", sans-serif; border: 2px solid transparent;
+}
+.topbar a:hover { border-color: var(--line); }
+.topbar a.on { background: #2a1d55; border-color: var(--cempa); color: var(--cempa); }
+.topbar a:focus-visible { outline: 3px solid var(--cempa); outline-offset: 2px; }
+.topbar .short { display: none; }
+@media (max-width: 640px) {
+  .topbar { justify-content: flex-start; padding: 6px 8px; }
+  .topbar { gap: 2px; }
+  .topbar a { padding: 6px 6px; gap: 3px; font-size: 12px; }
+  .topbar .full { display: none; }
+  .topbar .short { display: inline; }
+}
+
+/* home */
+.hero .start { display: grid; justify-items: center; gap: 8px; margin: 18px 0 4px; }
+.start-btn { font-size: 18px; padding: 14px 26px; background: linear-gradient(180deg, #ff9f1c, #e8641c); color: #1a0f2e; box-shadow: 0 6px 22px rgba(255, 159, 28, .35); }
+.start-btn:hover { filter: brightness(1.08); }
+.start-note { color: var(--muted); font-size: 14px; max-width: 520px; }
+.hero .doors { margin-top: 22px; }
+.hero .door { padding: 16px; transition: transform .15s ease, border-color .15s ease; }
+.hero .door:hover { transform: translateY(-3px); }
+.hero .crew { margin-top: 26px; }
+@media (max-width: 760px) { .hero .doors { grid-template-columns: 1fr; } }
+
+/* case views: no dashed rule or extra top margin when the case is the first thing on the page */
+body[data-view] .case-title { margin-top: 18px; border-top: 0; padding-top: 6px; }
+
+/* The Unheard steps */
+.steps { display: flex; gap: 8px; list-style: none; margin: 14px 0 0; padding: 0; flex-wrap: wrap; counter-reset: s; }
+.steps li { counter-increment: s; display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; border: 2px solid var(--line); color: var(--muted); font: 600 13px "Fredoka", sans-serif; }
+.steps li::before { content: counter(s); display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--line); color: var(--bone); font-size: 12px; }
+.steps li.now { border-color: var(--cempa); color: var(--cempa); }
+.steps li.now::before { background: var(--cempa); color: #1a0f2e; }
+.steps li.done { border-color: var(--turq); color: var(--turq); }
+.steps li.done::before { content: "✓"; background: var(--turq); color: #08201d; }
+
+/* pager */
+.pager { display: flex; justify-content: space-between; gap: 12px; margin: 40px 0 8px; }
+.pager[hidden] { display: none; }
+.pager a { text-decoration: none; display: inline-block; }
+
+/* the heading that receives focus after a view change should not show a ring */
+h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { outline: none; }
+
+/* The House sub-tabs */
+.sub-off { display: none !important; }
+.subtabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 6px; }
+.subtabs button { background: transparent; color: var(--bone); border: 2px solid var(--line); border-radius: 12px; padding: 9px 16px; font: 600 14px "Fredoka", sans-serif; cursor: pointer; }
+.subtabs button:hover { border-color: var(--cempa); }
+.subtabs button.on { background: #2a1d55; border-color: var(--cempa); color: var(--cempa); }
+.subtabs button:focus-visible { outline: 3px solid var(--cempa); outline-offset: 2px; }
