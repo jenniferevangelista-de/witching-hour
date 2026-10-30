@@ -256,5 +256,35 @@
   "who": "spirit",
   "voice": "Guardian",
   "text": "You are not alone. I am right here."
+ },
+ "the room is yours now ask the board and watch the glass": {
+  "file": "seance-b5e331cf7f.mp3",
+  "who": "luna",
+  "voice": "Jessica",
+  "text": "The room is yours now. Ask the board, and watch the glass."
+ },
+ "that was not me": {
+  "file": "seance-c6724817c1.mp3",
+  "who": "luna",
+  "voice": "Jessica",
+  "text": "That was not me!"
+ },
+ "probably the kettle probably": {
+  "file": "seance-191c8182b3.mp3",
+  "who": "bigotes",
+  "voice": "George",
+  "text": "Probably the kettle. Probably."
+ },
+ "it moved when the glass stopped i will write it down": {
+  "file": "seance-479a8538bc.mp3",
+  "who": "xochi",
+  "voice": "Matilda",
+  "text": "It moved when the glass stopped. I will write it down."
+ },
+ "the case is closed thank you for staying until the end": {
+  "file": "seance-ae28eb4dd6.mp3",
+  "who": "xochi",
+  "voice": "Matilda",
+  "text": "The case is closed. Thank you for staying until the end."
  }
 }

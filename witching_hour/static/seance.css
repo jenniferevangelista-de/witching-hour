@@ -180,3 +180,35 @@ body.climax .spelled .lt { animation: lt .55s cubic-bezier(.2, 1.4, .4, 1) both,
 @media (prefers-reduced-motion: reduce) {
   .seat img, .candle i, body.climax::after, .act h2, .fab { animation: none !important; }
 }
+
+/* the Summon button has a twin inside the scene; the real one stays in Luna's panel */
+.stage .corner .twin { background: linear-gradient(180deg, #ff6aa6, #e83f8b); color: #fff; border: 0; }
+#rm-demo { margin-left: 8px; }
+
+/* evidence appears out of the dark, one card at a time, with a small ghost drifting past */
+.events > .event { position: relative; overflow: visible; animation: evIn 1.3s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 420ms); }
+.events > .event:nth-child(1) { --i: 0; } .events > .event:nth-child(2) { --i: 1; } .events > .event:nth-child(3) { --i: 2; }
+.events > .event:nth-child(4) { --i: 3; } .events > .event:nth-child(5) { --i: 4; } .events > .event:nth-child(6) { --i: 5; }
+.events > .event:nth-child(7) { --i: 6; } .events > .event:nth-child(n+8) { --i: 7; }
+@keyframes evIn {
+  0% { opacity: 0; transform: translateY(14px) scale(.985); filter: blur(7px) brightness(2.2); }
+  55% { opacity: .85; filter: blur(1.5px) brightness(1.5); box-shadow: 0 0 26px rgba(141, 255, 207, .35); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+.events > .event::before {
+  content: ""; position: absolute; right: 10px; top: -22px; width: 34px; height: 40px; pointer-events: none; opacity: 0;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 40'><path d='M17 2C8 2 3 9 3 18v18l5-4 4 4 5-4 5 4 4-4 5 4V18C31 9 26 2 17 2z' fill='%238dffcf' fill-opacity='.55'/><circle cx='12' cy='17' r='2.6' fill='%2305030c'/><circle cx='22' cy='17' r='2.6' fill='%2305030c'/><ellipse cx='17' cy='25' rx='2.4' ry='3' fill='%2305030c'/></svg>") center / contain no-repeat;
+  filter: drop-shadow(0 0 8px rgba(141, 255, 207, .8));
+  animation: wisp 3.4s ease-in-out both; animation-delay: calc(var(--i, 0) * 420ms + 500ms);
+}
+@keyframes wisp {
+  0% { opacity: 0; transform: translate(-30px, 18px) scale(.6) rotate(-8deg); }
+  25% { opacity: .9; }
+  60% { opacity: .55; transform: translate(10px, -10px) scale(1) rotate(5deg); }
+  100% { opacity: 0; transform: translate(46px, -34px) scale(1.15) rotate(-4deg); }
+}
+@media (prefers-reduced-motion: reduce) { .events > .event, .events > .event::before { animation: none; opacity: 1; } .events > .event::before { display: none; } }
+
+/* The Room: when the glass stops, the lights go and the end card closes the case */
+.act.end h2 { font-size: clamp(40px, 8vw, 84px); }
+.end-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }

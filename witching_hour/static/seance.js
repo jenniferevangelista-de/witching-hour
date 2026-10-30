@@ -191,7 +191,15 @@
     if (prefix === "uh") {
       const replay = $("#uh-replay"), open = $("#uh-open");
       if (replay) { replay.classList.add("fab"); $(".corner.l", stage).append(replay); }
-      if (open) $(".corner.r", stage).append(open);
+      if (open) {   // the real button stays next to "What happened that night?"; the scene gets a twin
+        const twin = document.createElement("button");
+        twin.type = "button"; twin.className = "big twin";
+        const sync = () => { twin.hidden = open.hidden; twin.textContent = open.textContent; };
+        sync();
+        twin.addEventListener("click", () => open.click());
+        $(".corner.r", stage).append(twin);
+        new MutationObserver(sync).observe(open, { attributes: true, attributeFilter: ["hidden"], childList: true, characterData: true, subtree: true });
+      }
     }
     const spelled = $(`#${prefix}-spelled`);
     if (spelled) stage.after(spelled);
@@ -390,6 +398,7 @@
       build(prefix);
       const st = S[prefix];
       if (!st) return;
+      if (opts.climax && !opts.audioUrl) opts = { ...opts, audioUrl: clipUrl(r.response.spoken) };   // live game: the recorded Guardian line
       st.turnAudio = opts.climax ? null : opts.audioUrl || null;
       $$(".seat", st.stage).forEach((s) => s.classList.add("lean"));
       if (opts.climax) await prelude(prefix, opts);
@@ -443,6 +452,36 @@
       const xochi = ["I kept watch. The glass moved by itself.", "Her words are gentle. Her warning is not.", "I will write it down: every answer cites a real moment."];
       if (!opts.climax && st.count % 3 === 1) await say(prefix, "xochi", xochi[((st.count - 1) / 3 | 0) % xochi.length], { tag: "Xochi keeps watch" });
     },
+    roomIntro(prefix) {
+      build(prefix);
+      const st = S[prefix];
+      if (!st) return;
+      st.scared = false;
+      document.body.classList.add("seance-on");
+      sfx.prime();
+      st.root.scrollIntoView({ behavior: reduce() ? "auto" : "smooth", block: "start" });
+      return say(prefix, "luna", "The room is yours now. Ask the board, and watch the glass.", { tag: "Luna" });
+    },
+    async roomScare(prefix) {   // the last act: the room moves when the glass stops
+      const st = S[prefix];
+      if (!st || st.scared) return;
+      st.scared = true;
+      await wait(2800);
+      sfx.slam(); flash(); shake(st.stage);
+      if (WH.haunt) WH.haunt();
+      const dark = document.createElement("div");
+      dark.className = "lights-out";
+      document.body.append(dark);
+      dark.addEventListener("animationend", () => dark.remove());
+      $$(".seat", st.stage).forEach((s) => s.classList.add("scared"));
+      await wait(2200);
+      $$(".seat", st.stage).forEach((s) => s.classList.remove("scared"));
+      await say(prefix, "luna", "That was not me!", { tag: "Luna" });
+      await say(prefix, "bigotes", "Probably the kettle. Probably.", { tag: "Dr. Bigotes" });
+      await say(prefix, "xochi", "It moved when the glass stopped. I will write it down.", { tag: "Xochi keeps watch" });
+      await say(prefix, "xochi", "The case is closed. Thank you for staying until the end.", { tag: "Xochi" });
+      endCard();
+    },
     async end(prefix) {
       const st = S[prefix];
       if (!st) return;
@@ -450,6 +489,33 @@
       $$(".sbub", st.stage).forEach((b) => b.classList.remove("on"));
     },
   };
+
+  function endCard() {
+    let c = $("#end-card");
+    if (!c) {
+      c = document.createElement("div");
+      c.id = "end-card"; c.className = "act end"; c.hidden = true;
+      c.innerHTML = '<div><p class="kicker">The end</p><h2>Case closed</h2><p>A house, a recording, a room. The measurements were real. The spirits were not.</p><div class="end-actions"><button type="button" class="big again">Play again</button><button type="button" class="big alt tested">How it was tested</button><button type="button" class="stay">Close</button></div></div>';
+      document.body.append(c);
+      const close = (go) => { c.classList.remove("show"); setTimeout(() => { c.hidden = true; }, 500); if (go && window.WHNav) window.WHNav.go(go); };
+      $(".again", c).onclick = () => close("home");
+      $(".tested", c).onclick = () => close("lab");
+      $(".stay", c).onclick = () => close();
+    }
+    c.hidden = false;
+    requestAnimationFrame(() => c.classList.add("show"));
+  }
+
+  // The Room without a camera
+  function roomButton() {
+    const start = $("#rm-start");
+    if (!start || $("#rm-demo")) return;
+    const b = document.createElement("button");
+    b.type = "button"; b.id = "rm-demo"; b.className = "big fab";
+    b.textContent = "▶ Play without a camera";
+    b.addEventListener("click", () => { sfx.prime(); if (WH.roomDemo) WH.roomDemo(); });
+    start.after(b);
+  }
 
   // ---- the idle scene is visible as soon as there is something to play
   function reveal() {
@@ -501,6 +567,7 @@
 
   // build once now, so the crew is in place the moment the séance opens
   ["uh", "rm"].forEach(build);
+  roomButton();
   reveal();
   crewButtons();
   const crewBox = $("#crew");

@@ -210,7 +210,7 @@
     const qs = ["Is someone here?", "Who are you?", "What were you trying to say?", "Where?", "Why?", "Goodbye"];
     $(`#${prefix}-suggest`).innerHTML = qs.map((q) => `<button type="button" class="chip">${esc(q)}</button>`).join("");
     $(`#${prefix}-suggest`).querySelectorAll("button").forEach((b) => b.addEventListener("click", () =>
-      ask(prefix, b.textContent, prefix === "rm" ? () => { room.watchUntil = performance.now() + 6000; } : undefined)));
+      ask(prefix, b.textContent, prefix === "rm" ? afterRoomAnswer : undefined)));
     WH.stage && WH.stage.live(prefix);
     return r;
   }
@@ -225,7 +225,8 @@
     try {
       const r = await WH.getJSON(`/api/sessions/${s.session_id}/ask`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question }) });
       await asked;
-      await showTurn(prefix, r);
+      const msg = r.response.message;
+      await showTurn(prefix, r, undefined, { climax: prefix === "uh" && msg === "I AM HERE", finale: prefix === "uh" && msg === "GOODBYE" });
       afterSpell && afterSpell(r);
     } catch (e) {
       $(`#${prefix}-spoken`).textContent = e.message;
@@ -403,6 +404,26 @@
     if (s) WH.getJSON(`/api/sessions/${s.session_id}/evidence`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ evidence: [e] }) }).catch(() => {});
   }
 
+  // The Room works without a camera too: simulated moments, so anyone can play the last act.
+  const ROOM_DEMO = [
+    { id: "live-001", type: "light_change", start: 1.2, confidence: 0.92, description: "the light changed suddenly (simulated for the demo)" },
+    { id: "live-002", type: "audio", start: 3.5, confidence: 0.88, description: "a sound 24 dB above the room (simulated for the demo)" },
+    { id: "live-003", type: "motion", start: 5.0, confidence: 0.81, where: "left", description: "movement on the left side (simulated for the demo)" },
+  ];
+  function afterRoomAnswer() {
+    room.watchUntil = performance.now() + 6000;
+    if (room.demo && WH.stage) WH.stage.roomScare("rm");
+  }
+  async function roomDemo() {
+    room.demo = true;
+    room.evidence = ROOM_DEMO.map((e) => ({ ...e, end: e.start + STEP }));
+    $("#rm-log").innerHTML = room.evidence.map((e) => `<li data-ev="${esc(e.id)}"><span class="id">${esc(e.id)}</span> ${esc(e.start.toFixed(1))}s · ${esc(e.description)} <span class="ci">${Math.round(e.confidence * 100)}%</span></li>`).join("");
+    $("#rm-status").textContent = "Demo room, no camera: the three moments below are simulated. Ask the board, then watch what happens when the glass stops.";
+    $("#rm-meters").textContent = "";
+    await summon("rm", "the room (demo)", room.evidence);
+    WH.stage && WH.stage.roomIntro("rm");
+  }
+
   function haunt() {
     room.watchUntil = 0;
     const o = $("#rm-haunt");
@@ -411,6 +432,7 @@
   }
 
   async function startRoom() {
+    room.demo = false;
     try {
       room.stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 180 }, audio: true });
     } catch (e) {
@@ -490,11 +512,13 @@
       e.preventDefault();
       const i = $("input", e.target);
       if (!i.value.trim()) return;
-      ask("rm", i.value.trim(), () => { room.watchUntil = performance.now() + 6000; });
+      ask("rm", i.value.trim(), afterRoomAnswer);
       i.value = "";
     });
   }
   WH.bigotes = bigotes;
+  WH.roomDemo = roomDemo;
+  WH.haunt = haunt;
   WH.evidenceFor = (prefix) => (prefix === "rm" ? room.evidence : unheard.evidence) || [];
   boot();
 })();

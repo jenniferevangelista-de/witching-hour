@@ -39,6 +39,7 @@ LUNA = [
     "Is someone here?", "Who are you?", "What were you trying to tell me that night?", "Why did you knock?",
     "What would have happened if I had gone out?", "Will you come back?", "What were you trying to say?",
     "Where?", "Why?", "Goodbye", "Out! Everybody out!",
+    "The room is yours now. Ask the board, and watch the glass.", "That was not me!",
 ]
 BIGOTES = [
     "Hmph. I am Doctor Bigotes. I have never met a ghost that was not a kettle, a draft or a thermostat.",
@@ -50,7 +51,7 @@ BIGOTES = [
     "Movement on the right: a person, a pet, a coat in a draft, or the camera adjusting. I would check who was home.",
     "It is only a draft. Probably.",
     "Two real sounds, both cited. And I have no kettle for this.",
-    "That was NOT the kettle!",
+    "That was NOT the kettle!", "Probably the kettle. Probably.",
 ]
 XOCHI = [
     "I am Xochi. I keep watch all night, and at dawn I bring the family a note about what I saw.",
@@ -58,7 +59,8 @@ XOCHI = [
     "Her words are gentle. Her warning is not.",
     "I will write it down: every answer cites a real moment.",
     "Wait. The air just changed.",
-    "Stay close to me!",
+    "Stay close to me!", "It moved when the glass stopped. I will write it down.",
+    "The case is closed. Thank you for staying until the end.",
 ]
 SPIRIT = sorted({spirits.GUARDIAN_YES, "Still here. I never left.", spirits.GUARDIAN_WHO, spirits.GUARDIAN_WHERE,
                  *[row[2] for row in spirits.GUARDIAN_ROWS], *[d[1] for d in spirits.GUARDIAN_DEFAULTS]})
