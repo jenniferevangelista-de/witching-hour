@@ -129,8 +129,11 @@
   let current = null;
   const visible = (k) => VIEWS[k].sel.flatMap((s) => [...document.querySelectorAll(s)]);
 
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
   function show(k, { scroll = true } = {}) {
     if (k === current) return;
+    // something was played or is still talking: reload on the new page, so nothing keeps speaking and every page starts from zero
+    if (current && window.WH && window.WH.dirty && window.WH.dirty()) { location.reload(); return; }
     current = k;
     const keep = new Set(visible(k));
     ORDER.forEach((name) => visible(name).forEach((el) => { if (!keep.has(el)) el.classList.add("view-off"); }));

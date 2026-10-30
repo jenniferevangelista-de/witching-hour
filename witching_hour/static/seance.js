@@ -130,7 +130,11 @@
   let typing = 0;
 
   /* Say one line: type it while the recorded voice plays (if there is one), then hold it long enough to read. */
-  async function voiced(text, src, show, { hold = null } = {}) {
+  async function voiced(text, src, show, opts) {
+    WH.active = (WH.active || 0) + 1;   // the page asks this before it leaves: anything still talking means a fresh start
+    try { return await voicedLine(text, src, show, opts); } finally { WH.active -= 1; }
+  }
+  async function voicedLine(text, src, show, { hold = null } = {}) {
     const me = ++typing;
     stopVoice();
     let audio = null, dur = 0;
@@ -532,33 +536,37 @@
     start.after(b);
   }
 
-  // ---- Summon the spirit: fixed at the top of The Unheard from the first second
+  // ---- Summon the spirit: one button fixed at the top of The Unheard and one in Luna's panel, both there from the start
   function summonFixed() {
     const open = $("#uh-open");
     if (!open || $("#summon-fixed")) return;
-    const b = document.createElement("button");
-    b.type = "button"; b.id = "summon-fixed"; b.className = "big summon-fixed";
     const label = "🔮 Summon the spirit";
-    b.textContent = label;
-    document.body.append(b);
+    const mk = (id, cls) => { const b = document.createElement("button"); b.type = "button"; b.id = id; b.className = cls; b.textContent = label; return b; };
+    const fixed = mk("summon-fixed", "big summon-fixed"), panel = mk("summon-panel", "big summon-panel");
+    document.body.append(fixed);
+    open.after(panel);
+    const both = [fixed, panel];
     let waiting = false;
-    b.addEventListener("click", async () => {
+    const click = async () => {
       sfx.prime();
       if (waiting) return;
-      if (!open.hidden) { open.click(); return; }
+      if (!open.hidden) { open.click(); return; }   // the case is read: summon, and the page scrolls down to the séance
       waiting = true;
-      b.classList.add("wait");
+      both.forEach((b) => b.classList.add("wait"));
       const status = $("#uh-status");
-      const tick = setInterval(() => { b.textContent = "⏳ " + ((status && status.textContent) || "Reading the recording...").replace(/^.*?(Reading frames\.\.\. \d+%).*$/, "$1").slice(0, 34); }, 300);
+      const tick = setInterval(() => {
+        const m = status && /Reading frames\.\.\. \d+%/.exec(status.textContent);
+        both.forEach((b) => { b.textContent = "⏳ " + (m ? m[0] : "Reading the recording..."); });
+      }, 300);
       // nothing opened yet: open the demo case, then summon as soon as the evidence is in
-      if (!WH.evidenceFor("uh").length && !($("#uh-status") && /reading|opening/i.test($("#uh-status").textContent))) { const d = $("#uh-demo"); d && d.click(); }
+      if (!WH.evidenceFor("uh").length && !(status && /reading|opening/i.test(status.textContent))) { const d = $("#uh-demo"); d && d.click(); }
       for (let i = 0; i < 240 && open.hidden; i++) await new Promise((r) => setTimeout(r, 250));
       clearInterval(tick);
-      b.classList.remove("wait");
-      b.textContent = label;
+      both.forEach((b) => { b.classList.remove("wait"); b.textContent = label; });
       waiting = false;
       if (!open.hidden) open.click();
-    });
+    };
+    both.forEach((b) => b.addEventListener("click", click));
   }
 
   // ---- the evidence cards come out of the dark as you scroll down to them, each with a small ghost

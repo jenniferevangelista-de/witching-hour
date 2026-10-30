@@ -513,7 +513,7 @@
         await investigate(URL.createObjectURL(f), await f.arrayBuffer(), f.name);
       } catch (e) { $("#uh-status").textContent = e.message; }
     });
-    $("#uh-open").addEventListener("click", async () => { await summon("uh", unheard.title || "recording", unheard.evidence, $("#uh-words").value.trim()); $("#uh-seance").scrollIntoView({ behavior: "smooth", block: "center" }); });
+    $("#uh-open").addEventListener("click", async () => { await summon("uh", unheard.title || "recording", unheard.evidence, $("#uh-words").value.trim()); const box = $("#uh-seance"); box.scrollIntoView({ behavior: WH.reduceMotion ? "auto" : "smooth", block: "center" }); setTimeout(() => { if (Math.abs(box.getBoundingClientRect().top) > innerHeight) box.scrollIntoView({ behavior: "auto", block: "center" }); }, 1200); });
     $("#uh-replay").addEventListener("click", replaySeance);
     $("#uh-dossier").addEventListener("click", dossier);
     $("#uh-ask").addEventListener("submit", (e) => { e.preventDefault(); const i = $("input", e.target); if (i.value.trim()) { ask("uh", i.value.trim()); i.value = ""; } });
@@ -529,6 +529,8 @@
   }
   WH.bigotes = bigotes;
   WH.roomDemo = roomDemo;
+  // true when this page has been played with: leaving it then reloads, so coming back (or going on) starts from zero
+  WH.dirty = () => !!(unheard.evidence.length || room.evidence.length || room.stream || Object.keys(sessions).length || WH.active > 0);
   WH.haunt = haunt;
   WH.evidenceFor = (prefix) => (prefix === "rm" ? room.evidence : unheard.evidence) || [];
   boot();
