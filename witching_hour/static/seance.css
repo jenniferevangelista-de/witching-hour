@@ -206,8 +206,7 @@ body.climax .spelled .lt { animation: lt .55s cubic-bezier(.2, 1.4, .4, 1) both,
   100% { opacity: 0; transform: translate(46px, -34px) scale(1.15) rotate(-4deg); }
 }
 
-/* Summon the spirit: fixed at the top of The Unheard from the start; the one in Luna's panel is hidden */
-#uh-open { display: none !important; }
+/* Summon the spirit: one fixed at the top of The Unheard from the start, and the one in Luna's panel */
 .summon-fixed { display: none; position: fixed; top: 64px; right: 16px; z-index: 40; background: linear-gradient(180deg, #ff6aa6, #e83f8b); color: #fff; border: 0; padding: 12px 20px; box-shadow: 0 6px 24px rgba(232, 63, 139, .45); cursor: pointer; }
 body[data-view="unheard"] .summon-fixed { display: inline-flex; }
 body.summoned .summon-fixed, body.seance-on .summon-fixed, body.act-on .summon-fixed { display: none !important; }
