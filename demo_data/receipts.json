@@ -1,9 +1,9 @@
 {
  "counted_at": "2026-10-30",
- "tests": 68,
+ "tests": 73,
  "workflows": 14,
- "voice_lines": 50,
- "audio_files": 74,
+ "voice_lines": 51,
+ "audio_files": 75,
  "nights": 123,
  "stories": 162,
  "warning": {

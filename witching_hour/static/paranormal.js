@@ -447,7 +447,7 @@
       return;
     }
     box.innerHTML = evidence.map((e) => `<div class="event" data-ev="${esc(e.id)}" id="ev-${esc(e.id)}">
-        <div class="top"><span><span class="id">${esc(e.id)}</span> <button class="ts" data-t="${esc(e.start)}">${esc(e.start.toFixed(2))}s</button> <span class="what">${esc(e.type.replace("_", " "))}</span></span><span class="ci">confidence ${esc(Math.round(e.confidence * 100))}%</span></div>
+        <div class="top"><span><span class="id">${esc(e.id)}</span> <button class="ts" data-t="${esc(e.start)}">${esc(e.start.toFixed(2))}s</button> <span class="what">${esc(e.type.replace("_", " "))}</span></span><span class="ci">relative signal intensity ${esc(Math.round(e.confidence * 100))}%</span></div>
         <div class="nums">${esc(e.description)}</div>
         <div class="bigotes">🔦 ${esc(bigotes(e, evidence))}</div>
       </div>`).join("");
@@ -569,7 +569,7 @@
     const html = `<!doctype html><meta charset="utf-8"><title>Case dossier: ${esc(unheard.title || "a recording")}</title>
 <style>body{font:15px/1.6 Georgia,serif;max-width:760px;margin:40px auto;padding:0 16px;color:#1b1430}h1{font-family:Impact,sans-serif;letter-spacing:1px}h2{border-bottom:2px solid #1b1430}.f{background:#fbf3e4;border:2px dashed #e83f8b;padding:10px 14px}</style>
 <h1>WITCHING HOUR · CASE DOSSIER</h1><p><b>${esc(unheard.title || "A recording")}</b>, investigated with PARANORMAL.exe. Written down by Xochi, the Night Watch.</p>
-<h2>1. What the recording really contains</h2><ol>${ev.map((e) => `<li>${esc(e.start.toFixed(2))}s: ${esc(e.type.replace("_", " "))}, ${esc(e.description)} (confidence ${Math.round(e.confidence * 100)}%)</li>`).join("") || "<li>Nothing stood out from the rest of the recording.</li>"}</ol>
+<h2>1. What the recording really contains</h2><ol>${ev.map((e) => `<li>${esc(e.start.toFixed(2))}s: ${esc(e.type.replace("_", " "))}, ${esc(e.description)} (relative signal intensity ${Math.round(e.confidence * 100)}%)</li>`).join("") || "<li>Nothing stood out from the rest of the recording.</li>"}</ol>
 <h2>2. What Dr. Bigotes thinks</h2><ul>${ev.map((e) => `<li>${esc(e.id)}: ${esc(bigotes(e, ev))}</li>`).join("")}</ul>
 <h2>3. What the board said (fiction)</h2><div class="f">${spirit ? `<p><b>${esc(spirit.name)}</b>, ${esc(spirit.title)}. ${esc(spirit.backstory)}</p>` : ""}<ol>${turns.map((t) => `<li>${esc(t)}</li>`).join("") || "<li>No séance yet.</li>"}</ol><p>The spirit and its words were made up by an open model from the evidence in section 1. They are not a real message.</p></div>
 <h2>4. Xochi's note</h2><p>I carried the message across, the way xolos do. Whether you believe it is up to you. What the camera really caught is in section 1, and that part is true.</p>`;

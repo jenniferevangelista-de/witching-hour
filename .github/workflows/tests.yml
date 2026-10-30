@@ -30,6 +30,7 @@ jobs:
         run: |
           node --check witching_hour/static/paranormal.js
           node --check witching_hour/static/seance.js
+          node --check witching_hour/static/receipts.js
       - run: pip install -e ".[dev]" playwright
       - name: Install browser fixture tools
         run: |
