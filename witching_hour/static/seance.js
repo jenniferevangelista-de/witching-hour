@@ -714,7 +714,12 @@
         reset = setTimeout(() => { batch = 0; }, 700);
       });
     }, { threshold: 0.25 });
-    const watch = (el) => { if (el.classList.contains("event") && !el.dataset.g) { el.dataset.g = "1"; el.classList.add("pre"); io.observe(el); } };
+    const watch = (el) => {
+      if (!el.classList.contains("event") || el.dataset.g) return;
+      el.dataset.g = "1"; el.classList.add("pre"); io.observe(el);
+      // a card already on screen must never stay dark, even if the observer missed it (a jump, a hidden panel)
+      setTimeout(() => { if (!el.classList.contains("in") && el.getBoundingClientRect().top < innerHeight) { io.unobserve(el); el.classList.add("in"); } }, 1800);
+    };
     const scan = () => $$(".events > .event").forEach(watch);
     new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
     scan();
