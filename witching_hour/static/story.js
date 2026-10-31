@@ -213,7 +213,13 @@
     document.body.append(f);
     setTimeout(() => f.remove(), 800);
     breakSound();
-    timers.push(setTimeout(next, 1700));
+    // the scene goes on: the crew finishes, shouts and runs; the story moves on once the run is over
+    const waitRun = () => {
+      const card = $("#act-card");
+      if (card && !card.hidden) { card.hidden = true; timers.push(setTimeout(next, 900)); return; }
+      timers.push(setTimeout(waitRun, 400));
+    };
+    timers.push(setTimeout(waitRun, 400));
   }
   function breakSound() {
     try {
