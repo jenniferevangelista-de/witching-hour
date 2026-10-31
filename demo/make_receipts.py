@@ -25,6 +25,7 @@ def main() -> None:
         cited |= set(t["grounding"]["related_evidence_ids"])
     ev = json.loads((D / "eval.json").read_text(encoding="utf-8"))["results"]
     bk = json.loads((D / "bakeoff.json").read_text(encoding="utf-8"))
+    stories = [json.loads(f.read_text(encoding="utf-8")) for f in sorted((D / "stories").glob("*.json"))]
     out = {
         "counted_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "tests": tests,
@@ -32,7 +33,10 @@ def main() -> None:
         "voice_lines": len(json.loads((D / "audio" / "seance_manifest.json").read_text(encoding="utf-8"))),
         "audio_files": len(list((D / "audio").glob("*.mp3"))),
         "nights": len(list((D / "nights").glob("*"))),
-        "stories": len(list((D / "stories").glob("*"))),
+        "stories": len(stories),
+        # quiet nights get a scripted note with no citations; only the cited stories come from the model
+        "model_stories": sum(any(s["cites"] for s in st["sentences"]) for st in stories),
+        "scripted_stories": sum(not any(s["cites"] for s in st["sentences"]) for st in stories),
         "warning": {"moments": len(ids), "cited": sorted(cited), "all_cited_exist": cited <= ids, "turns": len(warning["seance"]["turns"])},
         "planted": [{"backend": r["backend"], "recall_fpr5": r["recall_fpr5"], "auc": r["auc"], "cases": r["n_cases"]} for r in ev],
         "bakeoff": [{"model": r["model"], "grounded": r["grounded_share"], "verified": r["verified"], "sentences": r["sentences"]} for r in bk["results"]]

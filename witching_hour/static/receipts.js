@@ -13,7 +13,7 @@
         ${item(r.warning.moments, "moments measured in The Warning", `${r.warning.cited.length} of them cited by the recorded séance: ${r.warning.all_cited_exist ? "every citation points at a real moment" : "CHECK: a citation points nowhere"}`)}
         ${item(r.tests, "tests in the saved repository snapshot", `${r.workflows} workflows; see the latest GitHub Actions run for execution results`)}
         ${item(pct(best.recall_fpr5), "of planted anomalies caught by TabPFN", `${best.cases} exploratory cases; threshold set on the same nights to target 5% false alarms. Baselines: ${others}`)}
-        ${item(r.nights, "nights scanned", `${r.stories} stories written, each checked sentence by sentence`)}
+        ${item(r.nights, "nights scanned", `${r.stories} story entries: ${r.model_stories ?? "most"} by Gemma, checked sentence by sentence; ${r.scripted_stories ?? "the rest"} scripted quiet-night notes`)}
         ${item(r.voice_lines, "voice lines recorded", "the crew and the Guardian, recorded once, so the demo needs no key")}
         ${models ? item(r.bakeoff.length, "open models in the bake-off", models) : ""}
       </ul>
