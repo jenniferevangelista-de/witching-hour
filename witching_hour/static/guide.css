@@ -1,0 +1,74 @@
+/* The step rail beside each case, the "more below" pill and the guided tour. Loaded after seance.css. */
+
+/* ---- receipts: every card the same shape, numbers and titles on one line */
+.rc { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; }
+.rc li { align-content: start; grid-template-rows: auto minmax(2.6em, auto) 1fr; }
+.rc span { line-height: 1.3; }
+@media (max-width: 560px) { .rc { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; } }
+
+/* ---- the step rail */
+.rail { position: fixed; z-index: 25; top: 96px; left: 18px; width: 178px; display: none; }
+.rail h4 { margin: 0 0 8px; font: 600 12px "Fredoka", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.rail ol { list-style: none; margin: 0; padding: 0; counter-reset: r; position: relative; }
+.rail ol::before { content: ""; position: absolute; left: 11px; top: 12px; bottom: 12px; width: 2px; background: var(--line); }
+.rail li { counter-increment: r; position: relative; }
+.rail button {
+  display: grid; grid-template-columns: 24px 1fr; gap: 8px; align-items: center; width: 100%; padding: 6px 4px; margin: 0;
+  background: none; border: 0; color: var(--muted); font: 600 13.5px/1.25 "Fredoka", sans-serif; text-align: left; cursor: pointer;
+}
+.rail button::before {
+  content: counter(r); display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--panel-2); border: 2px solid var(--line); color: var(--bone); font-size: 12px; position: relative; z-index: 1;
+}
+.rail button:hover { color: var(--bone); }
+.rail button:focus-visible { outline: 3px solid var(--cempa); outline-offset: 2px; border-radius: 8px; }
+.rail li.done button { color: var(--turq); }
+.rail li.done button::before { content: "✓"; background: var(--turq); border-color: var(--turq); color: #08201d; }
+.rail li.now button { color: var(--cempa); }
+.rail li.now button::before { background: var(--cempa); border-color: var(--cempa); color: #2a1600; box-shadow: 0 0 0 4px rgba(255, 191, 60, .2); }
+.rail .rail-tour { margin-top: 14px; width: 100%; font-size: 13px; padding: 8px 10px; }
+
+body.has-rail .rail { display: block; }
+/* leave the left margin to the rail on laptop screens */
+@media (min-width: 1240px) and (max-width: 1659px) { body.has-rail main { max-width: calc(100vw - 440px); } }
+@media (max-width: 1239px) { body.has-rail .rail { display: none; } }
+
+/* ---- "more below": the next step, always one tap away */
+.more-below {
+  position: fixed; z-index: 26; left: 50%; bottom: 18px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100vw - 160px);
+  padding: 9px 16px; border-radius: 999px; border: 2px solid var(--cempa); background: rgba(18, 12, 38, .94);
+  color: var(--bone); font: 600 14px "Fredoka", sans-serif; cursor: pointer; box-shadow: 0 8px 24px rgba(0, 0, 0, .45);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.more-below[hidden] { display: none; }
+.more-below .arrow { display: inline-block; animation: bob 1.4s ease-in-out infinite; }
+.more-below small { color: var(--muted); font-weight: 500; }
+@keyframes bob { 50% { transform: translateY(3px); } }
+@media (prefers-reduced-motion: reduce) { .more-below .arrow { animation: none; } }
+
+/* ---- guided tour */
+.tour-btn { margin-left: 8px; }
+.topbar .tour-link { border-color: var(--rosa); color: #ffd1e6; }
+.tour-spot {
+  position: absolute; z-index: 60; border-radius: 16px; pointer-events: none;
+  box-shadow: 0 0 0 4px var(--cempa), 0 0 0 9999px rgba(6, 3, 16, .62);
+  transition: top .35s ease, left .35s ease, width .35s ease, height .35s ease;
+}
+.tour-tip {
+  position: fixed; z-index: 61; width: min(380px, calc(100vw - 32px)); padding: 14px 16px 12px;
+  background: var(--bone); color: #24183f; border: 3px solid #c2410c; border-radius: 18px; box-shadow: 0 14px 40px rgba(0, 0, 0, .5);
+}
+.tour-tip .who { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.tour-tip .who img { width: 44px; height: 44px; }
+.tour-tip .who b { font: 700 15px "Fredoka", sans-serif; color: #c2410c; }
+.tour-tip .who span { font-size: 12px; color: #6b5a8e; }
+.tour-tip p { margin: 0 0 12px; font-size: 15px; line-height: 1.45; }
+.tour-tip .row { display: flex; align-items: center; gap: 8px; }
+.tour-tip .row .count { margin-right: auto; font-size: 12px; color: #6b5a8e; }
+.tour-tip button { font: 600 13px "Fredoka", sans-serif; border-radius: 10px; padding: 7px 12px; cursor: pointer; border: 2px solid #2a2048; }
+.tour-tip .next { background: #c2410c; color: #fff; border-color: #c2410c; }
+.tour-tip .back { background: transparent; color: #2a2048; }
+.tour-tip .skip { background: transparent; border: 0; color: #6b5a8e; text-decoration: underline; padding: 7px 4px; }
+.tour-tip:focus-visible, .tour-tip button:focus-visible { outline: 3px solid var(--cempa); outline-offset: 2px; }
+body.touring .more-below { display: none; }
