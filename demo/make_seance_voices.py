@@ -73,12 +73,18 @@ def catalogue() -> list[tuple[str, str, str]]:
     for who, mode, lines in (("luna", "medium", LUNA), ("bigotes", "skeptic", BIGOTES), ("xochi", "family", XOCHI)):
         out += [(who, t, mode) for t in lines]
     out += [("spirit", t, "spirit") for t in SPIRIT]
+    # the other spirits a template séance can summon, each in its own archetype voice
+    for arche, (who_line, lines) in spirits.ARCHETYPE_LINES.items():
+        out += [("spirit", t, f"spirit:{arche}") for t in [who_line, *[sp for _, sp in lines]] if t.strip(". ")]
     return out
 
 
 def voice_of(mode: str):
     if mode == "spirit":
         return spirits.ARCHETYPES["guardian"]["voice"], SPIRIT_SETTINGS, "Guardian"
+    if mode.startswith("spirit:"):
+        arche = mode.split(":", 1)[1]
+        return spirits.ARCHETYPES[arche]["voice"], SPIRIT_SETTINGS, spirits.ARCHETYPES[arche]["title"]
     return VOICES[mode][0], SETTINGS[mode], VOICES[mode][1]
 
 

@@ -304,5 +304,113 @@
   "who": "luna",
   "voice": "Jessica",
   "text": "I summon the spirit the evidence suggests: a Guardian, a Lost One, a Trickster, a Watcher, a Hostile Presence or a Silent One. Its answers are fiction, and each one must point at a real moment of the recording."
+ },
+ "i do not remember my name i only remember the sound": {
+  "file": "seance-c9d64d2dcb.mp3",
+  "who": "spirit",
+  "voice": "The Lost One",
+  "text": "I do not remember my name. I only remember the sound."
+ },
+ "i keep calling nobody turns around": {
+  "file": "seance-836b0e863a.mp3",
+  "who": "spirit",
+  "voice": "The Lost One",
+  "text": "I keep calling. Nobody turns around."
+ },
+ "did you hear it too": {
+  "file": "seance-573f65ea2d.mp3",
+  "who": "spirit",
+  "voice": "The Lost One",
+  "text": "Did you hear it too?"
+ },
+ "everything sounds farther away than before": {
+  "file": "seance-f636adde33.mp3",
+  "who": "spirit",
+  "voice": "The Lost One",
+  "text": "Everything sounds farther away than before."
+ },
+ "oh you want my name guess": {
+  "file": "seance-e47c6c37a2.mp3",
+  "who": "spirit",
+  "voice": "The Trickster",
+  "text": "Oh, you want my name? Guess."
+ },
+ "too slow i was already somewhere else": {
+  "file": "seance-bac9dbf45d.mp3",
+  "who": "spirit",
+  "voice": "The Trickster",
+  "text": "Too slow. I was already somewhere else."
+ },
+ "ask me again and see": {
+  "file": "seance-cb32b17b7d.mp3",
+  "who": "spirit",
+  "voice": "The Trickster",
+  "text": "Ask me again and see."
+ },
+ "only joking or am i": {
+  "file": "seance-f4330fc71b.mp3",
+  "who": "spirit",
+  "voice": "The Trickster",
+  "text": "Only joking. Or am I?"
+ },
+ "i am the one who notices": {
+  "file": "seance-4a0caa3132.mp3",
+  "who": "spirit",
+  "voice": "The Watcher",
+  "text": "I am the one who notices."
+ },
+ "you missed something": {
+  "file": "seance-ed74de9854.mp3",
+  "who": "spirit",
+  "voice": "The Watcher",
+  "text": "You missed something."
+ },
+ "it is quieter than it should be": {
+  "file": "seance-330985af96.mp3",
+  "who": "spirit",
+  "voice": "The Watcher",
+  "text": "It is quieter than it should be."
+ },
+ "not yet watch the door": {
+  "file": "seance-f1c64a02e7.mp3",
+  "who": "spirit",
+  "voice": "The Watcher",
+  "text": "Not yet. Watch the door."
+ },
+ "this room was mine first": {
+  "file": "seance-ab2da4ef71.mp3",
+  "who": "spirit",
+  "voice": "The Hostile Presence",
+  "text": "This room was mine first."
+ },
+ "you are not welcome here it is only a game but play carefully": {
+  "file": "seance-0c68e734ab.mp3",
+  "who": "spirit",
+  "voice": "The Hostile Presence",
+  "text": "You are not welcome here. It is only a game, but play carefully."
+ },
+ "feel that that is me": {
+  "file": "seance-90ac18cf1e.mp3",
+  "who": "spirit",
+  "voice": "The Hostile Presence",
+  "text": "Feel that? That is me."
+ },
+ "the corner stays dark for a reason": {
+  "file": "seance-1176ac36e3.mp3",
+  "who": "spirit",
+  "voice": "The Hostile Presence",
+  "text": "The corner stays dark for a reason."
+ },
+ "not now": {
+  "file": "seance-81a1064e89.mp3",
+  "who": "spirit",
+  "voice": "The Silent One",
+  "text": "Not now."
+ },
+ "shh": {
+  "file": "seance-0c731a5f1d.mp3",
+  "who": "spirit",
+  "voice": "The Silent One",
+  "text": "Shh."
  }
 }

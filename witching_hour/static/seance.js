@@ -668,6 +668,8 @@
       if (waiting) return;
       const status = $("#uh-status");
       const state = status && status.dataset.state;
+      // still reading the demo clip: no need to wait, the pipeline already measured it
+      if (state === "loading" && window.WH.useMeasured && window.WH.useMeasured()) { sfx.prime(); setTimeout(() => { if (!open.hidden && !open.disabled) open.click(); }, 60); return; }
       if (state === "loading" || state === "error" || state === "ready" && open.disabled) return;
       sfx.prime();
       if (state === "ready" && !open.hidden) { open.click(); return; }
@@ -688,6 +690,7 @@
         both.forEach((b) => { b.textContent = "... " + (m ? m[0] : "Reading the recording..."); });
       }, 300);
       for (let i = 0; i < 240 && current() && status.dataset.state === "loading"; i++) {
+        if (window.WH.useMeasured && window.WH.useMeasured()) break;   // the demo needs no wait: use what the pipeline measured
         await new Promise((resolve) => setTimeout(resolve, 250));
       }
       clearInterval(tick);
