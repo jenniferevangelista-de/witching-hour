@@ -456,8 +456,23 @@
 
   const sameEvidence = (a, b) => JSON.stringify(a.map((e) => [e.type, e.start])) === JSON.stringify(b.map((e) => [e.type, e.start]));
 
+  // the demo case can skip the reading: the pipeline already measured the same clip with OpenCV (cases.json)
+  let skipped = null;
+  WH.useMeasured = () => {
+    const demo = unheard.caseData;
+    if (unheard.ready || unheard.kind !== "demo" || !demo || !demo.series) return false;
+    skipped = recordingVersion;
+    unheard = { ...unheard, evidence: demo.evidence, series: demo.series, title: "The Warning (a staged recording)", ready: true };
+    $("#uh-status").dataset.state = "ready";
+    $("#uh-status").textContent = `The Warning (a staged recording): ${demo.evidence.length} moments, as measured by the pipeline with OpenCV.`;
+    drawTimeline(demo.series, demo.evidence, demo.series.t.length * STEP);
+    renderEvidence(demo.evidence);
+    refreshRecordingControls();
+    return true;
+  };
+
   async function investigate(src, buf, title, measured, version = recordingVersion) {
-    const active = () => recordingCurrent(version);
+    const active = () => recordingCurrent(version) && skipped !== version;
     if (!active()) return null;
     const v = $("#uh-video");
     $("#uh-status").textContent = "PARANORMAL.exe is reading the recording, frame by frame, in your browser...";

@@ -43,7 +43,7 @@
     { id: "seance", part: 2, view: "unheard", who: "luna", title: "The séance",
       text: "The spirit speaks only through the glass, three words at a time, and every answer must point at a real moment. This séance was recorded with Gemma 4 on a laptop. Watch the glass.",
       enter: seance,
-      show: [UH], hide: [`${UH} > .term-body > .term-actions`, "#uh-status", "#uh-story", UH_LEFT, `${UH_RIGHT} > p.notice`, `${UH_RIGHT} > label.words`, `${UH_RIGHT} .receipts-slot`] },
+      show: [UH], hide: [`${UH} > .term-body > .term-actions`, "#uh-status", "#uh-story", UH_LEFT, `${UH_RIGHT} > .with-guide.luna`, "#summon-panel", `${UH_RIGHT} > p.notice`, `${UH_RIGHT} > label.words`, `${UH_RIGHT} .receipts-slot`] },
     { part: 3, view: "room", who: "luna", title: "The Room: your turn",
       text: "Turn on your camera, or play without one. Summon the spirit of the room and pick a question. Then stay very still: if something really moves right after the glass stops, the game will notice. Or bring your own recording, and the crew investigates it like Kenji's. On this free demo the spirit is a template; at home, Gemma answers live.",
       show: [RM], hide: ["#rm-log"] },
@@ -179,6 +179,7 @@
     const step = () => {
       if (at < 0 || STAGES[at].id !== "seance") return;
       const note = intro.querySelector(".st-wait") || intro.querySelector("p").appendChild(Object.assign(document.createElement("b"), { className: "st-wait" }));
+      if (/Reading frames|reading the recording/.test($("#uh-status").textContent) && window.WH && WH.useMeasured) WH.useMeasured();   // skipped the clip: use what the pipeline measured
       const reading = /Reading frames/.test($("#uh-status").textContent);
       note.textContent = reading ? ` (${$("#uh-status").textContent.replace("Reading frames...", "Luna is still reading the clip:")})` : "";
       const replay = $("#uh-replay"), open = $("#uh-open");
