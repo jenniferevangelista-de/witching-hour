@@ -189,6 +189,7 @@
     }, 120);
   }
   function startTour(i = 0) { showStep(i); }
+  window.WHGuide = { start: startTour };
   document.addEventListener("keydown", (e) => {
     if (at < 0) return;
     if (e.key === "Escape") stopTour();

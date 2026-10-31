@@ -19,7 +19,7 @@
   const STAGES = [
     { part: 0, view: "home", who: "luna", title: "What if someone tried to warn you, and you never heard them?",
       text: "Witching Hour is a ghost hunt for Halloween and Día de los Muertos. The evidence is real: sensor logs and recordings, measured by open models. The spirits are fiction, and nobody on the crew may say a word the evidence cannot back.",
-      bare: true, show: ["header.hero", "#st-welcome"], hide: ["header.hero > .tagline", "#crew", "header.hero nav.doors", "header.hero .start"] },
+      bare: true, show: ["header.hero", "#st-welcome"], hide: ["header.hero > .tagline", "#crew", ".crew-ctl", "header.hero nav.doors", "header.hero .start"] },
     { part: 0, view: "home", who: "xochi", title: "Meet the crew",
       text: "Three of us read the same evidence and never agree on what it means. Press play on a card to hear each of us.",
       show: ["#crew"], hide: ["header.hero > .kicker", "header.hero > h1", "header.hero > .hook", "header.hero > .tagline", "header.hero nav.doors", "header.hero .start"] },
@@ -66,7 +66,7 @@
   welcome.id = "st-welcome";
   welcome.innerHTML = `<div class="st-cast">${["luna", "bigotes", "xochi"].map((k) => `<figure class="${k}"><img src="/static/characters/${k}.svg" alt="${FACE[k]}"><figcaption><b>${FACE[k].split(",")[0]}</b><span>${FACE[k].split(", ")[1]}</span></figcaption></figure>`).join("")}</div>
     <p>A ghost hunt for Halloween and Día de los Muertos. <b>The evidence is real</b>: sensor logs and recordings, measured by open models. <b>The spirits are fiction</b>, and nobody on the crew may say a word the evidence cannot back.</p>
-    <button type="button" class="big st-begin">Begin the investigation →</button>`;
+    <div class="st-choices"><button type="button" class="big st-begin">Begin the investigation →</button><button type="button" class="big alt st-guided">🧭 Or take the guided tour of the full page</button></div>`;
   $("header.hero")?.after(welcome);
   // whoever is talking gets a speech bubble with their words; a click on a character makes them talk
   const CARD = { medium: "luna", skeptic: "bigotes", family: "xochi" };
@@ -239,6 +239,7 @@
   bar.querySelectorAll(".parts button").forEach((b) => b.addEventListener("click", () => goTo(STAGES.findIndex((s) => s.part === +b.dataset.p))));
   end.querySelector(".st-again").addEventListener("click", () => goTo(0));
   welcome.querySelector(".st-begin").addEventListener("click", next);
+  welcome.querySelector(".st-guided").addEventListener("click", () => { freeMode(); setTimeout(() => window.WHGuide && window.WHGuide.start(0), 300); });
   function freeMode() {
     store.set(MODE, "explore");
     clearStage();

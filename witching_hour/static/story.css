@@ -118,3 +118,8 @@ body.story #st-welcome .st-cast { margin-top: 70px; }
 
 /* Luna's drawing is smaller inside its frame: scale her whole face (mouth included) from the bottom */
 .st-cast .luna .face { scale: 1.55; transform-origin: 50% 88%; margin-bottom: 10px; }
+
+/* the crew cards: "Hear me" sits under the text instead of over the title */
+.crew .card .hear { position: static; grid-column: 2; justify-self: start; margin-top: 2px; }
+/* the first screen: two ways in */
+.st-choices { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
