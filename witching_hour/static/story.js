@@ -67,7 +67,7 @@
   // the first screen: the crew, big, right under the title
   const welcome = document.createElement("section");
   welcome.id = "st-welcome";
-  welcome.innerHTML = `<div class="st-cast">${["luna", "bigotes", "xochi"].map((k) => `<figure class="${k}"><img src="/static/characters/${k}.svg" alt="${FACE[k]}"><figcaption><b>${FACE[k].split(",")[0]}</b><span>${FACE[k].split(", ")[1]}</span></figcaption></figure>`).join("")}</div>
+  welcome.innerHTML = `<div class="st-cast">${["luna", "bigotes", "xochi"].map((k) => `<figure class="${k}"><img src="/static/characters/${k}.svg" alt="${FACE[k]}"><figcaption><b>${FACE[k].split(",")[0]}</b><span>${FACE[k].split(", ")[1]}</span></figcaption></figure>`).join("")}</div><p class="st-tap">🔊 Tap a character to hear them introduce themselves</p>
     <p>A ghost hunt for Halloween and Día de los Muertos. <b>The evidence is real</b>: sensor logs and recordings, measured by open models. <b>The spirits are fiction</b>, and nobody on the crew may say a word the evidence cannot back.</p>
     <div class="st-choices"><button type="button" class="big st-begin">Begin the investigation →</button><button type="button" class="big alt st-guided">🧭 Or take the guided tour of the full page</button></div>`;
   $("header.hero")?.after(welcome);

@@ -123,3 +123,4 @@ body.story #st-welcome .st-cast { margin-top: 70px; }
 .crew .card .hear { position: static; grid-column: 2; justify-self: start; margin-top: 2px; }
 /* the first screen: two ways in */
 .st-choices { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+#st-welcome p.st-tap { margin: 0 auto 4px; font-size: 13px; color: var(--muted); }
