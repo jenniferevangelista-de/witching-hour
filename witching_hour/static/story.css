@@ -53,7 +53,7 @@ body.story .st-bar {
 .st-explore { position: fixed; z-index: 41; top: 10px; right: 12px; font-size: 12px; padding: 6px 12px; }
 body:not(.story) .st-explore { display: none; }
 body:not(.story) .st-story-back { display: inline-flex; }
-.st-story-back { display: none; position: fixed; z-index: 41; right: 12px; bottom: 70px; font-size: 13px; }
+.st-story-back { display: none; position: fixed; z-index: 41; right: 12px; top: 64px; font-size: 13px; padding: 6px 14px; }
 
 /* the end card */
 #st-end { display: none; }

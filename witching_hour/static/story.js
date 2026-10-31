@@ -46,11 +46,10 @@
       show: [UH], hide: [`${UH} > .term-body > .term-actions`, "#uh-status", "#uh-story", UH_LEFT, `${UH_RIGHT} > p.notice`, `${UH_RIGHT} > label.words`, `${UH_RIGHT} .receipts-slot`] },
     { part: 3, view: "room", who: "luna", title: "The Room: your turn",
       text: "Turn on your camera, or play without one. Summon the spirit of the room and pick a question. Then stay very still: if something really moves right after the glass stops, the game will notice. Or bring your own recording, and the crew investigates it like Kenji's. On this free demo the spirit is a template; at home, Gemma answers live.",
-      extra: [["📼 Bring your own recording", () => $("#uh-file").click()]],
       show: [RM], hide: ["#rm-log"] },
-    { id: "own", optional: true, part: 3, view: "unheard", who: "bigotes", title: "Your recording",
+    { id: "own", optional: true, part: 3, view: "room", who: "bigotes", title: "Your recording",
       text: "Your browser is reading your clip frame by frame; it never leaves this page. Below: what stood out, my boring explanations, and the board for whatever is left. Summon the spirit when the reading is done.",
-      show: [UH], hide: [`${UH} > .term-body > .term-actions`, "#uh-replay", `${UH_RIGHT} > p.notice`, `${UH_RIGHT} > label.words`, `${UH_RIGHT} .receipts-slot`] },
+      show: [RM, UH], hide: ["#rm-log", `${UH} > .term-body > .term-actions`, "#uh-replay", `${UH_RIGHT} > p.notice`, `${UH_RIGHT} > label.words`, `${UH_RIGHT} .receipts-slot`] },
     { part: 4, view: "lab", who: "bigotes", title: "How it was tested",
       text: "Of course I tested the meter. We planted fake ghosts in real nights and counted how many each detector caught. The receipts are counted from the repository, not typed by hand.",
       show: ["#archive", 'section[aria-labelledby="eval-title"]'], hide: ["#archive-body"] },
@@ -222,9 +221,12 @@
     // the scene goes on: the crew finishes, shouts and runs, then the green "Now it is your turn" card offers the way on
   }
   document.addEventListener("click", (e) => {
-    if (!document.body.classList.contains("story")) return;
-    if (e.target.closest("#act-card .next")) store.set(KEY, String(STAGES.findIndex((s) => s.view === "room")));   // survives the page reload
-    else if (e.target.closest("#act-card .tryit")) { const r = STAGES.findIndex((s) => s.view === "room"); store.set(KEY, String(r)); timers.push(setTimeout(() => goTo(r), 600)); }
+    const story = document.body.classList.contains("story"), room = STAGES.findIndex((s) => s.view === "room");
+    if (e.target.closest("#act-card .next")) { if (story) store.set(KEY, String(room)); }   // survives the page reload
+    else if (e.target.closest("#act-card .tryit")) {   // "Try it yourself" goes to The Room, where your own recording comes in
+      if (story) store.set(KEY, String(room));
+      setTimeout(() => { if (story) goTo(room); else window.WHNav.go("room"); }, 600);
+    }
   }, true);
   function breakSound() {
     try {
@@ -251,7 +253,25 @@
   end.querySelector(".st-again").addEventListener("click", () => goTo(0));
   welcome.querySelector(".st-begin").addEventListener("click", next);
   // a recording chosen from "your turn" opens its own investigation screen
-  $("#uh-file")?.addEventListener("change", () => { if (document.body.classList.contains("story")) goTo(STAGES.findIndex((s) => s.id === "own")); });
+  // The Room takes your own recording too: the investigation of the clip opens right under it
+  const roomActs = $(`${RM} .term-actions`);
+  let fromRoom = false;
+  if (roomActs && !$("#rm-upload")) {
+    const b = document.createElement("button");
+    b.type = "button"; b.id = "rm-upload"; b.className = "big alt"; b.textContent = "📼 Bring your own recording";
+    b.addEventListener("click", () => { fromRoom = true; $("#uh-file").click(); });
+    roomActs.append(b);
+  }
+  $("#uh-file")?.addEventListener("change", () => {
+    const story = document.body.classList.contains("story");
+    if (!fromRoom && !story) return;
+    fromRoom = false;
+    const uh = $(UH), rm = $(RM);
+    if (uh && rm && rm.nextElementSibling !== uh) rm.after(uh);
+    if (story) { goTo(STAGES.findIndex((s) => s.id === "own")); return; }
+    uh.classList.remove("view-off");
+    setTimeout(() => uh.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }), 200);
+  });
   welcome.querySelector(".st-guided").addEventListener("click", () => { freeMode(); setTimeout(() => window.WHGuide && window.WHGuide.start(0), 300); });
   function freeMode() {
     store.set(MODE, "explore");
