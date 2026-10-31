@@ -110,3 +110,6 @@ body.story .st-intro[hidden] { display: none; }
 .st-cast .bigotes .st-bub { border-color: #11706a; }
 .st-cast .xochi .st-bub { border-color: #b0215f; }
 body.story #st-welcome .st-cast { margin-top: 70px; }
+/* the first screen's bubble: two lines at a time, like a game's dialogue box */
+.st-bub { display: flex; flex-direction: column; justify-content: flex-end; line-height: 1.4; height: calc(2.8em + 26px); overflow: hidden; }
+.st-bub[hidden] { display: none; }
