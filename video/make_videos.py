@@ -12,6 +12,7 @@ import json
 import subprocess
 import sys
 import time
+import urllib.parse
 import urllib.request
 import wave
 from pathlib import Path
@@ -361,21 +362,38 @@ CURSOR_JS = """
 })();
 """
 
+AUDIO_JS = """
+(() => {
+  // remember every voice the app plays, so the tour can mix the same files back in
+  window.__plays = [];
+  const play = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function () {
+    if (this.tagName === 'AUDIO') {
+      const rec = {t: performance.now(), src: this.currentSrc || this.src, end: null};
+      window.__plays.push(rec);
+      const stop = () => { if (rec.end === null) rec.end = performance.now(); };
+      this.addEventListener('pause', stop, {once: true});
+      this.addEventListener('ended', stop, {once: true});
+    }
+    return play.apply(this, arguments);
+  };
+})();
+"""
+
 TOUR = [
-    ("open", "This is the live demo of Witching Hour. I'm Luna, and I'll show you around."),
-    ("doors", "Meet the crew, and the three doors of PARANORMAL dot exe."),
-    ("map", "Case one, The House. The haunting map: every square is a night of a real house. The brighter it glows, the stronger the apparition. A blue dot means a room fell under eighteen degrees."),
-    ("night", "I'll open April nineteenth. At five forty the spirit meter jumps: the machines are waking up. Here is my story of that night."),
-    ("skeptic", "Doctor Bigotes explains it. Hover a citation, and the evidence it points to lights up on the chart."),
-    ("family", "And Xochi writes the morning note for the family. Even the house gets a message on the board, checked against the night's own events."),
-    ("tonight", "Tonight's forecast mixes live weather with TabPFN, and Doctor Bigotes checks the official warnings in a real browser."),
-    ("unheard", "Now, The Unheard. I open The Warning, and the browser reads the clip frame by frame. The video never leaves this page."),
-    ("evidence", "Five moments stand out from the rest of the recording, and Doctor Bigotes has a note for each one. The flicker, the buzz, a soft sound, the knocks, and the shadow."),
-    ("replay", "She told me what she remembers. Here is the recorded séance with the guardian. Listen."),
-    ("room", "And The Room. It uses your own camera and microphone, live. In this recording, the camera is Chrome's test pattern, so the board sees motion everywhere."),
-    ("summon", "I summon the spirit of the room and ask it something."),
-    ("archive", "Down in the archive: the planted ghosts benchmark, the model bake-off, and the apprentice we fine-tuned with Tinker."),
-    ("end", "The evidence is real. The spirits are fiction. Happy Halloween, and feliz Día de los Muertos."),
+    ("open", "This is the live demo of Witching Hour. I'm Luna, and I'll show you around. The evidence is real. The spirits are fiction."),
+    ("house", "Case one, The House. Every square is a night of a real house in Belgium. The brighter it glows, the further a room strayed from what TabPFN expected."),
+    ("night", "April nineteenth. At five forty the appliances use 380 watt hours, when TabPFN expected 75 at most. Here is my story of that night, and every sentence cites its evidence."),
+    ("skeptic", "Doctor Bigotes explains it. Hover a citation, and the moment it points to lights up on the chart."),
+    ("family", "Xochi writes the morning note for the family, with the rooms that fell under eighteen degrees."),
+    ("tonight", "Tonight's forecast: live weather goes into a second TabPFN model, and Doctor Bigotes checks the official warnings in a real browser."),
+    ("unheard", "Case two, The Unheard. I open The Warning, a staged clip, and the browser reads it frame by frame. The video never leaves this page."),
+    ("evidence", "Five moments stand out. Doctor Bigotes has a note for each one. And the receipts beside them are counted from the repository, not typed by hand."),
+    ("summon", "Then I summon the spirit for what he could not explain. This séance was recorded with Gemma 4, running on a laptop. Watch the glass."),
+    ("room", "Case three, The Room. You can use your camera, or play without one. On this free demo the spirit is a template. At home, Gemma answers live."),
+    ("ask", "I ask the board if someone is here."),
+    ("lab", "And how it was tested: the planted ghosts benchmark, the model bake-off through Backboard, and the apprentice we fine-tuned with Tinker."),
+    ("end", "Happy Halloween, and feliz Día de los Muertos."),
 ]
 
 
@@ -383,9 +401,7 @@ def make_tour():
     from playwright.sync_api import sync_playwright
 
     lines = {k: (pcm(say("luna", text, f"tour_{k}")), text) for k, text in TOUR}
-    case = json.loads((ROOT / "demo_data" / "cases.json").read_text(encoding="utf-8"))["cases"][0]
-    guardian = [ROOT / a.lstrip("/").replace("media/", "demo_data/media/", 1) if a else None for a in case["seance"]["audio"]]
-    marks, turns = [], []
+    marks, plays = [], []
     rec = WORK / "rec"
     with sync_playwright() as p:
         args = ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--autoplay-policy=no-user-gesture-required"]
@@ -397,6 +413,7 @@ def make_tour():
                                   record_video_size={"width": W, "height": H}, color_scheme="dark")
         ctx.grant_permissions(["camera", "microphone"], origin=BASE)
         ctx.add_init_script(CURSOR_JS)
+        ctx.add_init_script(AUDIO_JS)
         page = ctx.new_page()
         t0 = time.monotonic()
         now = lambda: time.monotonic() - t0  # noqa: E731
@@ -425,40 +442,48 @@ def make_tour():
             if rest > 0:
                 page.wait_for_timeout(int(rest * 1000))
 
+        def go(where):
+            glide(f"nav a[data-go='{where}']", True)
+            page.wait_for_timeout(1200)
+
+        def follow_board(stage, seconds):
+            """Keep the board in view while the séance plays itself out."""
+            end = now() + seconds
+            while now() < end:
+                if page.evaluate("(() => { const c = document.querySelector('#act-card'); return !!c && !c.hidden; })()"):
+                    return True
+                page.evaluate(f"(() => {{ const s = document.querySelector('{stage}'); if (s) s.scrollIntoView({{block: 'center', behavior: 'smooth'}}); }})()")
+                page.wait_for_timeout(1500)
+            return False
+
         page.goto(BASE, wait_until="networkidle")
+        perf0, py0 = page.evaluate("performance.now()") / 1000, now()
         page.wait_for_timeout(1500)
-        step("open", lambda: page.mouse.move(W / 2, 400, steps=10))
-        step("doors", lambda: (scroll_to("#crew", 120), page.wait_for_timeout(900), glide("nav.doors .door")))
-        step("map", lambda: (glide("a.door[href='#case-house']", True), page.wait_for_timeout(900), scroll_to("#map-title", 60)))
+        if page.evaluate("document.querySelector('#music-switch')?.getAttribute('aria-pressed') === 'true'"):
+            page.click("#music-switch")  # the synthesized score is not captured by the recording, keep it quiet
+        step("open", lambda: (page.mouse.move(W / 2, 400, steps=10), glide("#start-here")))
+        step("house", lambda: (go("house"), glide(".cell[data-night='2016-04-19']")))
         step("night", lambda: (glide(".cell[data-night='2016-04-19']", True), page.wait_for_timeout(1500), scroll_to("#night", 40)))
         step("skeptic", lambda: (glide("button.tab.skeptic", True), page.wait_for_timeout(1200), glide("#night .cite")))
-        step("family", lambda: (glide("button.tab.family", True), page.wait_for_timeout(2500), scroll_to("#night .ouija", 120)))
-        step("tonight", lambda: scroll_to("#tonight", 40))
-        step("unheard", lambda: (scroll_to("#unheard", 20), page.wait_for_timeout(1200), glide("#uh-demo", True)))
+        step("family", lambda: (glide("button.tab.family", True), page.wait_for_timeout(1500)))
+        step("tonight", lambda: (scroll_to("#case-house", 20), page.wait_for_timeout(800), glide("[data-sub='tonight']", True)))
+        step("unheard", lambda: (go("unheard"), glide("#uh-demo", True)))
         page.wait_for_function("document.querySelectorAll('#uh-evidence .event').length > 0", timeout=120000)
-        step("evidence", lambda: (scroll_to("#uh-timeline", 140), page.wait_for_timeout(1500), glide("#uh-evidence .event .ts")))
-
-        def replay():
-            scroll_to("#uh-open", 380)
-            page.wait_for_timeout(800)
-            glide("#uh-replay", True)
-        step("replay", replay)
-        n = len(case["seance"]["turns"])
-        seen, deadline = 0, now() + 200
-        while seen < n and now() < deadline:
-            c = page.evaluate("document.querySelectorAll('#uh-turns li').length")
-            if c > seen:
-                for k in range(seen, c):
-                    turns.append((now(), k))
-                seen = c
-                page.evaluate("(() => { const l = document.querySelector('#uh-turns li:last-child'); if (l) l.scrollIntoView({block: 'center', behavior: 'smooth'}); })()")
-            page.wait_for_timeout(200)
-        page.wait_for_timeout(2500)
-        step("room", lambda: (scroll_to("#room", 20), page.wait_for_timeout(1200), glide("#rm-start", True)), min_wait=9)
-        step("summon", lambda: (glide("#rm-seance-open", True), page.wait_for_timeout(2500), glide("#rm-suggest button", True)), min_wait=12)
-        step("archive", lambda: scroll_to("#eval-title", 40), min_wait=8)
-        step("end", lambda: page.evaluate("window.scrollTo({top: 0, behavior: 'smooth'})"), min_wait=6)
+        step("evidence", lambda: (scroll_to("#uh-evidence", 120), page.wait_for_timeout(1500), glide("#uh-evidence .event .ts")))
+        step("summon", lambda: (glide("#uh-open", True), page.wait_for_timeout(2500)))
+        glide("#uh-replay", True)
+        if not follow_board("#uh-stage", 240):
+            print("the séance did not reach its closing card", flush=True)
+        page.wait_for_timeout(3500)
+        page.evaluate("(() => { const c = document.querySelector('#act-card'); if (c) c.hidden = true; })()")
+        step("room", lambda: (go("room"), glide("#rm-demo", True)), min_wait=6)
+        step("ask", lambda: (glide("#rm-seance-open", True), page.wait_for_timeout(3000), glide("#rm-suggest button", True)), min_wait=4)
+        follow_board("#rm-stage", 14)
+        step("lab", lambda: (go("lab"), page.mouse.wheel(0, 500)), min_wait=9)
+        step("end", lambda: (go("home"), page.evaluate("window.scrollTo({top: 0, behavior: 'smooth'})")), min_wait=5)
         page.wait_for_timeout(1500)
+        for p_ in page.evaluate("window.__plays"):
+            plays.append((py0 + p_["t"] / 1000 - perf0, (p_["end"] / 1000 - perf0 + py0) if p_["end"] else None, p_["src"]))
         video = Path(page.video.path())
         ctx.close()
         browser.close()
@@ -476,11 +501,16 @@ def make_tour():
         clip, text = lines[key]
         place(clip, at)
         cues += [(at + a, at + b, s) for a, b, s in split_cue(text, len(clip) / SR)]
-    for at, k in turns:  # the guardian speaks when each answer lands on the list
-        if k < len(guardian) and guardian[k] and guardian[k].exists():
-            clip = pcm(guardian[k])
-            place(clip, at)
-            cues += [(at, at + len(clip) / SR, "“" + case["seance"]["turns"][k]["response"]["spoken"] + "”")]
+    for at, end, src in plays:  # the app's own voices, at the moment the page played them
+        f = ROOT / "demo_data" / urllib.parse.urlparse(src).path.lstrip("/")
+        if not f.is_file():
+            print("no local file for", src, flush=True)
+            continue
+        clip = pcm(f)
+        if end is not None:
+            clip = clip[: max(0, int((end - at) * SR))]
+        place(clip, at)
+    print(f"tour: {len(marks)} narrated steps, {len(plays)} app voices", flush=True)
     mix_and_mux("witching_hour_tour", video, voice, sorted(cues))
 
 
