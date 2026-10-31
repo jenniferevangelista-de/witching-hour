@@ -19,7 +19,7 @@
   const STAGES = [
     { part: 0, view: "home", who: "luna", title: "What if someone tried to warn you, and you never heard them?",
       text: "Witching Hour is a ghost hunt for Halloween and Día de los Muertos. The evidence is real: sensor logs and recordings, measured by open models. The spirits are fiction, and nobody on the crew may say a word the evidence cannot back.",
-      show: ["header.hero"], hide: ["header.hero > .tagline", "#crew", "header.hero nav.doors", "header.hero .start"] },
+      bare: true, show: ["header.hero", "#st-welcome"], hide: ["header.hero > .tagline", "#crew", "header.hero nav.doors", "header.hero .start"] },
     { part: 0, view: "home", who: "xochi", title: "Meet the crew",
       text: "Three of us read the same evidence and never agree on what it means. Press play on a card to hear each of us.",
       show: ["#crew"], hide: ["header.hero > .kicker", "header.hero > h1", "header.hero > .hook", "header.hero > .tagline", "header.hero nav.doors", "header.hero .start"] },
@@ -61,6 +61,13 @@
   const intro = document.createElement("div");
   intro.className = "st-intro st-on";
   main.prepend(intro);
+  // the first screen: the crew, big, right under the title
+  const welcome = document.createElement("section");
+  welcome.id = "st-welcome";
+  welcome.innerHTML = `<div class="st-cast">${["luna", "bigotes", "xochi"].map((k) => `<figure class="${k}"><img src="/static/characters/${k}.svg" alt="${FACE[k]}"><figcaption><b>${FACE[k].split(",")[0]}</b><span>${FACE[k].split(", ")[1]}</span></figcaption></figure>`).join("")}</div>
+    <p>A ghost hunt for Halloween and Día de los Muertos. <b>The evidence is real</b>: sensor logs and recordings, measured by open models. <b>The spirits are fiction</b>, and nobody on the crew may say a word the evidence cannot back.</p>
+    <button type="button" class="big st-begin">Begin the investigation →</button>`;
+  $("header.hero")?.after(welcome);
   const end = document.createElement("section");
   end.id = "st-end";
   end.innerHTML = `<div class="crew-row"><img src="/static/characters/luna.svg" alt="Luna"><img src="/static/characters/bigotes.svg" alt="Dr. Bigotes"><img src="/static/characters/xochi.svg" alt="Xochi"></div>
@@ -115,6 +122,7 @@
     if (s.enter) s.enter();
     s.show.forEach(light);
     s.hide.forEach((q) => $$(q).forEach((el) => el.classList.add("st-hide")));
+    intro.hidden = !!s.bare;
     intro.innerHTML = `<img src="/static/characters/${s.who}.svg" alt="${FACE[s.who]}"><div><div class="kick">Part ${s.part + 1} · ${PARTS[s.part]}</div><h2>${s.title}</h2><p>${s.text}</p>${s.extra ? '<div class="st-extra"></div>' : ""}</div>`;
     (s.extra || []).forEach(([label, fn]) => { const b = document.createElement("button"); b.type = "button"; b.className = "big alt"; b.textContent = label; b.onclick = fn; intro.querySelector(".st-extra").append(b); });
     bar.querySelector(".where").innerHTML = `${PARTS[s.part]} <small>· ${s.title} · ${i + 1} of ${STAGES.length}</small>`;
@@ -207,6 +215,7 @@
   bar.querySelector(".back").addEventListener("click", prev);
   bar.querySelectorAll(".parts button").forEach((b) => b.addEventListener("click", () => goTo(STAGES.findIndex((s) => s.part === +b.dataset.p))));
   end.querySelector(".st-again").addEventListener("click", () => goTo(0));
+  welcome.querySelector(".st-begin").addEventListener("click", next);
   function freeMode() {
     store.set(MODE, "explore");
     clearStage();
