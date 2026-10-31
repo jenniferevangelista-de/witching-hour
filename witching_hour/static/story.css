@@ -88,7 +88,7 @@ body.story .st-intro[hidden] { display: none; }
 .st-cast { display: flex; justify-content: center; align-items: flex-end; gap: clamp(16px, 5vw, 64px); margin: 4px 0 10px; }
 .st-cast figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
 .st-cast img { width: clamp(110px, 16vw, 190px); height: auto; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .5)); animation: floaty 5.2s ease-in-out infinite; }
-.st-cast .luna img { width: clamp(96px, 13vw, 160px); animation-duration: 3.8s; }
+.st-cast .luna img { width: clamp(140px, 19vw, 230px); animation-duration: 3.8s; }
 .st-cast .bigotes img { animation-delay: -1.4s; }
 .st-cast .xochi img { animation-delay: -2.6s; }
 .st-cast figcaption b { display: block; font: 700 19px "Fredoka", sans-serif; color: var(--bone); }
