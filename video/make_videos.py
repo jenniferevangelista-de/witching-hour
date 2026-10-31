@@ -364,14 +364,18 @@ CURSOR_JS = """
 
 AUDIO_JS = """
 (() => {
-  // remember every voice the app plays, so the tour can mix the same files back in
-  window.__plays = [];
+  // remember every voice the app plays, so the tour can mix the same files back in;
+  // kept in sessionStorage because leaving a played page reloads it
+  const KEY = '__wh_plays';
+  const load = () => { try { return JSON.parse(sessionStorage.getItem(KEY) || '[]'); } catch (_) { return []; } };
+  const save = (list) => { try { sessionStorage.setItem(KEY, JSON.stringify(list)); } catch (_) {} };
   const play = HTMLMediaElement.prototype.play;
   HTMLMediaElement.prototype.play = function () {
     if (this.tagName === 'AUDIO') {
-      const rec = {t: performance.now(), src: this.currentSrc || this.src, end: null};
-      window.__plays.push(rec);
-      const stop = () => { if (rec.end === null) rec.end = performance.now(); };
+      const list = load(), i = list.length;
+      list.push({t: Date.now(), src: this.currentSrc || this.src, end: null});
+      save(list);
+      const stop = () => { const l = load(); if (l[i] && l[i].end === null) { l[i].end = Date.now(); save(l); } };
       this.addEventListener('pause', stop, {once: true});
       this.addEventListener('ended', stop, {once: true});
     }
@@ -459,7 +463,7 @@ def make_tour():
             return False
 
         page.goto(BASE, wait_until="networkidle")
-        perf0, py0 = page.evaluate("performance.now()") / 1000, now()
+        perf0, py0 = page.evaluate("Date.now()") / 1000, now()
         page.wait_for_timeout(1500)
         if page.evaluate("document.querySelector('#music-switch')?.getAttribute('aria-pressed') === 'true'"):
             page.click("#music-switch")  # the synthesized score is not captured by the recording, keep it quiet
@@ -484,7 +488,7 @@ def make_tour():
         step("lab", lambda: (go("lab"), page.mouse.wheel(0, 500)), min_wait=9)
         step("end", lambda: (go("home"), page.evaluate("window.scrollTo({top: 0, behavior: 'smooth'})")), min_wait=5)
         page.wait_for_timeout(1500)
-        for p_ in page.evaluate("window.__plays"):
+        for p_ in page.evaluate("JSON.parse(sessionStorage.getItem('__wh_plays') || '[]')"):
             plays.append((py0 + p_["t"] / 1000 - perf0, (p_["end"] / 1000 - perf0 + py0) if p_["end"] else None, p_["src"]))
         video = Path(page.video.path())
         ctx.close()
