@@ -420,7 +420,9 @@ def make_tour():
 
         def glide(sel, click=False):
             loc = page.locator(sel).first
-            loc.scroll_into_view_if_needed()
+            # pulsing buttons never count as "stable", so scroll by hand instead of waiting for them
+            loc.evaluate("e => e.scrollIntoView({block: 'center'})", timeout=10000)
+            page.wait_for_timeout(400)
             box = loc.bounding_box()
             if box:
                 page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=18)
