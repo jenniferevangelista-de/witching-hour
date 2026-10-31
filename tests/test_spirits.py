@@ -140,3 +140,23 @@ def test_where_points_at_the_evidence_that_has_a_place():
     s = spirits.summon("warning", EVIDENCE)
     r = spirits.ask(s, "Where?")
     assert r["response"]["message"] == "DOOR" and r["grounding"]["related_evidence_ids"] == ["ev-003"]
+
+
+def test_template_spirit_follows_the_evidence():
+    ev = lambda t, n, c=0.8: [{"id": f"ev-{i:03d}", "type": t, "start": float(i), "end": i + 0.5, "description": t, "confidence": c} for i in range(n)]
+    assert spirits.template_archetype(EVIDENCE) == "guardian"
+    assert spirits.template_archetype(ev("light_change", 1)) == "watcher"
+    assert spirits.template_archetype(ev("light_change", 1, 0.3)) == "silent"
+    assert spirits.template_archetype(ev("audio", 3)) == "lost_one"
+    assert spirits.template_archetype(ev("motion", 4, 0.5)) == "trickster"
+    assert spirits.template_archetype(ev("motion", 9, 0.9)) == "hostile"
+    assert spirits.template_archetype([]) == "silent"
+    s = spirits.summon("a light only", ev("light_change", 1))
+    assert s.spirit.archetype == "watcher" and s.spirit.name != "Agnes"
+
+
+def test_every_archetype_line_passes_the_board_rules():
+    for who, lines in spirits.ARCHETYPE_LINES.values():
+        for message, spoken in lines:
+            ok, why = spirits.check_answer({"message": message, "spoken": spoken, "evidence_ids": ["ev-001"]}, EVIDENCE)
+            assert ok is not None, (message, why)

@@ -167,15 +167,40 @@ def check_answer(raw: dict, evidence: list[dict]) -> tuple[dict | None, str | No
 # ---------------------------------------------------------------- templates (no model)
 
 
-def template_spirit(evidence: list[dict]) -> Spirit:
+# Without a model, the evidence itself picks the spirit: what kind of moments, how many, how strong.
+TEMPLATE_SPIRITS = {
+    "guardian": ("Agnes", "A presence that has watched this place for a long time.", "to warn whoever lives here"),
+    "lost_one": ("Marisol", "A voice that keeps coming back to the same sounds, as if looking for someone.", "to be found"),
+    "trickster": ("Pip", "Something that loves to move things the moment nobody is looking.", "to play one more game"),
+    "watcher": ("The Hallway", "A stillness that notices every change of light.", "to be noticed"),
+    "hostile": ("The Cold Corner", "A presence that does not like visitors.", "to make the room its own"),
+    "silent": ("Nobody", "Almost nothing stirred in this recording.", "to stay quiet"),
+}
+
+
+def template_archetype(evidence: list[dict]) -> str:
     if not evidence:
-        return Spirit("Nobody", "silent", "Nothing stirred in this recording.", "to stay quiet", [], "template")
-    types = {e["type"] for e in evidence}
-    arche = "guardian" if {"motion", "light_change"} & types else "watcher"
-    return Spirit("Agnes" if arche == "guardian" else "The Hallway", arche,
-                  "A presence that has watched this place for a long time.",
-                  "to warn whoever lives here" if arche == "guardian" else "to be noticed",
-                  [e["id"] for e in sorted(evidence, key=lambda e: -e["confidence"])[:3]], "template")
+        return "silent"
+    n = len(evidence)
+    share = {t: sum(e["type"] == t for e in evidence) / n for t in ("audio", "motion", "light_change")}
+    strong = sum(e.get("confidence", 0) for e in evidence) / n
+    if all(share.values()) and n <= 6:
+        return "guardian"            # light, sound and movement together, a few times: someone trying to get through
+    if n >= 8 and strong >= 0.7:
+        return "hostile"
+    if share["motion"] >= 0.5 and n >= 3:
+        return "trickster"
+    if share["audio"] >= 0.5:
+        return "lost_one"
+    if n == 1 and strong < 0.5:
+        return "silent"
+    return "watcher"
+
+
+def template_spirit(evidence: list[dict]) -> Spirit:
+    arche = template_archetype(evidence)
+    name, backstory, goal = TEMPLATE_SPIRITS[arche]
+    return Spirit(name, arche, backstory, goal, [e["id"] for e in sorted(evidence, key=lambda e: -e["confidence"])[:3]], "template")
 
 
 # What the template Guardian says when no model is attached. Each row: words in the question, the board
@@ -205,6 +230,20 @@ WATCHER_DEFAULTS = [
     ("LISTEN", "It is quieter than it should be."),
     ("WAIT", "Not yet. Watch the door."),
 ]
+# the other spirits, when no model is attached: who they say they are, then what they say
+ARCHETYPE_LINES = {
+    "lost_one": ("I do not remember my name. I only remember the sound.",
+                 [("FIND ME", "I keep calling. Nobody turns around."), ("LISTEN", "Did you hear it too?"),
+                  ("WHERE AM I", "Everything sounds farther away than before.")]),
+    "trickster": ("Oh, you want my name? Guess.",
+                  [("CATCH ME", "Too slow. I was already somewhere else."), ("MAYBE", "Ask me again and see."),
+                   ("BEHIND YOU", "Only joking. Or am I?")]),
+    "watcher": ("I am the one who notices.", WATCHER_DEFAULTS),
+    "hostile": ("This room was mine first.",
+                [("LEAVE", "You are not welcome here. It is only a game, but play carefully."),
+                 ("COLD", "Feel that? That is me."), ("NOT YOURS", "The corner stays dark for a reason.")]),
+    "silent": ("...", [("NO", "..."), ("WAIT", "Not now."), ("QUIET", "Shh.")]),
+}
 
 
 def _evidence_for(ev: list[dict], kinds, n: int) -> dict:
@@ -244,7 +283,10 @@ def template_answer(session: Session, question: str) -> dict:
         options = [d for d in GUARDIAN_DEFAULTS if d[0] != last] or GUARDIAN_DEFAULTS
         message, spoken = options[n % len(options)]
         return say(message, spoken)
-    options = [d for d in WATCHER_DEFAULTS if d[0] != last] or WATCHER_DEFAULTS
+    who, lines = ARCHETYPE_LINES.get(session.spirit.archetype, ARCHETYPE_LINES["watcher"])
+    if any(w in q for w in ("who are you", "your name", "who is this")):
+        return say(re.sub(r"[^A-Z0-9 ]", "", session.spirit.name.upper())[:24] or "NOBODY", who)
+    options = [d for d in lines if d[0] != last] or lines
     message, spoken = options[n % len(options)]
     return say(message, spoken)
 
