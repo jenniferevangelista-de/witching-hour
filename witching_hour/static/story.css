@@ -9,6 +9,7 @@ body.story .st-hide { display: none !important; }
 body.story .papel { opacity: .55; }
 /* the pieces of a terminal stack in one column, so each screen reads top to bottom */
 body.story .terminal .layout { grid-template-columns: minmax(0, 1fr); }
+body.story #rm-video, body.story #uh-video { max-width: 720px; margin: 0 auto; }
 body.story .st-on.view-off { display: block !important; }
 body.story main > .st-on { animation: stIn .5s ease both; }
 @keyframes stIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }

@@ -139,8 +139,12 @@
   // ---- the séance: summon, replay, and when the board says I AM HERE the glass breaks and the story moves on
   function seance() {
     const t0 = Date.now();
+    if (!$("#uh-evidence .event") && !$("#uh-demo").disabled) $("#uh-demo").click();   // skipped straight here: start reading the clip
     const step = () => {
       if (at < 0 || STAGES[at].id !== "seance") return;
+      const note = intro.querySelector(".st-wait") || intro.querySelector("p").appendChild(Object.assign(document.createElement("b"), { className: "st-wait" }));
+      const reading = /Reading frames/.test($("#uh-status").textContent);
+      note.textContent = reading ? ` (${$("#uh-status").textContent.replace("Reading frames...", "Luna is still reading the clip:")})` : "";
       const replay = $("#uh-replay"), open = $("#uh-open");
       if (replay && !replay.hidden && !replay.classList.contains("off")) { replay.click(); return watchClimax(); }
       if (open && !open.hidden && !open.disabled && !$("#uh-seance:not([hidden])")) open.click();
