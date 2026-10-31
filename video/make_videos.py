@@ -385,19 +385,16 @@ AUDIO_JS = """
 """
 
 TOUR = [
-    ("open", "This is the live demo of Witching Hour. I'm Luna, and I'll show you around. The evidence is real. The spirits are fiction."),
-    ("house", "Case one, The House. Every square is a night of a real house in Belgium. The brighter it glows, the further a room strayed from what TabPFN expected."),
-    ("night", "April nineteenth. At five forty the appliances use 380 watt hours, when TabPFN expected 75 at most. Here is my story of that night, and every sentence cites its evidence."),
-    ("skeptic", "Doctor Bigotes explains it. Hover a citation, and the moment it points to lights up on the chart."),
-    ("family", "Xochi writes the morning note for the family, with the rooms that fell under eighteen degrees."),
-    ("tonight", "Tonight's forecast: live weather goes into a second TabPFN model, and Doctor Bigotes checks the official warnings in a real browser."),
-    ("unheard", "Case two, The Unheard. I open The Warning, a staged clip, and the browser reads it frame by frame. The video never leaves this page."),
-    ("evidence", "Five moments stand out. Doctor Bigotes has a note for each one. And the receipts beside them are counted from the repository, not typed by hand."),
-    ("summon", "Then I summon the spirit for what he could not explain. This séance was recorded with Gemma 4, running on a laptop. Watch the glass."),
-    ("room", "Case three, The Room. You can use your camera, or play without one. On this free demo the spirit is a template. At home, Gemma answers live."),
-    ("ask", "I ask the board if someone is here."),
-    ("lab", "And how it was tested: the planted ghosts benchmark, the model bake-off through Backboard, and the apprentice we fine-tuned with Tinker."),
-    ("end", "Happy Halloween, and feliz Día de los Muertos."),
+    ("open", "This is Witching Hour, live. I'm Luna. Let me show you the whole investigation, one screen at a time. The evidence is real. The spirits are fiction."),
+    ("crew", "Meet the crew. Each of us reads the same evidence, and none of us agree on what it means."),
+    ("map", "The House. Four months of a real house in Belgium. Every square is a night. The bright ones broke the pattern TabPFN expected. I open April nineteenth."),
+    ("night", "Three voices tell the same night, and every sentence cites its evidence. At the bottom, I call the spirit of the house."),
+    ("unheard", "The Unheard. Kenji, a client in Japan, sent us his hallway camera. His mother almost went out that night. The browser reads the clip frame by frame."),
+    ("evidence", "Five moments stood out. Doctor Bigotes has a boring explanation for each one, and the receipts are counted from the repository."),
+    ("seance", "What he cannot explain, I take to the board. This séance was recorded with Gemma 4 on a laptop. Watch the glass."),
+    ("room", "Now it is your turn. The Room uses your camera, or no camera at all, or a recording you bring. On this free demo the spirit is a template. At home, Gemma answers live."),
+    ("lab", "And how it was tested: planted ghosts, a model bake-off through Backboard, and an apprentice fine-tuned with Tinker."),
+    ("end", "The evidence is real. The spirits are fiction. And the feeling is yours. Happy Halloween, and feliz Día de los Muertos."),
 ]
 
 
@@ -407,6 +404,8 @@ def make_tour():
     lines = {k: (pcm(say("luna", text, f"tour_{k}")), text) for k, text in TOUR}
     marks, plays = [], []
     rec = WORK / "rec"
+    shots = OUT / "screens"
+    shots.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
         args = ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--autoplay-policy=no-user-gesture-required"]
         try:
@@ -415,7 +414,6 @@ def make_tour():
             browser = p.chromium.launch(args=args)
         ctx = browser.new_context(viewport={"width": W, "height": H}, record_video_dir=str(rec),
                                   record_video_size={"width": W, "height": H}, color_scheme="dark")
-        ctx.grant_permissions(["camera", "microphone"], origin=BASE)
         ctx.add_init_script(CURSOR_JS)
         ctx.add_init_script(AUDIO_JS)
         page = ctx.new_page()
@@ -433,8 +431,15 @@ def make_tour():
                 if click:
                     page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
 
-        def scroll_to(sel, offset=90):
-            page.evaluate(f"(() => {{ const e = document.querySelector('{sel}'); if (e) window.scrollTo({{top: e.getBoundingClientRect().top + scrollY - {offset}, behavior: 'smooth'}}); }})()")
+        def nxt():
+            glide(".st-bar .next", True)
+            page.wait_for_timeout(1500)
+
+        def shot(name):
+            try:
+                page.screenshot(path=str(shots / f"{name}.png"))
+            except Exception as e:  # noqa: BLE001
+                print("shot", name, "failed:", e, flush=True)
 
         def step(key, action, min_wait=0.0):
             start = now()
@@ -448,45 +453,56 @@ def make_tour():
             if rest > 0:
                 page.wait_for_timeout(int(rest * 1000))
 
-        def go(where):
-            glide(f"nav a[data-go='{where}']", True)
-            page.wait_for_timeout(1200)
-
-        def follow_board(stage, seconds):
-            """Keep the board in view while the séance plays itself out."""
+        def wait_for(js, seconds):
             end = now() + seconds
             while now() < end:
-                if page.evaluate("(() => { const c = document.querySelector('#act-card'); return !!c && !c.hidden; })()"):
+                if page.evaluate(js):
                     return True
-                page.evaluate(f"(() => {{ const s = document.querySelector('{stage}'); if (s) s.scrollIntoView({{block: 'center', behavior: 'smooth'}}); }})()")
-                page.wait_for_timeout(1500)
+                page.wait_for_timeout(500)
             return False
 
-        page.goto(BASE, wait_until="networkidle")
+        page.goto(BASE + "/?story#home", wait_until="networkidle")
         perf0, py0 = page.evaluate("Date.now()") / 1000, now()
         page.wait_for_timeout(1500)
         if page.evaluate("document.querySelector('#music-switch')?.getAttribute('aria-pressed') === 'true'"):
             page.click("#music-switch")  # the synthesized score is not captured by the recording, keep it quiet
-        step("open", lambda: (page.mouse.move(W / 2, 400, steps=10), glide("#start-here")))
-        step("house", lambda: (go("house"), glide(".cell[data-night='2016-04-19']")))
-        step("night", lambda: (glide(".cell[data-night='2016-04-19']", True), page.wait_for_timeout(1500), scroll_to("#night", 40)))
-        step("skeptic", lambda: (glide("button.tab.skeptic", True), page.wait_for_timeout(1200), glide("#night .cite")))
-        step("family", lambda: (glide("button.tab.family", True), page.wait_for_timeout(1500)))
-        step("tonight", lambda: (scroll_to("#case-house", 20), page.wait_for_timeout(800), glide("[data-sub='tonight']", True)))
-        step("unheard", lambda: (go("unheard"), glide("#uh-demo", True)))
-        page.wait_for_function("document.querySelectorAll('#uh-evidence .event').length > 0", timeout=120000)
-        step("evidence", lambda: (scroll_to("#uh-evidence", 120), page.wait_for_timeout(1500), glide("#uh-evidence .event .ts")))
-        step("summon", lambda: (glide("#uh-open", True), page.wait_for_timeout(2500)))
-        glide("#uh-replay", True)
-        if not follow_board("#uh-stage", 240):
+        step("open", lambda: (page.mouse.move(W / 2, 500, steps=10), shot("story-welcome")))
+        glide("#st-welcome figure.luna", True)     # Luna introduces herself in her own voice
+        wait_for("!document.querySelector('#st-welcome figure.luna.talking')", 20)
+        page.wait_for_timeout(600)
+        step("crew", lambda: (glide(".st-begin", True), page.wait_for_timeout(1500), glide("#crew .card.skeptic .hear", True)), min_wait=9)
+        wait_for("!document.querySelector('#crew .card.talking')", 15)
+        step("map", lambda: (nxt(), page.wait_for_timeout(800), shot("story-map"), glide(".cell[data-night='2016-04-19']")), min_wait=6)
+        step("night", lambda: (glide(".cell[data-night='2016-04-19']", True), page.wait_for_timeout(2500), shot("story-night")))
+        glide("#night .ouija .call", True)
+        wait_for("(() => { const p = document.querySelector('#night .plain'); return p && !p.hidden; })()", 60)
+        page.wait_for_timeout(9000)                  # Luna reads what the board meant
+        shot("story-board")
+        nxt()                                        # Tonight
+        page.wait_for_timeout(2500)
+        step("unheard", lambda: (nxt(), page.wait_for_timeout(1000), shot("story-kenji")), min_wait=10)
+        wait_for("document.querySelector('#uh-status').dataset.state === 'ready'", 90)
+        step("evidence", lambda: (nxt(), page.wait_for_timeout(1200), shot("story-evidence")), min_wait=6)
+        step("seance", lambda: nxt())
+        wait_for("(document.querySelector('#uh-spelled')?.textContent || '').trim().length > 2", 60)
+        page.wait_for_timeout(4000)
+        shot("story-seance")
+        if not wait_for("(() => { const c = document.querySelector('#act-card'); return !!c && !c.hidden; })()", 300):
             print("the séance did not reach its closing card", flush=True)
+        page.wait_for_timeout(2500)
+        shot("story-your-turn")
+        page.wait_for_timeout(1500)
+        glide("#act-card .next", True)               # reloads into The Room, the story resumes there
         page.wait_for_timeout(3500)
-        page.evaluate("(() => { const c = document.querySelector('#act-card'); if (c) c.hidden = true; })()")
-        step("room", lambda: (go("room"), glide("#rm-demo", True)), min_wait=6)
-        step("ask", lambda: (glide("#rm-seance-open", True), page.wait_for_timeout(3000), glide("#rm-suggest button", True)), min_wait=4)
-        follow_board("#rm-stage", 14)
-        step("lab", lambda: (go("lab"), page.mouse.wheel(0, 500)), min_wait=9)
-        step("end", lambda: (go("home"), page.evaluate("window.scrollTo({top: 0, behavior: 'smooth'})")), min_wait=5)
+        step("room", lambda: (glide("#rm-demo", True), page.wait_for_timeout(2500), glide("#rm-seance-open", True)), min_wait=8)
+        wait_for("!!document.querySelector('#rm-suggest button')", 20)
+        glide("#rm-suggest button", True)
+        page.wait_for_timeout(9000)
+        shot("story-room")
+        step("lab", lambda: (nxt(), page.wait_for_timeout(1000), shot("story-lab"), page.mouse.wheel(0, 400)), min_wait=8)
+        nxt()
+        page.wait_for_timeout(2500)
+        step("end", lambda: (nxt(), page.wait_for_timeout(1000), shot("story-end")), min_wait=6)
         page.wait_for_timeout(1500)
         for p_ in page.evaluate("JSON.parse(sessionStorage.getItem('__wh_plays') || '[]')"):
             plays.append((py0 + p_["t"] / 1000 - perf0, (p_["end"] / 1000 - perf0 + py0) if p_["end"] else None, p_["src"]))

@@ -315,9 +315,15 @@
     $(`#${prefix}-spoken`).textContent = "The glass trembles...";
     const asked = WH.stage && WH.stage.ask(prefix, question, { active });
     try {
-      const r = await WH.getJSON(`/api/sessions/${s.session_id}/ask`, { method: "POST", headers: { "Content-Type": "application/json" }, signal: controller.signal, body: JSON.stringify({ question }) });
-      if (!active()) return;
+      let answered = false;
+      const req = WH.getJSON(`/api/sessions/${s.session_id}/ask`, { method: "POST", headers: { "Content-Type": "application/json" }, signal: controller.signal, body: JSON.stringify({ question }) })
+        .finally(() => { answered = true; });
       await asked;
+      if (!active()) return;
+      // Luna has asked and the spirit is still choosing its words: say so on the board
+      if (!answered) $(`#${prefix}-seance`).classList.add("thinking");
+      const r = await req;
+      $(`#${prefix}-seance`).classList.remove("thinking");
       if (!active()) return;
       const msg = r.response.message;
       await showTurn(prefix, r, undefined, { active, recorded: false, climax: prefix === "uh" && msg === "I AM HERE", finale: prefix === "uh" && msg === "GOODBYE" });
@@ -333,6 +339,7 @@
         $(`#${prefix}-suggest`).classList.remove("busy");
         form.querySelector("button").disabled = false;
         $(`#${prefix}-seance`).setAttribute("aria-busy", "false");
+        $(`#${prefix}-seance`).classList.remove("thinking");
         if (prefix === "uh") refreshRecordingControls();
       }
     }

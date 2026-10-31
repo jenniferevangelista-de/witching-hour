@@ -272,3 +272,14 @@ body.act-on .music-switch { display: none; }
 @keyframes jaw { from { transform: scaleY(.4); } to { transform: scaleY(1.3); } }
 @keyframes ball { from { opacity: .25; transform: scale(.9); } to { opacity: .95; transform: scale(1.12); } }
 @media (prefers-reduced-motion: reduce) { .speaking .talk-layer .jaw, .talking .talk-layer .jaw { animation: none; transform: scaleY(1); } .speaking .talk-layer .ball, .talking .talk-layer .ball { animation: none; opacity: .7; } }
+/* while the spirit chooses its words, the board says so */
+.seance .stage { position: relative; }
+.seance.thinking .stage::after {
+  content: "🔮 The spirit is gathering its words…"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 9;
+  padding: 10px 18px; border-radius: 999px; background: rgba(14, 9, 30, .88); border: 2px solid var(--ghost); color: var(--ghost);
+  font: 600 15px "Fredoka", sans-serif; white-space: nowrap; box-shadow: 0 0 24px rgba(141, 255, 207, .35); animation: gather 1.4s ease-in-out infinite;
+}
+.seance.thinking .board .glass { animation: tremble .18s ease-in-out infinite alternate; }
+@keyframes gather { 50% { opacity: .55; } }
+@keyframes tremble { from { margin-left: -2px; } to { margin-left: 2px; } }
+@media (prefers-reduced-motion: reduce) { .seance.thinking .stage::after, .seance.thinking .board .glass { animation: none; } }

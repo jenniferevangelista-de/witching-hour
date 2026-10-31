@@ -38,4 +38,5 @@ jobs:
           path: |
             video/out/*.mp4
             video/out/*.srt
+            video/out/screens/*.png
           retention-days: 14
