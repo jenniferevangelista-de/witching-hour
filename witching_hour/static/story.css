@@ -1,0 +1,81 @@
+/* Story mode: the investigation one piece per screen, with Back and Next. Loaded last.
+   body.story hides every block of the page except the ones the current stage lights up (.st-on). */
+
+body.story .topbar, body.story .rail, body.story .more-below, body.story .tour-btn, body.story .pager,
+body.story #uh-steps, body.story .subtabs, body.story .askspirit, body.story #act-card { display: none !important; }
+body.story main { max-width: 1040px; padding-top: 18px; padding-bottom: 120px; }
+body.story main > :not(.st-on) { display: none !important; }
+body.story .st-hide { display: none !important; }
+body.story .papel { opacity: .55; }
+/* the pieces of a terminal stack in one column, so each screen reads top to bottom */
+body.story .terminal .layout { grid-template-columns: minmax(0, 1fr); }
+body.story .st-on.view-off { display: block !important; }
+body.story main > .st-on { animation: stIn .5s ease both; }
+@keyframes stIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { body.story main > .st-on { animation: none; } }
+
+/* the card that opens every stage */
+.st-intro { display: none; }
+body.story .st-intro {
+  display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 14px; align-items: center;
+  margin: 6px 0 18px; padding: 14px 18px; border-radius: 20px; border: 2px solid var(--line); background: var(--panel);
+}
+.st-intro img { width: 76px; height: 76px; }
+.st-intro .kick { font: 600 12px "Fredoka", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--cempa); }
+.st-intro h2 { margin: 2px 0 4px; font-size: 26px; }
+.st-intro p { margin: 0; color: var(--bone); font-size: 16px; line-height: 1.5; }
+.st-intro .st-extra { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 560px) { body.story .st-intro { grid-template-columns: 52px minmax(0, 1fr); } .st-intro img { width: 52px; height: 52px; } .st-intro h2 { font-size: 21px; } }
+
+/* the bar at the bottom: where you are, and the way on */
+.st-bar { display: none; }
+body.story .st-bar {
+  position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px;
+  align-items: center; padding: 10px max(16px, calc(50vw - 520px)); background: rgba(14, 9, 30, .95); backdrop-filter: blur(8px);
+  border-top: 2px solid var(--line);
+}
+.st-bar .mid { display: grid; gap: 6px; justify-items: center; min-width: 0; }
+.st-bar .where { font: 600 14px "Fredoka", sans-serif; color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.st-bar .where small { color: var(--muted); font-weight: 500; }
+.st-bar .parts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.st-bar .parts button {
+  background: transparent; border: 2px solid var(--line); color: var(--muted); border-radius: 999px; padding: 3px 10px;
+  font: 600 12px "Fredoka", sans-serif; cursor: pointer;
+}
+.st-bar .parts button.on { border-color: var(--cempa); color: var(--cempa); }
+.st-bar .parts button.done { border-color: var(--turq); color: var(--turq); }
+.st-bar .big { min-width: 120px; }
+.st-bar .next { animation: nudge 2.4s ease-in-out infinite; }
+@keyframes nudge { 0%, 80%, 100% { transform: none; } 88% { transform: translateX(4px); } }
+@media (prefers-reduced-motion: reduce) { .st-bar .next { animation: none; } }
+@media (max-width: 640px) { .st-bar .parts { display: none; } .st-bar .big { min-width: 0; padding: 10px 14px; } }
+.st-explore { position: fixed; z-index: 41; top: 10px; right: 12px; font-size: 12px; padding: 6px 12px; }
+body:not(.story) .st-explore { display: none; }
+body:not(.story) .st-story-back { display: inline-flex; }
+.st-story-back { display: none; position: fixed; z-index: 41; right: 12px; bottom: 70px; font-size: 13px; }
+
+/* the end card */
+#st-end { display: none; }
+body.story #st-end.st-on { display: block; text-align: center; padding: 24px 10px; }
+#st-end h2 { font-size: 34px; margin: 6px 0; }
+#st-end p { color: var(--bone); max-width: 640px; margin: 8px auto; }
+#st-end .row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+#st-end .crew-row { display: flex; justify-content: center; gap: 18px; margin: 10px 0; }
+#st-end .crew-row img { width: 96px; height: 96px; }
+
+/* the glass breaks when the spirit says I AM HERE */
+.board .glass.shatter { animation: shatter 1.1s cubic-bezier(.2, .8, .2, 1) forwards; }
+@keyframes shatter {
+  0% { transform: translate(-50%, -30%) scale(1); filter: none; }
+  25% { transform: translate(-50%, -30%) scale(1.25) rotate(-6deg); filter: drop-shadow(0 0 22px #fff); }
+  100% { transform: translate(-50%, -30%) scale(1.9) rotate(14deg); opacity: 0; filter: blur(6px); }
+}
+.shard { position: fixed; z-index: 70; width: 14px; height: 18px; pointer-events: none; background: rgba(240, 250, 255, .9);
+  clip-path: polygon(50% 0, 100% 70%, 30% 100%, 0 40%); animation: fly 1.2s ease-out forwards; }
+@keyframes fly { to { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
+.flash { position: fixed; inset: 0; z-index: 69; background: #fff; pointer-events: none; animation: flash .7s ease-out forwards; }
+@keyframes flash { from { opacity: .55; } to { opacity: 0; } }
+
+/* the House board: say plainly what the spirit spelled */
+.ouija .plain { margin: 10px 0 0; padding: 10px 14px; border-radius: 12px; background: rgba(141, 255, 207, .08); border: 1px dashed rgba(141, 255, 207, .5); color: var(--bone); font-size: 15px; }
+.ouija .plain b { color: var(--ghost); }

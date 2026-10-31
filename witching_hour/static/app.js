@@ -265,6 +265,7 @@
       <div class="board">${boardSVG()}${GLASS}</div>
       <div class="spelled" aria-live="polite"></div>
       <div class="spirit-meta" hidden>${arch}${esc(o.why || "")}${cites}</div>
+      <p class="plain" hidden>The spirit spelled <b>${esc(o.message || "")}</b>, its shorthand for one measured moment. In plain words: ${esc(o.why || "the board points at the night's strongest apparition.")}</p>
       <div class="fiction">Fiction on purpose: the message is spelled by ${esc(o.by === "template" ? "a fixed rule" : (o.by || "the model"))} from the apparitions it cites. The apparitions are real; the spirit is not.</div>
     </div>`;
   }
@@ -277,10 +278,11 @@
 
   async function playOuija(root, msg) {
     const glass = root.querySelector(".glass"), out = root.querySelector(".spelled"), meta = root.querySelector(".spirit-meta");
-    const btn = root.querySelector(".call");
+    const btn = root.querySelector(".call"), plain = root.querySelector(".plain");
     btn.disabled = true;
     out.textContent = "";
     meta.hidden = true;
+    if (plain) plain.hidden = true;
     const wait = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
     const text = String(msg || "NO").toUpperCase();
     const steps = text === "NO" || text === "YES" ? [text] : text.split("");
@@ -290,13 +292,36 @@
       if (ch === " ") { placeGlass(glass, "REST"); out.textContent += " "; await wait(700); continue; }
       placeGlass(glass, ch);
       await wait(900);
+      tick();
       out.textContent += ch;
       await wait(250);
     }
     await wait(600);
     placeGlass(glass, "GOODBYE");
     meta.hidden = false;
+    if (plain) { plain.hidden = false; speak(plain.textContent); }
     btn.disabled = false;
+  }
+
+  // a soft wooden tick each time the glass stops on a letter, and Luna reading the meaning aloud
+  let tickCtx = null;
+  function tick() {
+    try {
+      tickCtx = tickCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const t = tickCtx.currentTime, o = tickCtx.createOscillator(), g = tickCtx.createGain();
+      o.type = "triangle"; o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(160, t + 0.08);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+      o.connect(g).connect(tickCtx.destination); o.start(t); o.stop(t + 0.14);
+    } catch (_) { /* no audio */ }
+  }
+  function speak(text) {
+    if (!("speechSynthesis" in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang));
+    u.voice = voices.find((v) => /female|ava|jenny|aria|samantha|zira/i.test(v.name)) || voices[0] || null;
+    u.rate = 0.95; u.pitch = 1.1;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
   }
 
   function checksHTML(night) {
