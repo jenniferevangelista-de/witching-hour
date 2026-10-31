@@ -259,17 +259,16 @@ body.act-on .music-switch { display: none; }
 
 /* speech bubbles behave like a game's dialogue box: a fixed window of lines, new words push the old ones up */
 .sbub p { display: flex; flex-direction: column; justify-content: flex-end; line-height: 1.4; height: 4.2em; min-height: 0; overflow: hidden; }
-/* moving mouths (mouth.js): while a character talks, a patch of skin hides the drawn smile and an open mouth flaps on it */
+/* talking faces (mouth.js): Xochi and Bigotes open their own drawn mouth, Luna's crystal ball glows with her voice */
 .face { position: relative; display: block; width: 100%; margin: 0 auto; }
 .face img { display: block; }
 .st-cast .face { display: inline-block; width: auto; }
 .seat.speaking .face { animation-name: talk !important; animation-duration: .9s !important; }
-.mouth { position: absolute; display: none; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; }
-.mouth::after {
-  content: ""; position: absolute; left: 50%; top: 50%; width: 62%; height: 90%; border-radius: 50% 50% 55% 55%;
-  background: radial-gradient(ellipse at 50% 80%, #ff7a9a 0 32%, #2a2048 38%); transform: translate(-50%, -50%) scaleY(.3);
-  animation: yap .17s ease-in-out infinite alternate;
-}
-.speaking .mouth, .talking .mouth { display: block; }
-@keyframes yap { from { transform: translate(-50%, -50%) scaleY(.22); } to { transform: translate(-50%, -50%) scaleY(1); } }
-@media (prefers-reduced-motion: reduce) { .mouth::after { animation: none; transform: translate(-50%, -50%) scaleY(.6); } }
+.talk-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.talk-layer .jaw { transform: scaleY(0); }
+.talk-layer .ball { opacity: 0; transform-origin: 120px 196px; }
+.speaking .talk-layer .jaw, .talking .talk-layer .jaw { animation: jaw .18s ease-in-out infinite alternate; }
+.speaking .talk-layer .ball, .talking .talk-layer .ball { animation: ball .45s ease-in-out infinite alternate; }
+@keyframes jaw { from { transform: scaleY(.4); } to { transform: scaleY(1.3); } }
+@keyframes ball { from { opacity: .25; transform: scale(.9); } to { opacity: .95; transform: scale(1.12); } }
+@media (prefers-reduced-motion: reduce) { .speaking .talk-layer .jaw, .talking .talk-layer .jaw { animation: none; transform: scaleY(1); } .speaking .talk-layer .ball, .talking .talk-layer .ball { animation: none; opacity: .7; } }
