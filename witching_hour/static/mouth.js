@@ -3,8 +3,9 @@
    so the mouth floats with the face. Positions are in the characters' own 240×260 drawings. */
 (() => {
   "use strict";
-  // where the mouth sits in each drawing: left %, top %, width % of the picture
-  const SPOT = { luna: [50, 59.5, 15], bigotes: [50, 51.8, 10], xochi: [50, 55.5, 12] };
+  // the drawn smile in each 240×260 drawing: centre x, centre y, width, height, and the skin around it,
+  // so a patch of skin hides the smile while the open mouth talks
+  const SPOT = { luna: [120, 156, 40, 18, "#fbf7ff"], bigotes: [120, 136, 26, 11, "#574c7a"], xochi: [120, 145, 34, 21, "#6e7a97"] };
   const COPY = ["animationName", "animationDuration", "animationDelay", "animationIterationCount", "animationTimingFunction", "maxWidth"];
 
   function wrap(img) {
@@ -21,8 +22,8 @@
     const m = document.createElement("i");
     m.className = "mouth";
     m.setAttribute("aria-hidden", "true");
-    const [x, y, w] = SPOT[who];
-    Object.assign(m.style, { left: `${x}%`, top: `${y}%`, width: `${w}%` });
+    const [x, y, w, h, skin] = SPOT[who];
+    Object.assign(m.style, { left: `${x / 240 * 100}%`, top: `${y / 260 * 100}%`, width: `${w / 240 * 100}%`, height: `${h / 260 * 100}%`, background: skin });
     face.append(m);
   }
   const scan = () => document.querySelectorAll(".seat > img, .st-cast figure > img").forEach(wrap);
