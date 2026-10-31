@@ -2,7 +2,7 @@
    body.story hides every block of the page except the ones the current stage lights up (.st-on). */
 
 body.story .topbar, body.story .rail, body.story .more-below, body.story .tour-btn, body.story .pager,
-body.story #uh-steps, body.story .subtabs, body.story .askspirit, body.story #act-card { display: none !important; }
+body.story #uh-steps, body.story .subtabs, body.story .askspirit { display: none !important; }
 body.story main { max-width: 1040px; padding-top: 18px; padding-bottom: 120px; }
 body.story main > :not(.st-on) { display: none !important; }
 body.story .st-hide { display: none !important; }

@@ -45,8 +45,12 @@
       enter: seance,
       show: [UH], hide: [`${UH} > .term-body > .term-actions`, "#uh-status", "#uh-story", UH_LEFT, `${UH_RIGHT} > p.notice`, `${UH_RIGHT} > label.words`, `${UH_RIGHT} .receipts-slot`] },
     { part: 3, view: "room", who: "luna", title: "The Room: your turn",
-      text: "Turn on your camera, or play without one. Summon the spirit of the room and pick a question. Then stay very still: if something really moves right after the glass stops, the game will notice. On this free demo the spirit is a template; at home, Gemma answers live.",
+      text: "Turn on your camera, or play without one. Summon the spirit of the room and pick a question. Then stay very still: if something really moves right after the glass stops, the game will notice. Or bring your own recording, and the crew investigates it like Kenji's. On this free demo the spirit is a template; at home, Gemma answers live.",
+      extra: [["📼 Bring your own recording", () => $("#uh-file").click()]],
       show: [RM], hide: ["#rm-log"] },
+    { id: "own", optional: true, part: 3, view: "unheard", who: "bigotes", title: "Your recording",
+      text: "Your browser is reading your clip frame by frame; it never leaves this page. Below: what stood out, my boring explanations, and the board for whatever is left. Summon the spirit when the reading is done.",
+      show: [UH], hide: [`${UH} > .term-body > .term-actions`, "#uh-replay", `${UH_RIGHT} > p.notice`, `${UH_RIGHT} > label.words`, `${UH_RIGHT} .receipts-slot`] },
     { part: 4, view: "lab", who: "bigotes", title: "How it was tested",
       text: "Of course I tested the meter. We planted fake ghosts in real nights and counted how many each detector caught. The receipts are counted from the repository, not typed by hand.",
       show: ["#archive", 'section[aria-labelledby="eval-title"]'], hide: ["#archive-body"] },
@@ -156,8 +160,10 @@
     scrollTo({ top: 0, behavior: "auto" });
     requestAnimationFrame(() => dispatchEvent(new Event("resize")));
   }
-  const next = () => goTo(Math.min(at + 1, STAGES.length - 1));
-  const prev = () => goTo(Math.max(at - 1, 0));
+  // optional stages (your own recording) are only reached on purpose, never by Next or Back
+  const step = (d) => { let i = at + d; while (STAGES[i] && STAGES[i].optional) i += d; return Math.min(Math.max(i, 0), STAGES.length - 1); };
+  const next = () => goTo(step(1));
+  const prev = () => goTo(step(-1));
 
   // ---- The House: a click on a night moves the story on to that night
   document.addEventListener("click", (e) => {
@@ -213,14 +219,13 @@
     document.body.append(f);
     setTimeout(() => f.remove(), 800);
     breakSound();
-    // the scene goes on: the crew finishes, shouts and runs; the story moves on once the run is over
-    const waitRun = () => {
-      const card = $("#act-card");
-      if (card && !card.hidden) { card.hidden = true; timers.push(setTimeout(next, 900)); return; }
-      timers.push(setTimeout(waitRun, 400));
-    };
-    timers.push(setTimeout(waitRun, 400));
+    // the scene goes on: the crew finishes, shouts and runs, then the green "Now it is your turn" card offers the way on
   }
+  document.addEventListener("click", (e) => {
+    if (!document.body.classList.contains("story")) return;
+    if (e.target.closest("#act-card .next")) store.set(KEY, String(STAGES.findIndex((s) => s.view === "room")));   // survives the page reload
+    else if (e.target.closest("#act-card .tryit")) { const r = STAGES.findIndex((s) => s.view === "room"); store.set(KEY, String(r)); timers.push(setTimeout(() => goTo(r), 600)); }
+  }, true);
   function breakSound() {
     try {
       const ac = new (window.AudioContext || window.webkitAudioContext)();
@@ -245,6 +250,8 @@
   bar.querySelectorAll(".parts button").forEach((b) => b.addEventListener("click", () => goTo(STAGES.findIndex((s) => s.part === +b.dataset.p))));
   end.querySelector(".st-again").addEventListener("click", () => goTo(0));
   welcome.querySelector(".st-begin").addEventListener("click", next);
+  // a recording chosen from "your turn" opens its own investigation screen
+  $("#uh-file")?.addEventListener("change", () => { if (document.body.classList.contains("story")) goTo(STAGES.findIndex((s) => s.id === "own")); });
   welcome.querySelector(".st-guided").addEventListener("click", () => { freeMode(); setTimeout(() => window.WHGuide && window.WHGuide.start(0), 300); });
   function freeMode() {
     store.set(MODE, "explore");
