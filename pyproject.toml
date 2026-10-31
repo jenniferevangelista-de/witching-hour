@@ -34,7 +34,7 @@ witching-hour = "witching_hour.cli:main"
 include = ["witching_hour*"]
 
 [tool.setuptools.package-data]
-witching_hour = ["static/*"]
+witching_hour = ["static/*", "static/characters/*.svg"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

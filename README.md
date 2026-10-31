@@ -2,7 +2,7 @@
 
 **What if someone tried to warn you, and you never heard them?**
 
-Witching Hour is a paranormal activity detector built for Halloween and Día de los Muertos. A crew of three tiny ghost hunters carries an open-source kit, and their terminal, **PARANORMAL.exe**, opens three kinds of cases:
+Witching Hour is a fictional ghost-hunting experience built for Halloween and Día de los Muertos, using real sensor anomaly measurements. A crew of three tiny ghost hunters carries an open-source kit, and their terminal, **PARANORMAL.exe**, opens three kinds of cases:
 
 | Case | What you bring | What the kit measures |
 |---|---|---|
@@ -10,7 +10,7 @@ Witching Hour is a paranormal activity detector built for Halloween and Día de 
 | 🎞️ **The Unheard** | a recording of the night you almost went out and something made you stay | light, motion and sound, frame by frame, **inside the browser** (OpenCV does the same in Python); the moments that stand out become numbered evidence |
 | 📹 **The Room** | your camera and microphone, live | the same measurements in real time, while you ask the board questions |
 
-In every case the crew reads the evidence, and Luna can open a **Ouija board** for whatever the evidence cannot explain. Here is the rule that holds the whole thing together: **the evidence is real, the spirits are fiction.** A spirit may say anything spooky it wants, but every message other than YES, NO or GOODBYE must point at a real, measured moment. The crew is held even tighter: every sentence they write must cite a piece of evidence, and every number in it must match what it cites. Sentences that fail are dropped before anyone reads them. We call it **cite or vanish**.
+In every case the crew reads the evidence, and Luna can open a **Ouija board** for whatever the evidence cannot explain. Here is the rule that holds the whole thing together: **the evidence is real, the spirits are fiction.** A spirit may say anything spooky it wants, but every message other than YES, NO or GOODBYE must point at a real, measured moment. The crew is held even tighter: every sentence they write must cite a piece of evidence, and every number in it must match what it cites. Sentences that fail are dropped before anyone reads them. The validator checks known references and numerical consistency with a tolerance; it does not establish that the explanation is true. Quiet nights use labeled scripted summaries. We call it **cite or vanish**.
 
 | | Character | Job | Voice |
 |---|---|---|---|
@@ -42,7 +42,7 @@ Built for the DEV Hacktoberfest Open-Source AI Challenge, Week 4: Ghost in the M
 
 ## Why local
 
-Night-time sensor logs say when someone goes to bed, when they get up, how long the bathroom light stays on, and when the house is empty. A recording of your hallway says even more. For someone who lives alone, that is the most private data they have. Everything here can run on a small machine at home: TabPFN on CPU, Gemma through Ollama, the web app on localhost. Recordings and the live camera are analyzed in the browser and never uploaded; only the list of measured moments goes to the board.
+Night-time sensor logs say when someone goes to bed, when they get up, how long the bathroom light stays on, and when the house is empty. A recording of your hallway says even more. For someone who lives alone, that is the most private data they have. Everything here can run on a small machine at home: TabPFN on CPU, Gemma through Ollama, the web app on localhost. Recordings and live camera/audio are analyzed in the browser and are not uploaded. Opening a live board sends measured summaries, questions and optional memory text to the app server; a configured remote provider also receives that text. With local Ollama on a home install, those requests can stay on your machine.
 
 The public demo uses a public research dataset (a real house in Belgium, published under CC BY 4.0) and a staged clip, and replays results computed by the same pipeline.
 
@@ -61,9 +61,9 @@ sensor log (CSV) ──► for each night, each sensor:
 
 - **Features** for each sensor: time of day, day of week, outdoor weather, and the same kind of sensor in the other rooms. Sensors in the same room are left out on purpose, so a shower (bathroom humidity and bathroom temperature rising together) shows up as two events instead of one explaining the other away.
 - **Asymmetric band**: energy readings have a long upper tail and a floor at zero, so the upper and lower halves of the predicted band are scaled separately.
-- **Tonight**: live hourly weather for the house's town (Google results through SerpApi) goes into a second TabPFN model trained on the house's past nights, which forecasts each room for tonight and the chance it drops below 18 °C.
+- **Tonight**: live hourly weather for the house's town (Google results through SerpApi) goes into a second TabPFN model trained on the house's past nights, which forecasts each room for tonight and the probability of a reading below 18 °C at the hour with the lowest predicted median. The public demo uses a dated weather snapshot applied to 2016 house data; it is an unvalidated illustration.
 - **The agent** (`witching-hour ask`) is a small JSON tool-calling loop. Gemma can rank the nights, open one night, ask TabPFN what it expected at a given minute, read tonight's forecast, and call a narrator. It never sees the raw log.
-- **Planted ghosts benchmark** (`witching-hour evaluate`): smooth bumps of known size, time and length are added to real nights, then TabPFN, LightGBM quantile regression and a same-hour seasonal rule are scored on how often they notice them at a 5% false alarm rate, with paired bootstrap intervals.
+- **Planted ghosts benchmark** (`witching-hour evaluate`): smooth bumps of known size, time and length are added to real nights, then TabPFN, LightGBM quantile regression and a same-hour seasonal rule are scored on how often they notice them at a 5% false alarm rate, with exploratory paired case-bootstrap intervals. The target false alarm threshold is selected and scored on the same cases, and sensors on the same night are correlated; these are not held-out deployment estimates.
 
 ## Run it
 

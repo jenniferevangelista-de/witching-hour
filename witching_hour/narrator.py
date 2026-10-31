@@ -226,7 +226,9 @@ class Story:
 
     def to_dict(self) -> dict:
         d = asdict(self)
-        d["verified"] = len(self.sentences)
+        # Quiet-night summaries describe the scanner's decision directly. They
+        # have no event citations and must not inflate the citation-check count.
+        d["verified"] = sum(bool(s.cites) for s in self.sentences)
         d["dropped"] = len(self.rejected)
         return d
 
@@ -338,7 +340,7 @@ def build_messages(scan: NightScan, mode: str) -> list[dict]:
 
 def _narrate(scan: NightScan, mode: str, chat, model: str, retries: int) -> Story:
     if not scan.events and not (mode == "family" and scan.checks):
-        return quiet_night(scan, mode, model)
+        return quiet_night(scan, mode)
     chat = chat or OllamaChat(model)
     cfg = MODES[mode]
     messages = build_messages(scan, mode)
@@ -369,7 +371,7 @@ def template_story(scan: NightScan, mode: str) -> Story:
     if mode == "family":
         return template_family(scan)
     if not scan.events:
-        return quiet_night(scan, mode, "template")
+        return quiet_night(scan, mode)
     out = []
     for e in sorted(scan.events, key=lambda e: e.start)[:6]:
         obs, exp = fmt(e.observed, e.unit), fmt(e.expected, e.unit)
@@ -393,12 +395,18 @@ def template_family(scan: NightScan) -> Story:
         out.append(Sentence(f"The {c.room} stayed below 18 °C from {c.start} to {c.end}, down to {c.coldest:.1f} °C, "
                             f"and the WHO recommends at least 18 °C indoors in cold seasons.", [c.id]))
     if not out:
-        return quiet_night(scan, "family", "template")
+        return quiet_night(scan, "family")
     return Story(scan.night, "family", "template", "This morning's note", out)
 
 
-def quiet_night(scan: NightScan, mode: str, model: str) -> Story:
-    text = {"medium": "I listened all night, and the house did not whisper once.",
-            "family": "I kept watch all night. The night looked calm: every reading stayed inside its usual range."}.get(
-        mode, "Hmph. Every reading stayed inside its expected range.")
-    return Story(scan.night, mode, model, "A quiet night", [Sentence(text, [])])
+def quiet_night(scan: NightScan, mode: str) -> Story:
+    """A scripted scan summary, not model output or a claim about every reading.
+
+    A reading can leave the predictive band without crossing the scanner's
+    higher alert threshold. No detected event therefore does not imply that
+    every reading was inside the band, or that a home was safe.
+    """
+    text = {"medium": "I listened all night. No apparition crossed the spirit meter's alert threshold.",
+            "family": "I kept watch. The scanner raised no event alerts or cold-room checks in this night log."}.get(
+        mode, "Hmph. The scanner found no events above its alert threshold. That does not mean every reading was inside its expected range.")
+    return Story(scan.night, mode, "template", "A quiet night", [Sentence(text, [])], attempts=0)
