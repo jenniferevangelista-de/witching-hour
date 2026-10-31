@@ -88,7 +88,7 @@ body.story .st-intro[hidden] { display: none; }
 .st-cast { display: flex; justify-content: center; align-items: flex-end; gap: clamp(16px, 5vw, 64px); margin: 4px 0 10px; }
 .st-cast figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
 .st-cast img { width: clamp(110px, 16vw, 190px); height: auto; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .5)); animation: floaty 5.2s ease-in-out infinite; }
-.st-cast .luna img { width: clamp(140px, 19vw, 230px); animation-duration: 3.8s; }
+.st-cast .luna img { width: clamp(110px, 16vw, 190px); scale: 1.55; transform-origin: 50% 80%; margin-bottom: 14px; animation-duration: 3.8s; }
 .st-cast .bigotes img { animation-delay: -1.4s; }
 .st-cast .xochi img { animation-delay: -2.6s; }
 .st-cast figcaption b { display: block; font: 700 19px "Fredoka", sans-serif; color: var(--bone); }
@@ -96,3 +96,17 @@ body.story .st-intro[hidden] { display: none; }
 #st-welcome p { max-width: 680px; margin: 10px auto 18px; color: var(--bone); font-size: 17px; line-height: 1.55; }
 #st-welcome .st-begin { font-size: 18px; padding: 12px 26px; }
 @media (prefers-reduced-motion: reduce) { .st-cast img { animation: none; } }
+/* speech bubbles over the crew on the first screen */
+.st-cast figure { position: relative; cursor: pointer; }
+.st-cast figure.talking img { filter: drop-shadow(0 0 16px rgba(255, 191, 60, .85)) drop-shadow(0 10px 14px rgba(0, 0, 0, .5)); }
+.st-bub {
+  position: absolute; z-index: 5; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: min(300px, 80vw);
+  padding: 10px 14px; border-radius: 16px; background: var(--bone); color: #24183f; border: 3px solid #2a2048;
+  font: 500 14.5px/1.4 "Inter", sans-serif; text-align: left; box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
+}
+.st-bub::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -10px; border: 10px solid transparent; border-top: 12px solid #2a2048; }
+.st-bub[hidden] { display: none; }
+.st-cast .luna .st-bub { border-color: #c2410c; }
+.st-cast .bigotes .st-bub { border-color: #11706a; }
+.st-cast .xochi .st-bub { border-color: #b0215f; }
+body.story #st-welcome .st-cast { margin-top: 70px; }

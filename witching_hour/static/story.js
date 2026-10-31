@@ -68,6 +68,29 @@
     <p>A ghost hunt for Halloween and Día de los Muertos. <b>The evidence is real</b>: sensor logs and recordings, measured by open models. <b>The spirits are fiction</b>, and nobody on the crew may say a word the evidence cannot back.</p>
     <button type="button" class="big st-begin">Begin the investigation →</button>`;
   $("header.hero")?.after(welcome);
+  // whoever is talking gets a speech bubble with their words; a click on a character makes them talk
+  const CARD = { medium: "luna", skeptic: "bigotes", family: "xochi" };
+  const whoOf = (card) => CARD[Object.keys(CARD).find((k) => card.classList.contains(k))];
+  const crew = $("#crew");
+  if (crew) {
+    new MutationObserver(() => {
+      $$("#crew .card").forEach((card) => {
+        const fig = welcome.querySelector(`figure.${whoOf(card)}`);
+        if (!fig) return;
+        let bub = fig.querySelector(".st-bub");
+        if (!bub) { bub = document.createElement("div"); bub.className = "st-bub"; bub.hidden = true; fig.prepend(bub); }
+        const text = (card.querySelector(".intro") || {}).textContent || "";
+        const talking = card.classList.contains("talking") && text.trim();
+        bub.hidden = !talking;
+        if (talking) bub.textContent = text;
+        fig.classList.toggle("talking", !!talking);
+      });
+    }).observe(crew, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["class"] });
+    welcome.querySelectorAll(".st-cast figure").forEach((fig) => fig.addEventListener("click", () => {
+      const k = Object.keys(CARD).find((c) => fig.classList.contains(CARD[c]));
+      $(`#crew .card.${k} .hear`)?.click();
+    }));
+  }
   const end = document.createElement("section");
   end.id = "st-end";
   end.innerHTML = `<div class="crew-row"><img src="/static/characters/luna.svg" alt="Luna"><img src="/static/characters/bigotes.svg" alt="Dr. Bigotes"><img src="/static/characters/xochi.svg" alt="Xochi"></div>
