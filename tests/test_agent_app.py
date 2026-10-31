@@ -99,3 +99,15 @@ def test_ask_is_off_on_the_public_demo(client):
     r = client.post("/api/ask", json={"question": "Was it a ghost?"})
     assert r.status_code == 503 and "private" in r.json()["detail"]
     assert client.post("/api/ask", json={"question": ""}).status_code == 422
+
+
+def test_historical_quiet_story_is_presented_as_scripted(client, demo_dir):
+    path = demo_dir / "stories" / "2016-01-16.medium.json"
+    original = path.read_bytes()
+    response = client.get("/api/nights/2016-01-16")
+    assert response.status_code == 200
+    story = response.json()["stories"]["medium"]
+    assert story["model"] == "template" and story["attempts"] == 0
+    assert story["verified"] == 0
+    assert "range" not in story["sentences"][0]["text"]
+    assert path.read_bytes() == original
