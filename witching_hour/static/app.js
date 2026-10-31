@@ -260,7 +260,7 @@
     const o = night.ouija || {};
     const arch = o.archetype ? `<span class="arch">${esc(o.archetype.replace("_", " "))}</span>` : "";
     const cites = (o.cites || []).map((c) => ` <button class="cite" data-ev="${esc(c)}">${esc(c)}</button>`).join("");
-    return `<div class="panel ouija">
+    return `<div class="panel ouija" data-audio="${esc(night.board_audio || "")}">
       <div class="head"><h3>🔮 Luna's spirit board</h3><button class="call" type="button">Call the spirit</button></div>
       <div class="board">${boardSVG()}${GLASS}</div>
       <div class="spelled" aria-live="polite"></div>
@@ -299,7 +299,12 @@
     await wait(600);
     placeGlass(glass, "GOODBYE");
     meta.hidden = false;
-    if (plain) { plain.hidden = false; speak(plain.textContent); }
+    if (plain) {
+      plain.hidden = false;
+      // Luna reads the meaning in her recorded voice; the browser's English voice only stands in when there is no recording
+      if (root.dataset.audio) { const a = new Audio(root.dataset.audio); a.play().catch(() => speak(plain.textContent)); }
+      else speak(plain.textContent);
+    }
     btn.disabled = false;
   }
 
@@ -317,6 +322,7 @@
   function speak(text) {
     if (!("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
     const voices = speechSynthesis.getVoices().filter((v) => /^en/i.test(v.lang));
     u.voice = voices.find((v) => /female|ava|jenny|aria|samantha|zira/i.test(v.name)) || voices[0] || null;
     u.rate = 0.95; u.pitch = 1.1;

@@ -142,5 +142,131 @@
   "voice": "Matilda",
   "model": "eleven_multilingual_v2",
   "file": "2016-04-12.family.mp3"
+ },
+ "2016-02-02.board": {
+  "text": "The spirit spelled: 0500 Air Low. In plain words: The air dries out significantly at the peak time of 05:00, reflecting the observed humidity drop.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-02-02.board.mp3"
+ },
+ "2016-02-05.board": {
+  "text": "The spirit spelled: 0210 Glass. In plain words: The message quietly references the peak time (0210) and the visual manifestation of the entity ('breath on the glass'), consistent with the observant nature of the Watcher.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-02-05.board.mp3"
+ },
+ "2016-02-12.board": {
+  "text": "The spirit spelled: Energy Spike 0010. In plain words: The observation hints at the appliance energy spike and the specific time it peaked.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-02-12.board.mp3"
+ },
+ "2016-02-13.board": {
+  "text": "The spirit spelled: Cold 0550 Zone. In plain words: The message is a quiet hint about the location and the peak time (0550) of the cold spot observed in the living room.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-02-13.board.mp3"
+ },
+ "2016-03-09.board": {
+  "text": "The spirit spelled: Cold 0500. In plain words: The cold spot in the living room peaks at 05:00, a quiet hint of the encroaching chill.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-03-09.board.mp3"
+ },
+ "2016-03-11.board": {
+  "text": "The spirit spelled: Cold Hush 0520. In plain words: The spirit observes the sudden drop and peak timing (0520) of the temperature anomaly in the living room.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-03-11.board.mp3"
+ },
+ "2016-03-24.board": {
+  "text": "The spirit spelled: Breath At 0200. In plain words: The Watcher observed the appearance of breath on the glass, linking it to the peak time of the humidity anomaly (E1).",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-03-24.board.mp3"
+ },
+ "2016-04-09.board": {
+  "text": "The spirit spelled: Warmth At 0450. In plain words: The Watcher observes the subtle, unexplained temperature spike, pointing directly to the peak time of the anomaly.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-09.board.mp3"
+ },
+ "2016-04-11.board": {
+  "text": "The spirit spelled: Warm 0300. In plain words: Observing the inexplicable warmth at its peak time in the ironing room.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-11.board.mp3"
+ },
+ "2016-04-12.board": {
+  "text": "The spirit spelled: Warm Above 22. In plain words: The observation notes an intense, unexpected localized warmth, which is being quietly pointed out by the spirit.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-12.board.mp3"
+ },
+ "2016-04-13.board": {
+  "text": "The spirit spelled: 0530 Energy Rising. In plain words: The watcher notes the sharp energy increase coinciding with the peak time of 0530.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-13.board.mp3"
+ },
+ "2016-04-17.board": {
+  "text": "The spirit spelled: Below 0530. In plain words: The observance of the air drying out, coupled with the time data, suggests a noticeable environmental shift in the ironing room.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-17.board.mp3"
+ },
+ "2016-04-19.board": {
+  "text": "The spirit spelled: 0540 Power Spike. In plain words: The energy readings indicate a massive, unnatural surge occurring at 0540.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-19.board.mp3"
+ },
+ "2016-04-24.board": {
+  "text": "The spirit spelled: Still Warm 0540. In plain words: The warmth noted in the ironing room is persistent, especially at the recorded peak time.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-24.board.mp3"
+ },
+ "2016-04-28.board": {
+  "text": "The spirit spelled: Power Spike 0540. In plain words: The spirit observes the sudden surge of appliance energy associated with the machines 'waking up' at the peak time of 05:40.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-04-28.board.mp3"
+ },
+ "2016-05-04.board": {
+  "text": "The spirit spelled: 0540 Slow Breath. In plain words: The high humidity and 'breath on the glass' apparition are noted, tied specifically to the peak time of 0540.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-05-04.board.mp3"
+ },
+ "2016-05-05.board": {
+  "text": "The spirit spelled: Air Gets Dry. In plain words: The sensor notes the rapid drying of the bathroom air.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-05-05.board.mp3"
+ },
+ "2016-05-13.board": {
+  "text": "The spirit spelled: Dry 0340. In plain words: The Watcher observes the dry air (low humidity) peaking around 0340 in the bathroom.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-05-13.board.mp3"
+ },
+ "2016-05-14.board": {
+  "text": "The spirit spelled: 336 Below 0300. In plain words: The change in humidity (336) was observed precisely at the peak time (0300) in the laundry room.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-05-14.board.mp3"
+ },
+ "2016-05-24.board": {
+  "text": "The spirit spelled: 0540 Energy Spike. In plain words: The spectral energy aligns with the unexpected appliance energy spike witnessed at 05:40 in the house.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-05-24.board.mp3"
+ },
+ "2016-05-25.board": {
+  "text": "The spirit spelled: High Heat 0550. In plain words: The spirit silently notes the unexpected temperature anomaly and its peak time in the kitchen.",
+  "voice": "Jessica",
+  "model": "eleven_multilingual_v2",
+  "file": "2016-05-25.board.mp3"
  }
 }

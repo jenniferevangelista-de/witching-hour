@@ -84,6 +84,8 @@ def night(night: str):
             if not scan.events and (mode != "family" or not scan.checks):
                 story = quiet_night(scan, mode).to_dict()
             out["stories"][mode] = story
+    if (data_dir() / "audio" / f"{night}.board.mp3").exists():
+        out["board_audio"] = f"/audio/{night}.board.mp3"
     for m, st in out["stories"].items():
         if (data_dir() / "audio" / f"{night}.{m}.mp3").exists():
             st["audio"] = f"/audio/{night}.{m}.mp3"
@@ -94,7 +96,7 @@ def night(night: str):
     return out
 
 
-AUDIO = re.compile(r"^(\d{4}-\d{2}-\d{2}\.(medium|skeptic|family)|seance-[0-9a-f]{10})\.mp3$")
+AUDIO = re.compile(r"^(\d{4}-\d{2}-\d{2}\.(medium|skeptic|family|board)|seance-[0-9a-f]{10})\.mp3$")
 
 
 @app.get("/api/seance/voices")
