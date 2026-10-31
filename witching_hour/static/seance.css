@@ -259,3 +259,14 @@ body.act-on .music-switch { display: none; }
 
 /* speech bubbles behave like a game's dialogue box: a fixed window of lines, new words push the old ones up */
 .sbub p { display: flex; flex-direction: column; justify-content: flex-end; line-height: 1.4; height: 4.2em; min-height: 0; overflow: hidden; }
+/* moving mouths (mouth.js): the face floats, the mouth flaps while the character talks */
+.face { position: relative; display: block; width: 100%; margin: 0 auto; }
+.st-cast .face { display: inline-block; width: auto; }
+.seat.speaking .face { animation-name: talk !important; animation-duration: .9s !important; }
+.mouth {
+  position: absolute; display: none; aspect-ratio: 1.7; transform: translate(-50%, -50%) scaleY(.3); border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 78%, #ff7a9a 0 30%, #2a2048 36%); border: 2px solid #2a2048; pointer-events: none;
+}
+.speaking .mouth, .talking .mouth { display: block; animation: yap .17s ease-in-out infinite alternate; }
+@keyframes yap { from { transform: translate(-50%, -50%) scaleY(.25); } to { transform: translate(-50%, -50%) scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .speaking .mouth, .talking .mouth { animation: none; transform: translate(-50%, -50%) scaleY(.7); } }
