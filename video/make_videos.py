@@ -65,6 +65,51 @@ def pad(seconds: float) -> np.ndarray:
     fade = np.minimum(1, np.minimum(t / 3, (seconds - t) / 3))
     return (x / np.abs(x).max() * .035 * fade).astype(np.float32)
 
+# ------------------------------------------------------------------ the score and the sound effects (as in the Night Guard film)
+RNG = np.random.default_rng(31)
+MUSIC = ROOT / "video" / "music" / "Funkorama.mp3"   # Kevin MacLeod (incompetech.com), CC BY 4.0, credited in the descriptions
+
+
+def _t(d):
+    return np.arange(int(d * SR)) / SR
+
+
+def _lpf(x, k):
+    return np.convolve(x, np.ones(k) / k, mode="same")
+
+
+SFX = {
+    "pop": lambda: (lambda t: np.sin(2 * np.pi * (700 + 900 * t) * t) * np.exp(-t * 28) * 0.5)(_t(.18)),
+    "chime": lambda f0=1320: (lambda t: sum(np.sin(2 * np.pi * f0 * m * t) / m for m in (1, 2, 3)) * np.exp(-t * 5) * 0.25)(_t(.6)),
+    "swish": lambda: (lambda t: _lpf(RNG.normal(0, 1, len(t)), 2) * np.sin(np.pi * t / .3) ** 2 * 0.35)(_t(.3)),
+    "thud": lambda: (lambda t: np.sin(2 * np.pi * (90 + 120 * np.exp(-t * 25)) * t) * np.exp(-t * 12) + _lpf(RNG.normal(0, 1, len(t)), 3) * np.exp(-t * 40) * 0.5)(_t(.35)),
+}
+
+
+def score(n: int, voice: np.ndarray, switch: float | None, events) -> np.ndarray:
+    """Suspense drone first, then Funkorama, ducked under every voice; plus the effects."""
+    t = np.arange(n) / SR
+    drone = pad(n / SR) * 6.0
+    funk = pcm(MUSIC) if MUSIC.exists() else np.zeros(n, np.float32)
+    funk = np.tile(funk, n // max(len(funk), 1) + 1)[:n] * 0.24
+    if switch is None:
+        mix = funk * np.minimum(1, t / 2.0)
+    else:
+        x = np.clip((t - switch) / 2.5, 0, 1)
+        mix = drone * (1 - x) + funk * x
+    a = np.abs(np.pad(voice, (0, max(0, n - len(voice))))[:n]).astype(np.float64)
+    k = int(SR * .25)
+    c = np.concatenate([[0.0], np.cumsum(a)])
+    env = (c[np.minimum(np.arange(n) + k, n)] - c[np.maximum(np.arange(n) - k, 0)]) / (2 * k) * 6   # a quick moving average
+    mix = mix * (1 - 0.55 * np.clip(env, 0, 1))
+    fx = np.zeros(n, np.float32)
+    for at, kind, gain, *arg in events:
+        clip = SFX[kind](*arg) * gain
+        i = int(at * SR)
+        seg = clip[: max(0, n - i)]
+        fx[i:i + len(seg)] += seg
+    return (mix + fx).astype(np.float32)
+
 
 def write_wav(x: np.ndarray, path: Path):
     x = np.clip(x, -1, 1)
@@ -271,7 +316,7 @@ FILM = [
 
 def make_film():
     get_fonts()
-    clips, cues, voice_track, t = [], [], [], 0.0
+    clips, cues, voice_track, t, starts = [], [], [], 0.0, []
     for i, scene in enumerate(FILM):
         kind, args, lines = scene[0], scene[1], scene[2]
         extra = ROOT / scene[3] if len(scene) > 3 else None
@@ -302,9 +347,26 @@ def make_film():
             f"fade=t=in:st=0:d=0.4,fade=t=out:st={max(dur - .4, 0):.2f}:d=0.4",
             "-frames:v", str(n), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "veryfast", str(mp4))
         clips.append(mp4)
+        starts.append((t, kind, args, lines))
         t += n / FPS
         print(f"film scene {i}: {dur:.1f}s", flush=True)
-    finish("witching_hour_film", clips, np.concatenate(voice_track), cues)
+    events, switch = [], None
+    for st, kind, args, lines in starts:
+        if kind == "title":
+            events += [(st + .3, "chime", .8, 1320), (st + .45, "chime", .8, 1760)]
+        elif kind == "character":
+            events += [(st + .25, "pop", .9)]
+        elif kind == "card":
+            events += [(st + .4 + k * .5, "pop", .6) for k in range(4)]
+        else:
+            events += [(st + .1, "swish", .9)]
+        if kind == "shot" and "Unheard" in str(args[2]) and switch is None:
+            switch = st
+        text = " ".join(x for _, x in lines)
+        if "Three knocks" in text:
+            at = st + .5 + 0.92 * len(text[: text.find("Three knocks")]) / 14
+            events += [(at + k * .45, "thud", .9) for k in range(3)]
+    finish("witching_hour_film", clips, np.concatenate(voice_track), cues, switch, events)
 
 
 def split_cue(text: str, seconds: float) -> list[tuple[float, float, str]]:
@@ -326,20 +388,20 @@ def split_cue(text: str, seconds: float) -> list[tuple[float, float, str]]:
     return out
 
 
-def finish(name: str, clips: list[Path], voice: np.ndarray, cues):
+def finish(name: str, clips: list[Path], voice: np.ndarray, cues, switch=None, events=()):
     lst = WORK / f"{name}.txt"
     lst.write_text("".join(f"file '{c.resolve().as_posix()}'\n" for c in clips), encoding="utf-8")
     silent = WORK / f"{name}_silent.mp4"
     run("ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(silent))
-    mix_and_mux(name, silent, voice, cues)
+    mix_and_mux(name, silent, voice, cues, switch, events)
 
 
-def mix_and_mux(name: str, video: Path, voice: np.ndarray, cues):
+def mix_and_mux(name: str, video: Path, voice: np.ndarray, cues, switch: float | None = None, events=()):
     vdur = duration(video)
     n = int(vdur * SR)
     voice = np.pad(voice, (0, max(0, n - len(voice))))[:n]
     wav = WORK / f"{name}.wav"
-    write_wav(voice * .9 + pad(vdur), wav)
+    write_wav(voice * .9 + score(n, voice, switch, events), wav)
     sub = OUT / f"{name}.srt"
     srt(cues, sub)
     out = OUT / f"{name}.mp4"
@@ -537,7 +599,8 @@ def make_tour():
             clip = clip[: max(0, int((end - at) * SR))]
         place(clip, at)
     print(f"tour: {len(marks)} narrated steps, {len(plays)} app voices", flush=True)
-    mix_and_mux("witching_hour_tour", video, voice, sorted(cues))
+    events = [(at - .25, "swish", .7) for at, _ in marks] + [(marks[-1][0] + 4, "chime", .8, 1320)] if marks else []
+    mix_and_mux("witching_hour_tour", video, voice, sorted(cues), None, events)
 
 
 if __name__ == "__main__":
