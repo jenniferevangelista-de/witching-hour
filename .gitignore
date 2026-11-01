@@ -37,3 +37,4 @@ video/out/
 video/paper/voices/
 video/paper/*.mp4
 video/paper/timeline.json
+video/paper/*.log*
