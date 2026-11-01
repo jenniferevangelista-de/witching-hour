@@ -82,7 +82,8 @@ def srt(cues: list[tuple[float, float, str]], path: Path):
     path.write_text("\n".join(f"{i}\n{ts(a)} --> {ts(b)}\n{t}\n" for i, (a, b, t) in enumerate(cues, 1)), encoding="utf-8")
 
 
-SUB_STYLE = "FontName=DejaVu Sans,FontSize=20,PrimaryColour=&H00FFFFFF,OutlineColour=&H00201030,BorderStyle=3,Outline=1,Shadow=0,MarginV=28"
+# one handwritten line in a light box at the bottom, like the Night Guard film
+SUB_STYLE = "FontName=Kalam,FontSize=13,PrimaryColour=&H00241830,OutlineColour=&H00F2F5F7,BorderStyle=3,Outline=1.6,Shadow=0,MarginV=12"
 
 
 # ------------------------------------------------------------------ drawing helpers
@@ -98,7 +99,8 @@ def font(name: str, size: int):
 
 
 def get_fonts():
-    for fname, url in (("Creepster.ttf", "https://github.com/google/fonts/raw/main/ofl/creepster/Creepster-Regular.ttf"),):
+    for fname, url in (("Creepster.ttf", "https://github.com/google/fonts/raw/main/ofl/creepster/Creepster-Regular.ttf"),
+                       ("Kalam-Regular.ttf", "https://github.com/google/fonts/raw/main/ofl/kalam/Kalam-Regular.ttf")):
         p = WORK / fname
         if not p.exists():
             try:
@@ -306,10 +308,10 @@ def make_film():
 
 
 def split_cue(text: str, seconds: float) -> list[tuple[float, float, str]]:
-    """Subtitles of at most ~70 characters, timed by their share of the line."""
+    """Subtitles of at most ~62 characters (one line), timed by their share of the line."""
     parts, cur = [], ""
     for w in text.split():
-        if len(cur) + len(w) + 1 > 70 and cur:
+        if len(cur) + len(w) + 1 > 62 and cur:
             parts.append(cur)
             cur = w
         else:
@@ -341,8 +343,10 @@ def mix_and_mux(name: str, video: Path, voice: np.ndarray, cues):
     sub = OUT / f"{name}.srt"
     srt(cues, sub)
     out = OUT / f"{name}.mp4"
+    get_fonts()
     subpath = sub.resolve().as_posix().replace(":", r"\:")
-    run("ffmpeg", "-y", "-i", str(video), "-i", str(wav), "-vf", f"subtitles='{subpath}':force_style='{SUB_STYLE}'",
+    fontdir = WORK.resolve().as_posix().replace(":", r"\:")
+    run("ffmpeg", "-y", "-i", str(video), "-i", str(wav), "-vf", f"subtitles='{subpath}':fontsdir='{fontdir}':force_style='{SUB_STYLE}'",
         "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:v", "libx264", "-crf", "20", "-preset", "veryfast",
         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", str(out))
     print(f"{out}: {duration(out):.1f}s", flush=True)
