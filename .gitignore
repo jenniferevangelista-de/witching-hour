@@ -34,3 +34,6 @@ train/out/
 demo/out/
 
 video/out/
+video/paper/voices/
+video/paper/*.mp4
+video/paper/timeline.json
