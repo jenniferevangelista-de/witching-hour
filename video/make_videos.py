@@ -359,7 +359,7 @@ def make_film():
         elif kind == "card":
             events += [(st + .4 + k * .5, "pop", .6) for k in range(4)]
         else:
-            events += [(st + .1, "swish", .9)]
+            pass
         if kind == "shot" and "Unheard" in str(args[2]) and switch is None:
             switch = st
         text = " ".join(x for _, x in lines)
@@ -599,7 +599,7 @@ def make_tour():
             clip = clip[: max(0, int((end - at) * SR))]
         place(clip, at)
     print(f"tour: {len(marks)} narrated steps, {len(plays)} app voices", flush=True)
-    events = [(at - .25, "swish", .7) for at, _ in marks] + [(marks[-1][0] + 4, "chime", .8, 1320)] if marks else []
+    events = [(marks[-1][0] + 4, "chime", .8, 1320)] if marks else []
     mix_and_mux("witching_hour_tour", video, voice, sorted(cues), None, events)
 
 

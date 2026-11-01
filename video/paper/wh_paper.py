@@ -389,7 +389,6 @@ def make_audio():
         i = int(at * SR); seg_ = clip[: max(0, n - i)] * g; buf[i:i + len(seg_)] += seg_
     for s in TL().values():
         add(voice, s["start"], decode(HERE / "voices" / f"{s['id']}.mp3"))
-        if s["id"] != "intro": add(fx, s["start"] - 0.35, swish(), 0.8)
     add(fx, S("intro")["start"] + 0.3, chime(1320), .8); add(fx, S("intro")["start"] + 0.45, chime(1760), .8)
     c = S("crew")["start"]
     for t0 in (0.2, 2.0, 4.0): add(fx, c + t0, pop())
