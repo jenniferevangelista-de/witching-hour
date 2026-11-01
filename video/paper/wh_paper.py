@@ -37,7 +37,7 @@ SCENES = [
     ("warning", "luna", "Case two. Kenji, a client in Japan, sent us his hallway camera. His mother almost went out. "
                         "The light flickers. Three knocks. A shadow. And she stays home.", 1.0),
     ("notes", "bigotes", "Hmph. A tired bulb. The pipes knocking. A neighbour. I have a boring explanation for almost everything.", 0.8),
-    ("seance", "luna", "For the rest, I open the board. The spirit speaks only through the glass, and every answer must point at a real moment. Will you come back?", 7.5),
+    ("seance", "luna", "For the rest, I open the board. The spirit speaks only through the glass, and every answer must point at a real moment. Will you come back?", 12.0),
     ("room", "xochi", "Now it's your turn. Use your camera, play without one, or bring your own recording.", 0.8),
     ("tested", "bigotes", "Of course I tested it. With planted ghosts, TabPFN caught twenty five percent, and LightGBM under ten. "
                           "Tinker taught a small model the rule: ninety five, then ninety nine percent. Four open models compared through Backboard. Eighty one tests.", 0.8),
@@ -262,17 +262,18 @@ def sc_seance(img, d, t):
     else:
         i = min(int(k), len(msg) - 1); gx, gy = letter_pos(msg[i])
     spelled = "" if t < s0 else "I AM HERE"[: [1, 3, 4, 6, 7, 8, 9][min(int(k), 6)]]
-    broken = t > s0 + 0.75 * 7 + 2.2
+    BREAK = s0 + 10.6                                         # after the Guardian has finished speaking
+    broken = t > BREAK
     if not broken:
         wcircle(d, gx, gy + 20, 60, t, 710, 7, fill=(250, 248, 240)); wcircle(d, gx, gy + 10, 22, t, 711, 5, fill=(200, 240, 225))
     else:
-        poof(d, t, gx, gy, seg(t, s0 + 0.75 * 7 + 2.2, s0 + 0.75 * 7 + 3.2))
+        poof(d, t, gx, gy, seg(t, BREAK, BREAK + 1.0))
         for j in range(10):
-            ang = j * 0.63; r = 80 + 200 * seg(t, s0 + 7.45, s0 + 8.4)
+            ang = j * 0.63; r = 80 + 200 * seg(t, BREAK, BREAK + 0.95)
             d.polygon([(gx + r * math.cos(ang), gy + r * math.sin(ang)), (gx + (r + 26) * math.cos(ang + .1), gy + (r + 26) * math.sin(ang + .1)),
                        (gx + (r + 10) * math.cos(ang - .2), gy + (r + 10) * math.sin(ang - .2))], fill=(180, 210, 230))
     if spelled: text(d, spelled, 960, 990 - 40, 70, GREEN, "mm", "impact.ttf")
-    if t > s0 + 6.0: text(d, '"I will never leave you."', 960, 140, 50, VIOLET)
+    if s0 + 5.6 < t < s0 + 10.6: text(d, '"I will never leave you."', 960, 140, 50, VIOLET)
 
 
 def sc_room(img, d, t):
@@ -333,7 +334,7 @@ def sc_end(img, d, t):
     if t > a + 1.0: text(d, "The evidence is real. The spirits are fiction.", W / 2, 650, 60, NIGHT, "mm", "impact.ttf")
     if t > a + 2.5: text(d, "witching-hour.onrender.com", W / 2, 760, 52, RED)
     if t > a + 3.0: text(d, "github.com/jenniferevangelista-de/witching-hour", W / 2, 840, 36, SOFT)
-    text(d, 'Music: "Funkorama" Kevin MacLeod (incompetech.com), CC BY 4.0 · opening score: original', W / 2, 1050, 22, SOFT)
+    text(d, "Music: an original score made in code for this film", W / 2, 1050, 22, SOFT)
 
 
 ORDER = [("intro", sc_intro), ("crew", sc_crew), ("house", sc_house), ("cite", sc_cite), ("warning", sc_warning), ("notes", sc_notes),
@@ -383,6 +384,31 @@ def drama(dur):
     return x / np.abs(x).max()
 
 
+
+def spooky(dur, seed=13):
+    """An original creepy score: a low drone a semitone apart, a minor music box, wind and a slow heartbeat."""
+    rng = np.random.default_rng(seed); n = int(dur * SR); t = np.arange(n) / SR
+    drone = (np.sin(2 * np.pi * 55 * t) + 0.8 * np.sin(2 * np.pi * 58.27 * t) + 0.4 * np.sin(2 * np.pi * 110 * t + np.sin(2 * np.pi * .09 * t)))
+    drone *= 0.55 + 0.45 * np.sin(2 * np.pi * .04 * t) ** 2
+    wind = np.convolve(rng.normal(0, 1, n), np.ones(60) / 60, mode="same") * (0.5 + 0.5 * np.sin(2 * np.pi * .03 * t + 1) ** 2) * 2.5
+    box = np.zeros(n); notes = [440.0, 523.25, 659.25, 622.25, 523.25, 493.88, 440.0, 329.63]   # A minor, with a wrong note
+    k = 0
+    for st in np.arange(1.0, dur, 0.62):
+        f = notes[k % len(notes)] * (0.5 if (k // 16) % 2 else 1.0); k += 1
+        m = min(int(1.4 * SR), n - int(st * SR))
+        if m <= 0: break
+        tt_ = np.arange(m) / SR; bell = (np.sin(2 * np.pi * f * tt_) + 0.3 * np.sin(2 * np.pi * f * 2.76 * tt_)) * np.exp(-tt_ * 3.2)
+        box[int(st * SR):int(st * SR) + m] += bell * 0.35
+    beat = np.zeros(n)
+    for st in np.arange(4.0, dur, 2.4):
+        for off, g in ((0, 1.0), (0.22, 0.7)):
+            m = min(int(.25 * SR), n - int((st + off) * SR))
+            if m <= 0: continue
+            tt_ = np.arange(m) / SR; beat[int((st + off) * SR):int((st + off) * SR) + m] += np.sin(2 * np.pi * (60 - 20 * tt_) * tt_) * np.exp(-tt_ * 18) * g
+    x = drone * 0.35 + wind * 0.25 + box + beat * 0.6
+    x *= np.minimum(1, t / 3.0) * np.minimum(1, (dur - t) / 3.0)
+    return (x / (np.abs(x).max() or 1)).astype(np.float32)
+
 def make_audio():
     n = int(DUR() * SR); voice = np.zeros(n); fx = np.zeros(n)
     def add(buf, at, clip, g=1.0):
@@ -396,16 +422,11 @@ def make_audio():
     for i in range(3): add(fx, kt + i * 0.45, thud(), 0.9)
     se = S("seance"); s0 = se["start"] + se["voice_dur"] + 0.2
     for i in range(7): add(fx, s0 + i * 0.75, pop(), 0.5)
-    if GUARDIAN.exists(): add(voice, s0 + 6.0, decode(GUARDIAN), 0.9)
-    add(fx, s0 + 0.75 * 7 + 2.2, shatter(), 1.0)
+    if GUARDIAN.exists(): add(voice, s0 + 5.6, decode(GUARDIAN), 0.9)
+    add(fx, s0 + 10.6, shatter(), 1.0)
     for i in range(12): add(fx, S("tech")["start"] + 0.5 + i * 0.6, chime(880 + 60 * (i % 7)), 0.35)
     add(fx, S("end")["start"], chime(880), 1.0); add(fx, S("end")["start"] + 0.15, chime(1320), 1.0)
-    switch = S("room")["start"]
-    t = np.arange(n) / SR
-    dr = np.zeros(n); dd = drama(switch + 3)[:n]; dr[: len(dd)] = dd
-    fk = decode(MUSIC); fk = np.tile(fk, n // len(fk) + 1)[:n]
-    x = np.clip((t - switch) / 2.0, 0, 1)
-    music = dr * (1 - x) * 0.30 + fk * x * 0.28
+    music = spooky(n / SR)[:n] * 0.34
     a_ = np.abs(voice); k = int(SR * .25); cs = np.concatenate([[0.0], np.cumsum(a_)])
     envv = (cs[np.minimum(np.arange(n) + k, n)] - cs[np.maximum(np.arange(n) - k, 0)]) / (2 * k) * 6
     mix = voice * 0.95 + fx * 0.8 + music * (1 - 0.5 * np.clip(envv, 0, 1))

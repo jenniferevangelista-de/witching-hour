@@ -86,12 +86,36 @@ SFX = {
 }
 
 
+
+def spooky(dur, seed=13):
+    """An original creepy score: a low drone a semitone apart, a minor music box, wind and a slow heartbeat."""
+    rng = np.random.default_rng(seed); n = int(dur * SR); t = np.arange(n) / SR
+    drone = (np.sin(2 * np.pi * 55 * t) + 0.8 * np.sin(2 * np.pi * 58.27 * t) + 0.4 * np.sin(2 * np.pi * 110 * t + np.sin(2 * np.pi * .09 * t)))
+    drone *= 0.55 + 0.45 * np.sin(2 * np.pi * .04 * t) ** 2
+    wind = np.convolve(rng.normal(0, 1, n), np.ones(60) / 60, mode="same") * (0.5 + 0.5 * np.sin(2 * np.pi * .03 * t + 1) ** 2) * 2.5
+    box = np.zeros(n); notes = [440.0, 523.25, 659.25, 622.25, 523.25, 493.88, 440.0, 329.63]   # A minor, with a wrong note
+    k = 0
+    for st in np.arange(1.0, dur, 0.62):
+        f = notes[k % len(notes)] * (0.5 if (k // 16) % 2 else 1.0); k += 1
+        m = min(int(1.4 * SR), n - int(st * SR))
+        if m <= 0: break
+        tt_ = np.arange(m) / SR; bell = (np.sin(2 * np.pi * f * tt_) + 0.3 * np.sin(2 * np.pi * f * 2.76 * tt_)) * np.exp(-tt_ * 3.2)
+        box[int(st * SR):int(st * SR) + m] += bell * 0.35
+    beat = np.zeros(n)
+    for st in np.arange(4.0, dur, 2.4):
+        for off, g in ((0, 1.0), (0.22, 0.7)):
+            m = min(int(.25 * SR), n - int((st + off) * SR))
+            if m <= 0: continue
+            tt_ = np.arange(m) / SR; beat[int((st + off) * SR):int((st + off) * SR) + m] += np.sin(2 * np.pi * (60 - 20 * tt_) * tt_) * np.exp(-tt_ * 18) * g
+    x = drone * 0.35 + wind * 0.25 + box + beat * 0.6
+    x *= np.minimum(1, t / 3.0) * np.minimum(1, (dur - t) / 3.0)
+    return (x / (np.abs(x).max() or 1)).astype(np.float32)
+
 def score(n: int, voice: np.ndarray, switch: float | None, events) -> np.ndarray:
     """Suspense drone first, then Funkorama, ducked under every voice; plus the effects."""
     t = np.arange(n) / SR
     drone = pad(n / SR) * 6.0
-    funk = pcm(MUSIC) if MUSIC.exists() else np.zeros(n, np.float32)
-    funk = np.tile(funk, n // max(len(funk), 1) + 1)[:n] * 0.24
+    funk = spooky(n / SR)[:n] * 0.30   # an original creepy score, made in code
     if switch is None:
         mix = funk * np.minimum(1, t / 2.0)
     else:
